@@ -1,0 +1,17 @@
+{
+    "Name": "",
+    "Koordianten": "",
+    "Kategorie": ["",""],
+    "Fotos": ["",""],
+    "Beschreibung": {"Text":""},
+
+    "holding_Team": "",
+    "date_eingenommen": "",
+    "Sicherungsmaßnahmen":
+                  [
+                    {   "Game": "",
+                        "game_Type": ""
+                      },
+                      {}
+                  ]
+}
