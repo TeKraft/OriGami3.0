@@ -316,7 +316,7 @@ server.post("/games/player", restify.bodyParser(), function (req, res, next) {
 //****************************************************************************************
 
 require('./users');
-require('./usermanagement/config/passport');
+require('./usermanagement/passport');
 
 server.post('/register',  function(req, res) {
     console.log("register");
