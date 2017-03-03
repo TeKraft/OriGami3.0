@@ -1956,4 +1956,47 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
 
     //$scope.initialize();
 
-}]);
+}])
+.controller('registerCtrl', ['$scope', '$rootScope', '$cordovaGeolocation', '$stateParams', '$ionicModal', '$ionicLoading',
+    '$timeout', 'leafletData', '$translate', 'GameData', 'PathData', 'PlayerStats', '$location', 'authentication',
+    function ($scope, $rootScope, $cordovaGeolocation, $stateParams, $ionicModal, $ionicLoading,
+              $timeout, leafletData, $translate, GameData, PathData, PlayerStats, $location, authentication) {
+
+        var vm = this;
+        console.log("register is running");
+
+        // Register the new user
+        vm.credentials = {
+            firstName: "",
+            lastName: "",
+            email: "",
+            userName: "",
+            password: "",
+            password2: "",
+            birthday: "",
+            info: "",
+            registrDate: ""
+        };
+
+        console.log(vm);
+
+        vm.onSubmit = function () {
+            console.log("submit");
+            if (vm.credentials.password !== vm.credentials.password2) {
+                console.log("in if");
+                alert("Passwörter stimmen nicht überein!");
+            } else {
+                console.log('Submitting registration');
+                console.log(vm.credentials)
+                authentication
+                    .register(vm.credentials)
+                    .error(function (err) {
+                        console.log(err);
+                        alert(err);
+                    })
+                    .then(function () {
+                        $location.path('/afterlogin');
+                    });
+            }
+        };
+    }]);

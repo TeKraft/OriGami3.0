@@ -6,6 +6,18 @@ var multer = require('multer');
 var md5file = require('md5-file');
 var path = require('path');
 var im = require('imagemagick');
+var passport = require('passport');
+var mongoose = require('mongoose');
+var User = mongoose.model('User');
+var jwt = require('express-jwt');
+var sendJSONresponse = function(res, status, content) {
+    res.status(status);
+    res.json(content);
+};
+var auth = jwt({
+    secret: 'MY_SECRET',
+    userProperty: 'payload'
+});
 
 var https_options = {
   key: fs.readFileSync('path_to_ssl_certificate_key'),
@@ -295,4 +307,129 @@ server.post("/games/player", restify.bodyParser(), function (req, res, next) {
     res.end(JSON.stringify(data));
   });
   return next();
+});
+
+//****************************************************************************************
+//****************************************************************************************
+//                                  Usermanagement
+//****************************************************************************************
+//****************************************************************************************
+
+require('./users');
+require('./usermanagement/config/passport');
+
+server.post('/register',  function(req, res) {
+    console.log("register");
+    var user = new User();
+    console.log(user);
+    user.userName = req.body.userName;
+    user.email = req.body.email;
+    user.firstName = req.body.firstName;
+    user.lastName = req.body.lastName;
+    user.registrDate = Date.now();
+    user.birthday = req.body.birthday;
+    user.info = req.body.info;
+
+    user.setPassword(req.body.password);
+
+    user.save(function(err) {
+        var token;
+        token = user.generateJwt();
+        res.status(200);
+        res.json({
+            "token" : token
+        });
+    });
+});
+
+server.post('/login', function(req, res) {
+    passport.authenticate('local', function(err, user, info){
+        var token;
+
+        // If Passport throws/catches an error
+        if (err) {
+            res.status(404).json(err);
+            return;
+        }
+
+        // If a user is found
+        if(user){
+            token = user.generateJwt();
+            res.status(200);
+            res.json({
+                "token" : token
+            });
+            console.log(token);
+        } else {
+            // If user is not found
+            res.status(401).json(info);
+        }
+    })(req, res);
+
+})
+
+server.get('/profile', auth, function(req, res) {
+
+    if (!req.payload._id) {
+        res.status(401).json({
+            "message" : "UnauthorizedError: private profile"
+        });
+    } else {
+        User
+            .findById(req.payload._id, function (err, user){
+                if(err){
+                    res.status(401).json("couldnt load profile");
+                } else {
+                    res.status(200).json(user);
+                }
+            });
+    }
+
+});
+
+server.get('/profile/:id', function(req, res){
+
+    User
+        .findById(req.params.id, function(err, obj){
+            if(err){
+                res.status(401).json("could not load the profile");
+            } else {
+                res.status(200).json(obj);
+            }
+        });
+});
+
+server.post('/profileUpdate', auth, function(req, res) {
+    if (!req.payload._id) {
+        res.status(401).json({
+            "message": "UnauthorizedError: cannot update profile without being logged in to it"
+        });
+    } else{
+        User.findByIdAndUpdate(req.payload._id, req.body, {runValidators: true, upsert: true})
+            .exec(function (err, user) {
+                res.status(200).json(user);
+            })
+    }
+});
+
+server.post('/profileDelete', auth, function (req, res) {
+    if (!req.payload._id) {
+        res.status(401).json({
+            "message": "UnauthorizedError: cannot delete profile without being logged in to it"
+        });
+    } else {
+        User.findById(req.payload._id)
+            .exec(function (err, value) {
+                if(err) {
+                    res.status(401).json({
+                        "message": "DeleteError: could not delete feature"
+                    });
+                } else {
+                    console.log('feature removed (logging just for testing)');
+                    value.remove();
+                    res.status(200).send('removed Feature');
+                }
+
+            });
+    }
 });

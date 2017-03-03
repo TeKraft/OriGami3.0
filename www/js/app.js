@@ -226,12 +226,40 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
             }
         })
 
+        .state('tab.afterlogin', {
+            url: '/afterlogin',
+            views: {
+                'tab-home': {
+                    templateUrl: 'templates/after-login.html',
+                }
+            }
+        })
+
         .state('acc.profile', {
             url: '/profile', //     /:accusername',
             views: {
                 'tab-acc': {
                     templateUrl: 'templates/acc-profile.html',
                     controller: 'LoginCtrl'
+                }
+            }
+        })
+
+        .state('tab.account-view', {
+            url: '/account', //     /:accusername',
+            views: {
+                'tab-home': {
+                    templateUrl: 'templates/profil-view.html',
+                }
+            }
+        })
+        .state('tab.register', {
+            url: '/register', //     /:accusername',
+            views: {
+                'tab-home': {
+                    templateUrl: 'templates/acc-register.html',
+                    controller: 'registerCtrl',
+                    controllerAs: "vm"
                 }
             }
         })

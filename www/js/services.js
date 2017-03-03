@@ -779,4 +779,130 @@ angular.module('starter.services', [])
         return stateDB.getItem('gameState');
     };
     return db;
-}]);
+}])
+
+.factory('authentication', ['$http', '$window','Server', function ($http, $window, Server) {
+    var base = Server;
+    var saveToken = function (token) {
+        $window.localStorage['mean-token'] = token;
+    };
+
+    var getToken = function () {
+        return $window.localStorage['mean-token'];
+    };
+
+    var isLoggedIn = function() {
+        var token = getToken();
+        var payload;
+
+        if(token){
+            payload = token.split('.')[1];
+            payload = $window.atob(payload);
+            payload = JSON.parse(payload);
+
+            return payload.exp > Date.now() / 1000;
+        } else {
+            return false;
+        }
+    };
+
+    var currentUser = function() {
+        if(isLoggedIn()){
+            var token = getToken();
+            var payload = token.split('.')[1];
+            payload = $window.atob(payload);
+            payload = JSON.parse(payload);
+            return {
+                firstName : payload.firstName,
+                lastName : payload.lastName,
+                email : payload.email,
+                userName : payload.userName
+            };
+        }
+    };
+
+    register = function(user) {
+        console.log("lalal");
+        return $http.post(base + '/register', user, {
+            method: 'POST'
+        }).success(function(data){
+            console.log("lalalalalal");
+            saveToken(data.token);
+        });
+    };
+
+    login = function(user) {
+        return $http.post(base + '/login', user).success(function(data) {
+            saveToken(data.token);
+        });
+    };
+
+    logout = function() {
+        $window.localStorage.removeItem('mean-token');
+    };
+
+    return {
+        currentUser : currentUser,
+        saveToken : saveToken,
+        getToken : getToken,
+        isLoggedIn : isLoggedIn,
+        register : register,
+        login : login,
+        logout : logout
+    };
+}])
+
+    .factory('meanData', ['$http', 'authentication','Server', function ($http, authentication, Server) {
+        var base = Server;
+        var getProfile = function () {
+            return $http.get(base + '/profile', {
+                headers: {
+                    Authorization: 'Bearer '+ authentication.getToken()
+                }
+            });
+        };
+
+        var getProfile2 = function(id) {
+            return $http.get(base + '/profile/'+ id);
+        };
+
+
+        return {
+            getProfile : getProfile,
+            getProfile2: getProfile2,
+        };
+    }])
+
+    .factory('userService', ['$http', 'authentication','Server', function ($http, authentication, Server) {
+        var base = Server;
+        function update(user) {
+            return $http.post(base + 'profileUpdate', user, {
+                headers: {
+                    Authorization: 'Bearer ' + authentication.getToken()
+                }})
+        };
+
+        function deleteUsers(user) {
+            return $http.post(base + '/profileDelete', user, {
+                headers: {
+                    Authorization: 'Bearer ' + authentication.getToken()
+                }})
+        };
+
+        var collID;
+
+        function setCollID(value){
+            collID = value;
+        };
+
+        function getCollID(){
+            return collID;
+        };
+
+        return {
+            update : update,
+            deleteUsers : deleteUsers,
+            setCollID: setCollID,
+            getCollID: getCollID
+        };
+    }]);
