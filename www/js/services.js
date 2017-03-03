@@ -1,6 +1,6 @@
 angular.module('starter.services', [])
 
-.value('Server', 'localhost:5000')
+.value('Server', 'http://localhost:5000')
 
 // #################################################################################################
 // services service
@@ -832,7 +832,9 @@ angular.module('starter.services', [])
     };
 
     login = function(user) {
-        return $http.post(base + '/login', user).success(function(data) {
+        return $http.post(base + '/login', user, {
+            method: 'POST'
+        }).success(function(data) {
             saveToken(data.token);
         });
     };

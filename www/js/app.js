@@ -221,7 +221,8 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
             views: {
                 'tab-acc': {
                     templateUrl: 'templates/acc-log.html',
-                    controller: 'LoginCtrl'
+                    controller: 'LoginCtrl',
+                    controllerAs: "vm"
                 }
             }
         })

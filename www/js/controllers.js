@@ -3,80 +3,6 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
 .controller('HomeCtrl', function ($scope) {})
 
 // #################################################################################################
-// controller login
-// #################################################################################################
-
-// NEW: LoginCtrl
-.controller('LoginCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService) {
-  console.log("start: LoginCtrl");
-
-  $scope.data = {};
-
-  //Get back in the history
-  $scope.getBack = function () {
-      $ionicHistory.goBack();
-  };
-
-
-  // execute function login() -- see acc-log.html
-  $scope.login = function () {
-    console.log("LOGIN user: " + $scope.data.username + " - PW: " + $scope.data.password);
-
-    LoginService.loginUser($scope.data.username, $scope.data.password).success(function(data) {
-
-      console.log("loginUser");
-      // ClearInputField.clearInput(data.username);
-      // ClearInputField.clearInput(data.password);
-      console.log($scope.data.username);
-      console.log($scope.data.password);
-
-      $state.go('acc.profile'); // bei Erfolg auf folgende html weiterleiten
-    }).error(function(data) {
-      var alertPopup = $ionicPopup.alert({
-        title: 'Login failed!',
-        template: 'Please check your credentials!'
-      });
-    });
-  }
-
-  $scope.register = function () {
-    console.log("REGISTER email: " + $scope.data.REGemail
-              + " - user: " + $scope.data.REGusername
-              + " - PW: " + $scope.data.REGpassword
-              + " - PWctrl: " + $scope.data.REGpasswordCTRL);
-
-  }
-
-  $scope.profileEdit = function (value, def) {
-    console.log(value);
-    console.log(def);
-
-    EditService.editValue(value, def).success(function(data) {
-
-      console.log("EditUser");
-      console.log(value);
-      console.log(def);
-
-      console.log($scope.value);
-      console.log($scope.def);
-
-      // $state.go('acc.profile'); // bei Erfolg auf folgende html weiterleiten
-    }).error(function(data) {
-      var alertPopup = $ionicPopup.alert({
-        title: 'Edit failed!',
-        template: 'Please check the fields!'
-      });
-    });
-  }
-
-  $scope.logout = function() {
-    console.log("logout()");
-  }
-
-  console.log("end: LoginCtrl");
-})
-
-// #################################################################################################
 // controller game
 // #################################################################################################
 
@@ -1957,6 +1883,12 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     //$scope.initialize();
 
 }])
+
+
+// *********************************************************************************************************
+//                                      Usermanagement
+// *********************************************************************************************************
+
 .controller('registerCtrl', ['$scope', '$rootScope', '$cordovaGeolocation', '$stateParams', '$ionicModal', '$ionicLoading',
     '$timeout', 'leafletData', '$translate', 'GameData', 'PathData', 'PlayerStats', '$location', 'authentication',
     function ($scope, $rootScope, $cordovaGeolocation, $stateParams, $ionicModal, $ionicLoading,
@@ -1999,4 +1931,24 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
                     });
             }
         };
-    }]);
+    }])
+
+.controller('LoginCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication) {
+    var vm = this;
+
+    vm.credentials = {
+        email : "",
+        password : ""
+    };
+
+    vm.onSubmit = function () {
+        authentication
+            .login(vm.credentials)
+            .error(function(err){
+                alert(err);
+            })
+            .then(function(){
+                $location.path('/afterlogin');
+            });
+    };
+});
