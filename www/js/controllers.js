@@ -1948,7 +1948,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
                 alert(err);
             })
             .then(function(){
-                $location.path('/account');
+                $location.path('/afterlogin');
             });
     };
 });
