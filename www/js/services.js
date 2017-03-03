@@ -1,6 +1,6 @@
 angular.module('starter.services', [])
 
-.value('Server', 'localhost:5000')
+.value('Server', 'http://localhost:5000')
 
 // #################################################################################################
 // services service
