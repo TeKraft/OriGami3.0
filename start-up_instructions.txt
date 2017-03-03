@@ -1,0 +1,27 @@
+For the platform to run propperly, clone the origami-backend repository from https://github.com/ifgi-sil/origami-backend.git
+
+Next, stop your MongoDB Service, and run the bash-script at origami-mongo/set_mongodb_password.sh within said repository.
+This will set the DB Authentication Flags and PW needed to run the App.
+Next, restart the MongoDB Service with "mongod --auth --port 27017 --dbpath [your desired path]".
+
+Now, open the file  config/index.js  within the origami-backend and change the config JSON to:
+var config = {
+  dbhost: 'localhost:27017',
+  dbuser: 'admin',
+  dbuserpass: 'admin',
+  port: 5000
+};
+
+Now execute npm install in the origami-backend, end start the server.js file with "node server.js".
+
+Now, your BackEnd is all set, and you can start the OriGami3.0 FrontEnd!!
+To do this, navigate to the OriGami3.0 folder, and at its root, execute the commands:
+
+"cd server && npm install && cd ../ && bower install", and then, finally, "gulp dev".
+
+This will automatically open a new window in your browser, but will do so too early.
+Due to not all dependencies being loaded in time, the window will remain empty or contain an error message.
+Be not afraid, wait for a couple of seconds (~5^ depending on your machine) and refresh the page.
+You should now be able to see the OriGami3.0 homepage.
+
+Prerequisites:  git, MongoDB v3.x.x^, gulp, node & npm, bower.
