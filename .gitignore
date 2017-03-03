@@ -7,5 +7,7 @@ plugins/
 dist/
 
 */npm-debug.log
-.idea/*
+
+.idea/
+
 www/lib/
