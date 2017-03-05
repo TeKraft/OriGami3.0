@@ -4,11 +4,22 @@
 <head>
 <meta charset="UTF-8" />
 <link rel="stylesheet" type="text/css" href="OriGamiTutorialStyle.css">
-<title> OriGami - How To </title>
+<title> OriGami Tutorial </title>
 </head>
 
 <body>
-<h1> OriGami for Teachers </h1>
+
+  <h1>OriGami Tutorial</h1>
+
+
+<input id="TB" type="button" name="answer" value="I'm a Teacher" onclick="showDivTeacher()" />
+  <br>
+<input id="SB" type="button" name="answer" value="I'm a Student" onclick="showDivStudent()" />
+
+
+
+<div id="Teacher" style="display:none;" class="answer_list">
+
 <div1>
   <h2>1. Creating a Game</h2>
   <ul>
@@ -50,7 +61,7 @@
     <a href="http://imgur.com/hJJofN7"><img src="http://i.imgur.com/hJJofN7.png" title="source: imgur.com" /></a>
     <br><br>
     <ul>
-    <li>A GeoRefence task consists of a marker which shows the location of where the uploaded photo was taken.</li>
+    <li>A GeoReference task consists of a marker which shows the location of where the uploaded photo was taken.</li>
     </ul>
     <a href="http://imgur.com/ILIXHZ0"><img src="http://i.imgur.com/ILIXHZ0.png" title="source: imgur.com" /></a>
     <br><br><hr><hr><br>
@@ -83,8 +94,11 @@
     <br><br><hr><hr><br>
   </ul>
 </div1>
+</div>
 
-<h1>OriGami for Students</h1>
+<div id="Student" style="display:none;" class="answer_list">
+
+
 <div1>
   <h2>How to Play OriGami</h2>
   <ul>
@@ -100,6 +114,21 @@
 
   </ul>
 </div1>
+</div>
+
+
+<script>
+    function showDivTeacher() {
+        document.getElementById('Teacher').style.display = "block";
+        document.getElementById('SB').style.display = "none";
+        document.getElementById('TB').style.display = "none";
+    }
+    function showDivStudent() {
+        document.getElementById('Student').style.display = "block";
+        document.getElementById('SB').style.display = "none";
+        document.getElementById('TB').style.display = "none";
+    }
+</script>
 
 </body>
 </html>
