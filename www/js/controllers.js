@@ -1886,12 +1886,12 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
 
 
 // *********************************************************************************************************
+// *********************************************************************************************************
 //                                      Usermanagement
 // *********************************************************************************************************
+// *********************************************************************************************************
 
-.controller('RegisterCtrl', ['$scope', '$rootScope', '$cordovaGeolocation', '$stateParams', '$ionicModal', '$ionicLoading',
-    '$timeout', 'leafletData', '$translate', 'GameData', 'PathData', 'PlayerStats', '$location', 'authentication',
-    function ($scope, $rootScope, $cordovaGeolocation, $stateParams, $ionicModal, $ionicLoading,
+.controller('RegisterCtrl', function ($scope, $rootScope, $cordovaGeolocation, $stateParams, $ionicModal, $ionicLoading,
               $timeout, leafletData, $translate, GameData, PathData, PlayerStats, $location, authentication) {
 
         var vm = this;
@@ -1933,35 +1933,39 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
                         $location.path('/acc/afterlogin');
                         var loc2 = $location.url();
                         console.log(loc2);
+                        $rootScope.loginUser = vm.credentials.email;
                     });
             }
         };
-    }])
+    })
 
 .controller('LoginCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication) {
     var vm = this;
-    console.log("Login-Controller")
+    console.log("Login-Controller");
 
     vm.credentials = {
         email : "",
         password : ""
     };
+    console.log(vm);
 
     vm.onSubmit = function () {
-        console.log("In submit")
+        console.log("In submit");
         authentication
             .login(vm.credentials)
             .error(function(err){
                 alert(err);
             })
             .then(function(){
-                $location.path('acc.afterlogin');
+                $location.path('/acc/afterlogin');
             });
     };
 })
+
 .controller('AfterloginCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData){
     var vm = this;
     vm.user = {};
+
 
     meanData.getProfile()
         .success(function(data) {
