@@ -1,9 +1,13 @@
-angular.module('starter.controllers', ['starter.services', 'starter.directives'])
+// #################################################################################################
+// controller game
+// #################################################################################################
+
+angular.module('starter')
 
 .controller('ProfHomeCtrl', function ($scope) {})
 
 // #################################################################################################
-// controller game
+// controller for showing games
 // #################################################################################################
 
 .controller('ProfGamesCtrl', [ '$rootScope', '$scope', '$http', '$location', '$ionicModal', '$window', '$timeout',
@@ -94,6 +98,10 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     };
 
 }])
+
+// #################################################################################################
+// controller for showing games for editing
+// #################################################################################################
 
 .controller('ProfTeacherCtrl', ['$rootScope', '$scope', '$timeout', '$ionicModal', '$window', '$ionicHistory',
                             '$translate', '$ionicSlideBoxDelegate', '$cordovaCamera', '$q', 'API', 'Edit',
@@ -744,7 +752,10 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     };
 }])
 
-// Controller which controls new GAME creation
+// #################################################################################################
+// controller for new game creation
+// #################################################################################################
+
 .controller('ProfNewGameCtrl', ['$rootScope', '$scope', '$state', '$http', '$location', '$cordovaGeolocation', '$ionicModal',
                             '$window', '$ionicPopup', '$ionicHistory', '$stateParams', '$cordovaCamera',
                             '$translate', 'leafletData', 'API', 'Edit', 'Data', 'Task',
@@ -1109,7 +1120,10 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
 
 }])
 
-// controller for gameplay
+// #################################################################################################
+// controller for playing games
+// #################################################################################################
+
 .controller('ProfPlayCtrl', ['$scope', '$stateParams', '$ionicModal', '$ionicPopup', '$ionicLoading', '$location', '$cordovaSocialSharing',
                          '$translate', '$timeout', '$cookies', 'GameData', 'GameState', 'API', 'PathData', 'PlayerStats',
                          function ($scope, $stateParams, $ionicModal, $ionicPopup, $ionicLoading, $location,  $cordovaSocialSharing,
@@ -1482,6 +1496,9 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     GameData.loadGame($scope.gameName).then(initGame, gameLoadFailure);
 }])
 
+// #################################################################################################
+// controller for map in origami play mode
+// #################################################################################################
 /* - Controller for map in origami play mode
  * - Only shows waypoint and emits signal when waypoint is reached or georeference game is played
  * - Is not concerned with GameState or the game progression logic - that is a job for PlayCtrl

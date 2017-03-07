@@ -275,7 +275,7 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
             url: '/mygames',
             views: {
                 'tab-acc': {
-                    templateUrl: 'templates/acc-mygames.html',
+                    templateUrl: 'templates/acc/acc-mygames.html',
                     controller: 'ProfGamesCtrl',
                 }
             }
