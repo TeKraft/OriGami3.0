@@ -797,8 +797,8 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
                 }
             }
         },
-
         geojson: {},
+
         markers: [],
         events: {
             /* map: {
@@ -1889,7 +1889,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
 //                                      Usermanagement
 // *********************************************************************************************************
 
-.controller('registerCtrl', ['$scope', '$rootScope', '$cordovaGeolocation', '$stateParams', '$ionicModal', '$ionicLoading',
+.controller('RegisterCtrl', ['$scope', '$rootScope', '$cordovaGeolocation', '$stateParams', '$ionicModal', '$ionicLoading',
     '$timeout', 'leafletData', '$translate', 'GameData', 'PathData', 'PlayerStats', '$location', 'authentication',
     function ($scope, $rootScope, $cordovaGeolocation, $stateParams, $ionicModal, $ionicLoading,
               $timeout, leafletData, $translate, GameData, PathData, PlayerStats, $location, authentication) {
@@ -1927,7 +1927,12 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
                         alert(err);
                     })
                     .then(function () {
-                        $location.path('/afterlogin');
+                        console.log("then");
+                        var loc = $location.url();
+                        console.log(loc);
+                        $location.path('/acc/afterlogin');
+                        var loc2 = $location.url();
+                        console.log(loc2);
                     });
             }
         };
@@ -1935,6 +1940,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
 
 .controller('LoginCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication) {
     var vm = this;
+    console.log("Login-Controller")
 
     vm.credentials = {
         email : "",
@@ -1942,13 +1948,26 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     };
 
     vm.onSubmit = function () {
+        console.log("In submit")
         authentication
             .login(vm.credentials)
             .error(function(err){
                 alert(err);
             })
             .then(function(){
-                $location.path('/afterlogin');
+                $location.path('acc.afterlogin');
             });
     };
+})
+.controller('AfterloginCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData){
+    var vm = this;
+    vm.user = {};
+
+    meanData.getProfile()
+        .success(function(data) {
+            vm.user = data;
+        })
+        .error(function (e) {
+            console.log(e);
+        });
 });

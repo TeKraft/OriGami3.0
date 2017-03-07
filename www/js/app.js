@@ -227,11 +227,13 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
             }
         })
 
-        .state('tab.afterlogin', {
+        .state('acc.afterlogin', {
             url: '/afterlogin',
             views: {
-                'tab-home': {
+                'tab-acc': {
                     templateUrl: 'templates/after-login.html',
+                    controller: 'AfterloginCtrl',
+                    controllerAs: "vm"
                 }
             }
         })
@@ -246,20 +248,20 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
             }
         })
 
-        .state('tab.account-view', {
+        .state('acc.account-view', {
             url: '/account', //     /:accusername',
             views: {
-                'tab-home': {
+                'tab-acc': {
                     templateUrl: 'templates/profil-view.html',
                 }
             }
         })
-        .state('tab.register', {
+        .state('acc.register', {
             url: '/register', //     /:accusername',
             views: {
-                'tab-home': {
+                'tab-acc': {
                     templateUrl: 'templates/acc-register.html',
-                    controller: 'registerCtrl',
+                    controller: 'RegisterCtrl',
                     controllerAs: "vm"
                 }
             }

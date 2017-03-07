@@ -826,15 +826,17 @@ angular.module('starter.services', [])
         return $http.post(base + '/register', user, {
             method: 'POST'
         }).success(function(data){
-            console.log("lalalalalal");
+            console.log("success");
             saveToken(data.token);
         });
     };
 
     login = function(user) {
+        console.log("In Frontend-login")
         return $http.post(base + '/login', user, {
             method: 'POST'
         }).success(function(data) {
+            console.log("loginsuccess")
             saveToken(data.token);
         });
     };
