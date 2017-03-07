@@ -1951,6 +1951,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
 
     vm.onSubmit = function () {
         console.log("In submit");
+        console.log("Credentials: " + vm.credentials)
         authentication
             .login(vm.credentials)
             .error(function(err){
@@ -1965,7 +1966,6 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
 .controller('AfterloginCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData){
     var vm = this;
     vm.user = {};
-
 
     meanData.getProfile()
         .success(function(data) {

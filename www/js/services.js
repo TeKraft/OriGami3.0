@@ -822,7 +822,8 @@ angular.module('starter.services', [])
     };
 
     register = function(user) {
-        console.log("lalal");
+        console.log("register Service");
+        console.log("User: " + user);
         return $http.post(base + '/register', user, {
             method: 'POST'
         }).success(function(data){
@@ -832,7 +833,8 @@ angular.module('starter.services', [])
     };
 
     login = function(user) {
-        console.log("In Frontend-login")
+        console.log("In Frontend-login");
+        console.log("User: " + user);
         return $http.post(base + '/login', user, {
             method: 'POST'
         }).success(function(data) {
