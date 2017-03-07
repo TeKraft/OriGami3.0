@@ -238,12 +238,16 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
             }
         })
 
+        // ########################################################
+        // starting templates for user-game-management
+        // ########################################################
+
         .state('acc.profile', {
             url: '/profile', //     /:accusername',
             views: {
                 'tab-acc': {
                     templateUrl: 'templates/acc-profile.html',
-                    controller: 'LoginCtrl'
+                    controller: 'HomeCtrl'
                 }
             }
         })
@@ -266,6 +270,118 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
                 }
             }
         })
+        // play game
+        .state('acc.mygames', {
+            url: '/mygames',
+            views: {
+                'tab-acc': {
+                    templateUrl: 'templates/acc-mygames.html',
+                    controller: 'ProfGamesCtrl',
+                }
+            }
+        })
+        // see created games
+        .state('acc.createdgames', {
+            url: '/createdgames',
+            views: {
+                'tab-acc': {
+                    templateUrl: 'templates/acc/acc-createdgames.html',
+                    controller: 'ProfTeacherCtrl'
+                }
+            }
+        })
+
+        /* Test State : Create new Game  -------------------- */
+        .state('acc.createmygame', {
+            url: '/createmygame',
+            views: {
+                'tab-acc': {
+                    templateUrl: 'templates/acc/acc-createmygame.html',
+                    controller: 'ProfTeacherCtrl'
+                }
+            }
+        })
+        /* --------------------------------------------------- */
+
+        .state('acc.editmygame', {
+            url: '/editmygame/:gameId',
+            views: {
+                'tab-acc': {
+                    templateUrl: 'templates/acc/acc-editmygame.html',
+                    controller: 'ProfTeacherCtrl'
+                }
+            }
+        })
+        .state('acc.mynewgame', {
+            url: '/teachmenu/mynewgame',
+            views: {
+                'tab-acc': {
+                    templateUrl: 'templates/acc/acc-mynewgame.html',
+                    controller: 'ProfNewGameCtrl'
+                }
+            }
+        })
+
+        .state('acc.playmygame', {
+            url: '/playmygame/:gameName',
+            views: {
+                'tab-acc': {
+                    templateUrl: 'templates/acc/acc-playmygame.html',
+                    controller: 'ProfPlayCtrl'
+                }
+            }
+        })
+
+        // ########################################################
+        // starting templates for usermanagement creating games
+        // ########################################################
+        // // Creation of task - Aided navigation and Path planning
+        // .state('tab.aidnavig', {
+        //     url: "/aidnavig",
+        //     views: {
+        //         'tab-home': {
+        //             templateUrl: "templates/map/aid_navig.html",
+        //             controller: 'aidController'
+        //         }
+        //     }
+        // })
+        // .state('tab.pathplan', {
+        //     url: "/pathplan",
+        //     views: {
+        //         'tab-home': {
+        //             templateUrl: "templates/map/path_plan.html",
+        //             controller: 'pathController'
+        //         }
+        //     }
+        // })
+        // .state('tab.tasktype', {
+        //     url: "/tasktype",
+        //     views: {
+        //         'tab-home': {
+        //             templateUrl: "templates/tasks/task-type.html",
+        //             controller: 'NewGameCtrl'
+        //         }
+        //     }
+        // })
+        // // States, responsible for TASK creation
+        // .state('tab.georef', {
+        //     url: "/georef",
+        //     views: {
+        //         'tab-home': {
+        //             templateUrl: "templates/tasks/georef.html",
+        //             controller: 'NewGameCtrl'
+        //         }
+        //     }
+        // })
+        // .state('tab.quest', {
+        //     url: "/quest",
+        //     views: {
+        //         'tab-home': {
+        //             templateUrl: "templates/tasks/quest.html",
+        //             controller: 'NewGameCtrl'
+        //         }
+        //     }
+        // })
 
     // if none of the above states are matched, use this as the fallback
     $urlRouterProvider.otherwise('/tab/home');    // TODO: '/acc/log'

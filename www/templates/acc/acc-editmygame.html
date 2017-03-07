@@ -1,0 +1,77 @@
+<ion-view  view-title="Games">
+    <ion-nav-bar align-title = "center" class="bar-positive">
+       </ion-nav-bar>
+<ion-content>
+      <div class = "game-backg">
+          <h2>Edit Game</h2>
+          <div class="game-type">
+
+              <button class="button icon-left ion-arrow-graph-up-right" style = "background-color:#FFEB3B" ui-sref="tab.pathplan" ng-click = "pathGame()" style="color:black;width:50px;">{{'find_destination' | translate}}</button>
+              <button class="button icon-right ion-location"  style = "background-color:#2196F3" ui-sref="tab.aidnavig" ng-click = "aidGame()" style="color:black;">{{'follow_route' | translate}}</button>
+
+          </div>
+          <button class="button button-fab button-fab-top-right button-positive icon ion-checkmark-round waves-effect waves-button waves-light" ng-click= "submitGame()"></button>
+          <button class="button button-fab button-fab-top-left button-positive icon ion-chevron-left waves-effect waves-button waves-light" ng-click = "cancelGame()"></button>
+      </div>
+      <label class="item item-input input-info" ng-class = "border">
+        <span class="input-label">{{'game_title' | translate}}</span>
+        <input type="text" ng-model = "editedGame.name" placeholder="{{'game_title' | translate}}" required>
+      </label>
+      <label class="item item-input input-info">
+        <span class="input-label">{{'game_description' | translate}}</span>
+        <input type="text" ng-model = "editedGame.description" placeholder="{{'short_description' | translate}}" required>
+      </label>
+      <label class="item item-input input-info">
+        <span class="input-label">{{'time_compl' | translate}}</span>
+        <input type="text" ng-model = "editedGame.timecompl" placeholder= "{{'time_descr' | translate}}" required>
+      </label>
+    <div class="item item-input input-info">
+         <span class="input-label">{{'difficulty' | translate}}</span>
+          <span class="rating" id="stars">
+               <a ng-click = "rateGame(0)">
+                  <i class = {{diff[0]}} style="font-size:2em;color:#FFEB3B;"></i>
+                </a>
+              <a ng-click = "rateGame(1)">
+                  <i class = {{diff[1]}} style="font-size:2em;color:#FFEB3B;"></i>
+                </a>
+              <a ng-click = "rateGame(2)">
+                  <i class = {{diff[2]}} style="font-size:2em;color:#FFEB3B;"></i>
+                </a>
+              <a ng-click = "rateGame(3)">
+                  <i class = {{diff[3]}} style="font-size:2em;color:#FFEB3B;"></i>
+                </a>
+              <a ng-click = "rateGame(4)">
+                  <i class = {{diff[4]}} style="font-size:2em;color:#FFEB3B;"></i>
+               </a>
+          </span>
+    </div>
+       <!-- <input type="text" ng-model = "newgame.difficulty" placeholder="How difficult this game is?" required> -->
+
+
+    <ion-list>
+        <div ng-repeat="act in navactivities">
+          <ion-item class="item-positive item-icon-left item-icon-right assertive activity-new" ng-click="toggleActivity(act)" ng-class="{active: isActivityShown(act)}">
+              <i class="icon" ng-class="isActivityShown(act) ? 'ion-minus' : 'ion-plus'"></i>
+               <p style="font-size:2em; height: 50%;">Activity: {{act.type}}</p>
+               <p>{{'number_points' | translate}}: {{act.points.length}}</p>
+          </ion-item>
+          <ion-item class="item-accordion" ng-repeat="item in act.points" ng-show="isActivityShown(act)">
+              <div class="points-cont">
+                  <div class = "location-icon">
+                      <i class="location-icon icon ion-location"> {{item.name}}</i>
+                  </div>
+                   <p>{{'tasks' | translate}}: {{item.tasks.length}}</p>
+                  <div class="new-task">
+                      <i class="icon ion-plus-circled" ng-click ="addTaskPoint(act,item)" ui-sref = "tab.tasktype">  New</i>
+                  </div>
+                  <div class = "all-tasks">
+                      <i class="icon ion-ios-list-outline" ui-sref = "tab.tasktype"> All</i>
+                  </div>
+              </div>
+          </ion-item>
+        </div>
+      </ion-list>
+
+
+  </ion-content>
+</ion-view>
