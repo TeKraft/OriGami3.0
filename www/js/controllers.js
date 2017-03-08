@@ -1976,10 +1976,13 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
             console.log(e);
         });
 })
-.controller('AccountCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData){
+.controller('AccountCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData, userService){
     console.log("AccountCtrl")
     var vm = this;
     vm.user = {};
+
+    vm.saveUser = saveUser;
+    vm.deleteUser = deleteUser;
 
     meanData.getProfile()
         .success(function(data) {
@@ -1988,4 +1991,35 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
         .error(function (e) {
             console.log(e);
         });
+
+    // Save the new user data
+    function saveUser() {
+        if (vm.user.password !== vm.user.password2) {
+            alert("Paswörter stimmen nicht überein!");
+        } else {
+            userService.update(vm.user)
+                .then(function () {
+                    $location.path('/account');
+                })
+                .catch(function (e) {
+                    console.log(e);
+                });
+        }
+    }
+    // Delete the user
+    function deleteUser() {
+        userService.deleteUsers(vm.user)
+            .then(function(){
+                $location.path('/account');
+            })
+            .catch(function (e) {
+                console.log(e);
+            });
+    }
 });
+.controller('TabCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData) {
+
+    $scope.logout = function () {
+        authentication.logout();
+    }
+})
