@@ -11,13 +11,23 @@ angular.module('starter')
 // #################################################################################################
 
 .controller('ProfGamesCtrl', [ '$rootScope', '$scope', '$http', '$location', '$ionicModal', '$window', '$timeout',
-                            '$ionicPopup', '$ionicHistory', '$translate', 'API', 'Data',
+                            '$ionicPopup', '$ionicHistory', '$translate', 'accAPI', 'Data', 'meanData',
                             function ($rootScope, $scope, $http, $location, $ionicModal, $window, $timeout,
-                                        $ionicPopup, $ionicHistory, $translate, API, Data) {
+                                        $ionicPopup, $ionicHistory, $translate, accAPI, Data, meanData) {
+    var vm = this;
+    vm.user = {};
 
-    console.log("$rootScope");
-    console.log($rootScope);
-    console.log($rootScope.loginUser);
+    meanData.getProfile()
+        .success(function(data) {
+            vm.user = data;
+        })
+        .error(function (e) {
+            console.log(e);
+        });
+
+    var thisUser = $rootScope.loginUser;
+    console.log("thisUser");
+    console.log(thisUser);
 
     // Info Popups --------------------------------------
     $scope.showPathInfo = function () {
@@ -40,18 +50,28 @@ angular.module('starter')
         $ionicHistory.goBack();
     };
 
-    console.log(API.getMetadata());
+    console.log("accAPI.getBaseMetadata()");
+    console.log(accAPI.getBaseMetadata());
 
     // Fetch all the games from the server
     $scope.games = [];
-    API.getMetadata().success(function (metadata, status, headers, config) {
+    accAPI.getBaseMetadata().success(function (metadata, status, headers, config) {
+      console.log(metadata);
         $scope.error_msg = null;
         $scope.games = [];
         for (var i = 0; i < metadata.length; i++) {
+
+          if (metadata[i].gameCreator == thisUser) {
             $scope.games.push(metadata[i]);
             $scope.games[i].diff = Array.apply(null, Array(metadata[i].diff)).map(function () {
                 return "ion-ios-star"
             });
+          } else {
+            console.log("metadata " + i);
+            // console.log(metadata[i]);
+          }
+
+
         }
     }).error(function (data, status, headers, config) {
         $scope.error_msg = $translate.instant('network_error');
@@ -104,14 +124,27 @@ angular.module('starter')
 // #################################################################################################
 
 .controller('ProfTeacherCtrl', ['$rootScope', '$scope', '$timeout', '$ionicModal', '$window', '$ionicHistory',
-                            '$translate', '$ionicSlideBoxDelegate', '$cordovaCamera', '$q', 'API', 'Edit',
+                            '$translate', '$ionicSlideBoxDelegate', '$cordovaCamera', '$q', 'accAPI', 'Edit', 'meanData',
                             function ($rootScope, $scope, $timeout, $ionicModal, $window, $ionicHistory,
-                                    $translate, $ionicSlideBoxDelegate, $cordovaCamera, $q, API, Edit) {
+                                    $translate, $ionicSlideBoxDelegate, $cordovaCamera, $q, accAPI, Edit, meanData) {
+    var vm = this;
+    vm.user = {};
+
+    meanData.getProfile()
+        .success(function(data) {
+            vm.user = data;
+        })
+        .error(function (e) {
+            console.log(e);
+        });
+
+    var thisUser = $rootScope.loginUser;
+
     // List of all available games fetched from the server
     $scope.list = [];
 
-    API.getAll().success(function (data, status, headers, config) {
-      console.log("TeacherCtrl - getAll.success()");
+    accAPI.getAllBaseGames(thisUser).success(function (data, status, headers, config) {
+      console.log("ProfTeacherCtrl - getAll.success("+thisUser+")");
         $scope.list = [];
         $scope.error_msg = null;
         for (var i = 0; i < data.length; i++) {
@@ -131,7 +164,7 @@ angular.module('starter')
             $scope.noData = false;
         }
     }).error(function (data, status, headers, config) {
-      console.log("TeacherCtrl - error()");
+      console.log("ProfTeacherCtrl - error()");
         $scope.error_msg = $translate.instant('network_error');
         $rootScope.notify(
             $translate.instant('oops_wrong'));
@@ -161,7 +194,7 @@ angular.module('starter')
     });
     // Rate difficulty of the game in stars
     $scope.rateGame = function (difficulty) {
-      console.log("TeacherCtrl - rateGame(difficulty)");
+      console.log("ProfTeacherCtrl - rateGame(difficulty)");
         $scope.diff = Array.apply(null, Array(5)).map(function () {
             return "ion-ios-star-outline"
         });
@@ -176,7 +209,7 @@ angular.module('starter')
     //Choose Activity
     $scope.act_type = 0;
     $scope.chooseActType = function (type) {
-      console.log("TeacherCtrl - chooseActType()");
+      console.log("ProfTeacherCtrl - chooseActType()");
         if (type == $scope.act_type)
             $scope.act_type = 0;
         else {
@@ -186,7 +219,7 @@ angular.module('starter')
 
     var currentAct = {}; // Activity that is currently created
     $scope.addActivity = function () {
-      console.log("TeacherCtrl - addActivity()");
+      console.log("ProfTeacherCtrl - addActivity()");
         $scope.newgame.activities = [];
         var newAct = {};
         currentAct.type = $scope.act_type == 1 ? "Find destination" : "Follow route";
@@ -368,7 +401,7 @@ angular.module('starter')
     };
 
     var Waypoint = function () {
-      console.log("TeacherCtrl - Waypoint()");
+      console.log("ProfTeacherCtrl - Waypoint()");
         if (!(this instanceof Waypoint)) return new Waypoint();
         this.lat = "";
         this.lng = "";
@@ -378,7 +411,7 @@ angular.module('starter')
 
     // Modal Windows Routine
     var createModal = function (templateUrl, id) {
-      console.log("TeacherCtrl - createModal()");
+      console.log("ProfTeacherCtrl - createModal()");
         $ionicModal.fromTemplateUrl(templateUrl, {
             id: id,
             scope: $scope,
@@ -391,17 +424,17 @@ angular.module('starter')
     };
 
     $scope.closeModal = function () {
-      console.log("TeacherCtrl - closeModal()");
+      console.log("ProfTeacherCtrl - closeModal()");
         $scope.modal.remove();
     };
     $scope.noTask = function () {
-      console.log("TeacherCtrl - noTask()");
+      console.log("ProfTeacherCtrl - noTask()");
         $scope.modal.remove();
         $scope.numberTask = 0;
     };
 
     $scope.$on('$destroy', function () {
-      console.log("TeacherCtrl - on.destroy()");
+      console.log("ProfTeacherCtrl - on.destroy()");
         if (typeof $scope.modal != 'undefined') {
             $scope.modal.remove();
         }
@@ -409,7 +442,7 @@ angular.module('starter')
 
     //Add Waypoint with modal
     $scope.$on('leafletDirectiveMap.contextmenu', function (event, locationEvent) {
-      console.log("TeacherCtrl - leafletDirectiveMap.contextmenu()");
+      console.log("ProfTeacherCtrl - leafletDirectiveMap.contextmenu()");
         $scope.newWaypoint = new Waypoint();
         $scope.newWaypoint.lat = locationEvent.leafletEvent.latlng.lat;
         $scope.newWaypoint.lng = locationEvent.leafletEvent.latlng.lng;
@@ -420,7 +453,7 @@ angular.module('starter')
     });
 
     $scope.$on('leafletDirectiveMap.click', function (event, locationEvent) {
-      console.log("TeacherCtrl - leafletDirectiveMap.click()");
+      console.log("ProfTeacherCtrl - leafletDirectiveMap.click()");
         $scope.newWaypoint = new Waypoint();
         $scope.newWaypoint.lat = locationEvent.leafletEvent.latlng.lat;
         $scope.newWaypoint.lng = locationEvent.leafletEvent.latlng.lng;
@@ -435,7 +468,7 @@ angular.module('starter')
     var newMarker = {};
     $scope.numberTask = 0;
     $scope.saveWayPoint = function () {
-      console.log("TeacherCtrl - saveWayPoint()");
+      console.log("ProfTeacherCtrl - saveWayPoint()");
         if (($scope.newWaypoint.name == "" || $scope.newWaypoint.name == undefined) || ($scope.newWaypoint.description == undefined || $scope.newWaypoint.description == "")) {
 
             if ($scope.newWaypoint.name == "" || $scope.newWaypoint.name == undefined) {
@@ -464,7 +497,7 @@ angular.module('starter')
 
     /* Handle Task Creation routine */
     $scope.addQAtask = function () {
-      console.log("TeacherCtrl - addQAtask()");
+      console.log("ProfTeacherCtrl - addQAtask()");
         $scope.qaTask = {};
         $scope.qaTask.answers = [{}, {}, {}, {}]; // Four answers - either text or images
         $scope.qaTask.question = {};
@@ -479,7 +512,7 @@ angular.module('starter')
     };
 
     $scope.addGRtask = function () {
-      console.log("TeacherCtrl - addGRtask()");
+      console.log("ProfTeacherCtrl - addGRtask()");
         $scope.geoTask = {};
 
         $scope.closeModal();
@@ -490,9 +523,9 @@ angular.module('starter')
     };
 
     $scope.imgUpload = function(file, $event) {
-      console.log("TeacherCtrl - imgUpload()");
+      console.log("ProfTeacherCtrl - imgUpload()");
         if (file) {
-            var upload = API.uploadImage(file);
+            var upload = accAPI.uploadImage(file);
             var reader = new FileReader();
             var isQuestion = false;
 
@@ -584,7 +617,7 @@ angular.module('starter')
     };
 
     $scope.submitGR = function (img_file) {
-      console.log("TeacherCtrl - submitGR()");
+      console.log("ProfTeacherCtrl - submitGR()");
         /*Creation of game content */
         $scope.geoTask.type = "GeoReference";
         //$scope.geoTask.img = "data:image/jpeg;base64," + $scope.georP.base64;
@@ -605,7 +638,7 @@ angular.module('starter')
 
     // Add points to the Activity
     $scope.addActPoints = function () {
-      console.log("TeacherCtrl - addActPoints()");
+      console.log("ProfTeacherCtrl - addActPoints()");
         currentAct.points = $scope.mainMap.markers;
         $scope.newgame.activities.push(currentAct);
         $scope.newgame.players = [];
@@ -613,8 +646,15 @@ angular.module('starter')
         $scope.maxScore = $scope.numberTask * 50 + $scope.mainMap.markers.length * 20;
     };
 
+    $scope.addGameCreator = function (){
+      console.log("ProfTeacherCtrl - addGameCreator");
+      console.log("gameCreator in addGameCreator");
+      console.log(gameCreator);
+      $scope.newgame.gameCreator = gameCreator;
+    }
+
     $scope.stopCreation = function () {
-      console.log("TeacherCtrl - stopCreation()");
+      console.log("ProfTeacherCtrl - stopCreation()");
         $ionicHistory.goBack();
         $ionicHistory.goBack();
         $scope.newgame = {};
@@ -622,8 +662,10 @@ angular.module('starter')
     };
 
     $scope.finishGame = function () {
-      console.log("TeacherCtrl - finishGame()");
-        API.saveItem($scope.newgame)
+      console.log("ProfTeacherCtrl - finishGame()");
+      console.log("$scope.newgame");
+      console.log($scope.newgame);
+        accAPI.saveBaseGame($scope.newgame)
             .success(function (data, status, headers, config) {
                 $rootScope.hide();
                 $rootScope.doRefresh(1);
@@ -640,20 +682,20 @@ angular.module('starter')
     };
 
     $scope.removeMarkers = function () {
-      console.log("TeacherCtrl - removeMarkers()");
+      console.log("ProfTeacherCtrl - removeMarkers()");
         $scope.modal.remove();
     };
 
     //Control of Navigation
     $scope.disableSwipe = function () {
-      console.log("TeacherCtrl - disableSwipe()");
+      console.log("ProfTeacherCtrl - disableSwipe()");
         $ionicSlideBoxDelegate.enableSlide(false);
     };
 
     $scope.emptyFields = [];
 
     $scope.slideTo = function (index) {
-      console.log("TeacherCtrl - slideTo()");
+      console.log("ProfTeacherCtrl - slideTo()");
         if (index == 1) {
             $scope.emptyFields = [false, false, false];
             if ($scope.newgame.name == undefined || $scope.newgame.description == undefined || $scope.newgame.timecompl == undefined) {
@@ -681,9 +723,9 @@ angular.module('starter')
     /* ----------------------------------------------------------------------- */
 
     // Delete the entire game by clicking on the trash icon
-    $scope.deleteItem = function (item, name) {
-      console.log("TeacherCtrl - deleteItem()");
-        API.deleteItem(name, $rootScope.getToken())
+    $scope.deleteBaseItem = function (item, name) {
+      console.log("ProfTeacherCtrl - deleteItem()");
+        accAPI.deleteBaseItem(name, $rootScope.getToken())
             .success(function (data, status, headers, config) {
                 $rootScope.hide();
             }).error(function (data, status, headers, config) {
@@ -693,11 +735,11 @@ angular.module('starter')
         $scope.list.splice($scope.list.indexOf(item), 1);
     };
 
-    $scope.editItem = function (item) {
-      console.log("TeacherCtrl - editItem()");
+    $scope.editBaseItem = function (item) {
+      console.log("ProfTeacherCtrl - editItem()");
         $scope.navactivities = [];
 
-        API.getOne(item.name)
+        accAPI.getOneBaseGame(item.name, thisUser)
             .success(function (data, status, headers, config) {
                 $scope.deleteGame = data.slice()[0];
             }).error(function (data, status, headers, config) {
@@ -713,25 +755,25 @@ angular.module('starter')
 
 
     $scope.toggleActivity = function (activity) {
-      console.log("TeacherCtrl - toggleActivity()");
+      console.log("ProfTeacherCtrl - toggleActivity()");
         activity.show = !activity.show;
     };
     $scope.isActivityShown = function (activity) {
-      console.log("TeacherCtrl - isActivityShown()");
+      console.log("ProfTeacherCtrl - isActivityShown()");
         return activity.show;
     };
     $scope.closeModal = function () {
-      console.log("TeacherCtrl - closeModal()");
+      console.log("ProfTeacherCtrl - closeModal()");
         $scope.modal.hide();
     };
 
     $scope.saveEditedGame = function () {
-      console.log("TeacherCtrl - saveEditedGame()");
+      console.log("ProfTeacherCtrl - saveEditedGame()");
         /*First delete the existing game, then save new instance.
              Not a very elegant solution, but i want to sleep already.*/
 
         //  console.log(JSON.stringify($scope.deleteGame) == JSON.stringify($scope.editedGame));
-        API.deleteItem($scope.deleteGame.name, $rootScope.getToken())
+        accAPI.deleteBaseItem($scope.deleteGame.name, $rootScope.getToken())
             .success(function (data, status, headers, config) {
                 $rootScope.hide();
                 $scope.list.splice($scope.list.indexOf($scope.deleteGame), 1);
@@ -740,7 +782,7 @@ angular.module('starter')
                     $translate.instant('oops_wrong'));
             });
 
-        API.saveItem($scope.editedGame)
+        accAPI.saveBaseItem($scope.editedGame)
             .success(function (data, status, headers, config) {
                 $scope.list.push($scope.editedGame);
                 $scope.modal.hide();
@@ -758,10 +800,22 @@ angular.module('starter')
 
 .controller('ProfNewGameCtrl', ['$rootScope', '$scope', '$state', '$http', '$location', '$cordovaGeolocation', '$ionicModal',
                             '$window', '$ionicPopup', '$ionicHistory', '$stateParams', '$cordovaCamera',
-                            '$translate', 'leafletData', 'API', 'Edit', 'Data', 'Task',
+                            '$translate', 'leafletData', 'accAPI', 'Edit', 'Data', 'Task', 'meanData',
                             function ($rootScope, $scope, $state, $http, $location, $cordovaGeolocation, $ionicModal,
                                         $window, $ionicPopup, $ionicHistory, $stateParams, $cordovaCamera,
-                                        $translate, leafletData, API, Edit, Data, Task) {
+                                        $translate, leafletData, accAPI, Edit, Data, Task, meanData) {
+    var vm = this;
+    vm.user = {};
+
+    meanData.getProfile()
+        .success(function(data) {
+            vm.user = data;
+        })
+        .error(function (e) {
+            console.log(e);
+        });
+
+    var thisUser = $rootScope.loginUser;
 
     /* Game Parameters ----- */
     $scope.currentAction = "New Game";
@@ -1067,12 +1121,12 @@ angular.module('starter')
             };
 
             if (Edit.getGame() != null) {
-                API.deleteItem(Edit.getGame().name, $rootScope.getToken())
+                accAPI.deleteBaseItem(Edit.getGame().name, $rootScope.getToken())
                     .success(function (data, status, headers, config) {
                         $rootScope.hide();
                         //$scope.list.splice($scope.list.indexOf($scope.completeGame), 1);
 
-                        API.saveItem($scope.completeGame)
+                        accAPI.saveBaseItem($scope.completeGame)
                             .success(function (data, status, headers, config) {
                                 $rootScope.hide();
                                 $rootScope.doRefresh(1);
@@ -1093,7 +1147,7 @@ angular.module('starter')
                     });
             } else {
 
-                API.saveItem($scope.completeGame)
+                accAPI.saveBaseItem($scope.completeGame)
                     .success(function (data, status, headers, config) {
                         $rootScope.hide();
                         $rootScope.doRefresh(1);
@@ -1125,9 +1179,22 @@ angular.module('starter')
 // #################################################################################################
 
 .controller('ProfPlayCtrl', ['$scope', '$stateParams', '$ionicModal', '$ionicPopup', '$ionicLoading', '$location', '$cordovaSocialSharing',
-                         '$translate', '$timeout', '$cookies', 'GameData', 'GameState', 'API', 'PathData', 'PlayerStats',
+                         '$translate', '$timeout', '$cookies', 'GameData', 'GameState', 'accAPI', 'PathData', 'PlayerStats', 'meanData',
                          function ($scope, $stateParams, $ionicModal, $ionicPopup, $ionicLoading, $location,  $cordovaSocialSharing,
-                                    $translate, $timeout, $cookies, GameData, GameState, API, PathData, PlayerStats) {
+                                    $translate, $timeout, $cookies, GameData, GameState, accAPI, PathData, PlayerStats, meanData) {
+    var vm = this;
+    vm.user = {};
+
+    meanData.getProfile()
+        .success(function(data) {
+            vm.user = data;
+        })
+        .error(function (e) {
+            console.log(e);
+        });
+
+    var thisUser = $rootScope.loginUser;
+
     $scope.gameName = $stateParams.gameName;
     $scope.gameLoaded = false;
     var congratsMessages = ['Good job!', 'Well done!', 'Great!', 'Cool!', 'Perfect!', 'So Fast! :)'];
@@ -1222,7 +1289,7 @@ angular.module('starter')
             $scope.waypointImgURL = null;
             $scope.waypoint = GameData.getWaypoint(actIndex, pointIndex);
             if ($scope.waypoint.pic != undefined) {
-                $scope.waypointImgURL = API.getImageURL($scope.waypoint.pic);
+                $scope.waypointImgURL = accAPI.getImageURL($scope.waypoint.pic);
             }
             $scope.$broadcast('waypointLoadedEvent', $scope.waypoint);
 
@@ -1252,7 +1319,7 @@ angular.module('starter')
     $scope.performGeoReferencingTask = function () {
         $scope.showInfo = true;
         $scope.subHeaderInfo = "Mark location on map";
-        $scope.geoRefPhoto = API.getImageURL($scope.task.img);
+        $scope.geoRefPhoto = accAPI.getImageURL($scope.task.img);
         createModal('georef-modal.html', 'georef');
     };
 
@@ -1291,11 +1358,11 @@ angular.module('starter')
             $scope.task.answers[randomIndex] = temporaryValue;
         }
 
-        $scope.imgAnsURL_0 = API.getImageURL($scope.task.answers[0].img);
-        $scope.imgAnsURL_1 = API.getImageURL($scope.task.answers[1].img);
-        $scope.imgAnsURL_2 = API.getImageURL($scope.task.answers[2].img);
-        $scope.imgAnsURL_3 = API.getImageURL($scope.task.answers[3].img);
-        $scope.imgRightAnswerURL = API.getImageURL($scope.rightAnswer.img);
+        $scope.imgAnsURL_0 = accAPI.getImageURL($scope.task.answers[0].img);
+        $scope.imgAnsURL_1 = accAPI.getImageURL($scope.task.answers[1].img);
+        $scope.imgAnsURL_2 = accAPI.getImageURL($scope.task.answers[2].img);
+        $scope.imgAnsURL_3 = accAPI.getImageURL($scope.task.answers[3].img);
+        $scope.imgRightAnswerURL = accAPI.getImageURL($scope.rightAnswer.img);
         // console.log($scope.imgAnsURL_0, $scope.imgAnsURL_1, $scope.imgAnsURL_2, $scope.imgAnsURL_3);
 
         $scope.chooseAnswer = function (answer, index) {
@@ -1443,7 +1510,7 @@ angular.module('starter')
         }, 1200);
         showResults();
 
-        API.addPlayerInfo(info); // Add score to player array for this game
+        accAPI.addPlayerInfo(info); // Add score to player array for this game
         $scope.$broadcast('gameOverEvent');
 
         $scope.shareViaFacebook = function (message, image, link) {
@@ -1458,7 +1525,7 @@ angular.module('starter')
     $scope.players = [];
 
     var showResults = function () {
-        API.getOne($scope.gameName)
+        accAPI.getOne($scope.gameName, thisUser)
             .success(function (data, status, headers, config) {
                 $scope.players = data.slice()[0].players;
 
@@ -1504,9 +1571,21 @@ angular.module('starter')
  * - Is not concerned with GameState or the game progression logic - that is a job for PlayCtrl
  */
 .controller('ProfStudentMapCtrl', ['$scope', '$rootScope', '$cordovaGeolocation', '$stateParams', '$ionicModal', '$ionicLoading',
-                                '$timeout', 'leafletData', '$translate', 'GameData', 'PathData', 'PlayerStats',
+                                '$timeout', 'leafletData', '$translate', 'GameData', 'PathData', 'PlayerStats', 'meanData',
                                 function ($scope, $rootScope, $cordovaGeolocation, $stateParams, $ionicModal, $ionicLoading,
-                                            $timeout, leafletData, $translate, GameData, PathData, PlayerStats) {
+                                            $timeout, leafletData, $translate, GameData, PathData, PlayerStats, meanData) {
+    var vm = this;
+    vm.user = {};
+
+    meanData.getProfile()
+        .success(function(data) {
+            vm.user = data;
+        })
+        .error(function (e) {
+            console.log(e);
+        });
+
+    var thisUser = $rootScope.loginUser;
 
     $scope.waypointLoaded = false;
     $scope.allowEdit = false; // flag to toggle map editing when marking in georeferencing game

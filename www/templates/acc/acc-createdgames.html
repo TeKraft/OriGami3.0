@@ -2,7 +2,7 @@
     <div style="position:fixed; top:2%; width:100%;">
         <h2 class="techm_h">Created Games</h2>
         <i class="ion-arrow-left-c back_icon" ng-click="cancelGame()"></i>
-        <i class="ion-plus-round newgame_icon" ng-click="startGameCreation()" ui-sref="tab.creategame"></i>
+        <i class="ion-plus-round newgame_icon" ng-click="startGameCreation()" ui-sref="acc.createdgames"></i>
     </div>
     <ion-content style="height:90%;top:10%;">
         <!-- Display error message if http request fails to fetch games -->
@@ -32,7 +32,7 @@
                 </div>
                 <div class="item item-body teachm_menu">
                     <div class="teachm_b" ng-click="deleteItem(item,'{{item.name}}')">DELETE</div>
-                    <div class="teachm_b" ui-sref="tab.newgame" ng-click="editItem(item)">EDIT</div>
+                    <div class="teachm_b" ui-sref="acc.mynewgame" ng-click="editItem(item)">EDIT</div>
                 </div>
             </a>
         </div>

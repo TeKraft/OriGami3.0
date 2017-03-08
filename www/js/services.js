@@ -304,6 +304,36 @@ angular.module('starter.services', [])
     };
 })
 
+// API for getting data from the remote server for account data (REST interface to Mongodb)
+.factory('accAPI', function ($rootScope, $http, $ionicLoading, $window, Server, Upload) {
+    var base = Server;
+
+    return {
+        getAllBaseGames: function (user) {
+          console.log(user);
+            return $http.get(base + '/baseGames/' + user, {
+                method: 'GET',
+            });
+        },
+        getOneBaseGame: function (name, user) {
+            return $http.get(base + '/baseGames/baseItem/' + name + '/' + user, {
+                method: 'GET',
+            });
+        },
+        getBaseMetadata: function () {
+          return $http.get(base + '/baseGames/metadata', {
+            method: 'GET',
+          });
+        },
+        saveBaseItem: function (form) {
+          return $http.post(base + '/baseGames/baseItem', form, {
+            method: 'POST',
+          });
+        },
+
+    }
+})
+
 /* loads existing games from database */
 .factory('GameData', function ($rootScope, $http, $filter, $q, Server) {
     var data = {};
@@ -884,7 +914,7 @@ angular.module('starter.services', [])
     .factory('userService', ['$http', 'authentication','Server', function ($http, authentication, Server) {
         var base = Server;
         function update(user) {
-            return $http.post(base + 'profileUpdate', user, {
+            return $http.post(base + '/profileUpdate', user, {
                 headers: {
                     Authorization: 'Bearer ' + authentication.getToken()
                 }})
