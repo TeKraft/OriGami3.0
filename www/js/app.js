@@ -257,6 +257,8 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
             views: {
                 'tab-acc': {
                     templateUrl: 'templates/profil-view.html',
+                    controller: 'AccountCtrl',
+                    controllerAs: 'vm'
                 }
             }
         })
