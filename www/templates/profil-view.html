@@ -7,27 +7,14 @@
     </div>
     <ion-content style="height:90%;top:10%;">
 
-        <!--
-        Login:
-        https://devdactic.com/simple-login-example-with-ionic-and-angularjs/
+        <p>First name: {{vm.user.firstName}}</p>
+        <p>Name: {{vm.user.lastName}}</p>
+        <p>Username: {{vm.user.userName}}</p>
+        <p>e-mail: {{vm.user.email}}</p>
+        <p>Birthday: {{vm.user.birthday}}</p>
+        <p>Info: {{vm.user.info}}</p>
 
-        Register&Login:
-        http://jasonwatmore.com/post/2015/03/10/angularjs-user-registration-and-login-example-tutorial
-
-         ... with PHP
-        http://www.arjunsk.com/html5/how-to-setup-loginregister-using-ionic-cordova-part-5/
-
-
-        ionic:
-        https://ionicframework.com/docs/api/directive/ionTabs/
-         -->
-
-        <p>Vorname: {{vm.user.firstName}}</p>
-        <p>Nachname: {{vm.user.lastName}}</p>
-        <p>other data:</p>
-        <p>other data:</p>
-        <p>other data:</p>
-
+        <button class="button button-block button-calm" ui-sref="acc.register">Changes</button>
 
     </ion-content>
 

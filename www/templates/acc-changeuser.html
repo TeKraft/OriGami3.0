@@ -1,0 +1,43 @@
+<ion-view view-title="Account View" style="background-color:#B22222;">
+    <div style="position:fixed; top:2%; width:100%;">
+        <h2 class="techm_h">Your Profile</h2>
+        <!-- <i class="ion-arrow-left-c back_icon" ng-click="cancelGame()"></i> -->
+        <i class="ion-arrow-left-c back_icon" ui-sref="acc.afterlogin"></i>
+        <!-- <button ng-click = "createFile()">ASDGFASDGASDG</button> -->
+    </div>
+    <ion-content style="height:90%;top:10%;">
+
+        <form method="post" ng-submit="vm.onSubmit()">
+            <label class="item item-input">
+                <input type="text" id="firstName" class="form-control" ng-model="vm.user.firstName" required />
+            </label>
+            <label class="item item-input">
+                <input type="text" id="lastName" class="form-control" ng-model="vm.user.lastName" required />
+            </label>
+            <label class="item item-input">
+                <input type="text" id="email" class="form-control" ng-model="vm.user.email" required />
+            </label>
+            <label class="item item-input">
+                <input type="text" id="userName" class="form-control" ng-model="vm.user.userName" required />
+            </label>
+            <label class="item item-input">
+                <input type="password" id="password" class="form-control" ng-model="vm.user.password" />
+            </label>
+            <label class="item item-input">
+                <input type="password" id="password2" class="form-control" ng-model="vm.user.password2"/>
+            </label>
+            Optional:
+            <label class="item item-input">
+                <input type="text" id="birthday" class="form-control" ng-model="vm.user.birthday"/>
+            </label>
+            <label class="item item-input">
+                <input type="text" id="info" class="form-control" ng-model="vm.user.info"/>
+            </label>
+            <label class="item item-input">
+                <button class="btn btn-custom" ng-click="vm.saveUser()">Save</button>
+                <button class="btn btn-danger" ng-click="vm.deleteUser()">Delete</button>
+            </label>
+        </form>
+
+    </ion-content>
+</ion-view>
