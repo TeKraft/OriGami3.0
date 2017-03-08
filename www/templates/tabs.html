@@ -19,8 +19,8 @@ navigation history that also transitions its views in and out.
     <ion-tab title="" icon-off="ion-chatbubbles" icon-on="ion-chatbubbles" href="#/tab/languages">
         <ion-nav-view name="languages-tab"></ion-nav-view>
     </ion-tab>
-    <!-- LeaderBoards -->
 
+    <!-- LeaderBoards -->
     <ion-tab title="" icon-off="ion-trophy" icon-on="ion-trophy" href="#/tab/leaders">
         <ion-nav-view cache-view="false" name="leaders-tab"></ion-nav-view>
     </ion-tab>
@@ -29,4 +29,17 @@ navigation history that also transitions its views in and out.
     <ion-tab title="" icon-off="ion-stats-bars" icon-on="ion-stats-bars" href="#/tab/stats">
         <ion-nav-view cache-view="false" name="stat-tab"></ion-nav-view>
     </ion-tab>
+
+    <!-- Logout -->
+    <ion-tab title="Logout" icon-off="ion-close" icon-on="ion-close" ui-sref="tab.home" on-select="logout()">
+        <ion-nav-view cache-view="false" name="tab-home"></ion-nav-view>
+    </ion-tab>
 </ion-tabs>
+<!--
+<script>
+    function logout () {
+        console.log(window.localStorage.getItem('mean-token'));
+        window.localStorage.removeItem('mean-token');
+        console.log(window.localStorage.getItem('mean-token'));
+    }
+</script>-->

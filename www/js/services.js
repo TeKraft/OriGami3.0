@@ -844,7 +844,9 @@ angular.module('starter.services', [])
     };
 
     logout = function() {
+        console.log($window.localStorage.getItem('mean-token'));
         $window.localStorage.removeItem('mean-token');
+        console.log($window.localStorage.getItem('mean-token'));
     };
 
     return {

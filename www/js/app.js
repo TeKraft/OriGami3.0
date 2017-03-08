@@ -48,7 +48,12 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
         .state('tab', {
             url: '/tab',
             abstract: true,
-            templateUrl: 'templates/tabs.html'
+            views: {
+                '': {
+                    controller: 'TabCtrl',
+                    templateUrl: 'templates/tabs.html'
+                }
+            }
         })
 
         // Each tab has its own nav history stack:
@@ -87,6 +92,15 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
             }
         })
         .state('tab.home', {
+            url: '/home',
+            views: {
+                'tab-home': {
+                    templateUrl: 'templates/home.html',
+                    controller: 'HomeCtrl'
+                }
+            }
+        })
+        .state('tab.logout', {
             url: '/home',
             views: {
                 'tab-home': {
@@ -213,7 +227,12 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
         .state('acc', {
             url: '/acc',
             abstract: true,
-            templateUrl: 'templates/acc-tabs.html'
+            views: {
+                '': {
+                    controller: 'TabCtrl',
+                    templateUrl: 'templates/acc-tabs.html'
+                }
+            }
         })
 
         .state('acc.log', {

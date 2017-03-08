@@ -25,4 +25,9 @@ navigation history that also transitions its views in and out.
         <ion-nav-view cache-view="false" name="stat-tab"></ion-nav-view>
     </ion-tab>
 
+    <!-- Logout -->
+    <ion-tab title="Logout" icon-off="ion-close" icon-on="ion-close" ui-sref="tab.home" on-select="logout()">
+        <ion-nav-view cache-view="false" name="tab-home"></ion-nav-view>
+    </ion-tab>
+
 </ion-tabs>
