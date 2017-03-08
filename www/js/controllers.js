@@ -1995,11 +1995,11 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     // Save the new user data
     function saveUser() {
         if (vm.user.password !== vm.user.password2) {
-            alert("Paswörter stimmen nicht überein!");
+            alert("Passwörter stimmen nicht überein!");
         } else {
             userService.update(vm.user)
                 .then(function () {
-                    $location.path('/account');
+                    $location.path('/acc/afterlogin');
                 })
                 .catch(function (e) {
                     console.log(e);
@@ -2010,7 +2010,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     function deleteUser() {
         userService.deleteUsers(vm.user)
             .then(function(){
-                $location.path('/account');
+                $location.path('/tab/home');
             })
             .catch(function (e) {
                 console.log(e);

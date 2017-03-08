@@ -291,6 +291,16 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
                 }
             }
         })
+        .state('acc.changeUser', {
+            url: '/changeUser',
+            views: {
+                'tab-acc': {
+                    templateUrl: 'templates/acc-changeuser.html',
+                    controller: 'AccountCtrl',
+                    controllerAs: 'vm'
+                }
+            }
+        })
         // play game
         .state('acc.mygames', {
             url: '/mygames',
@@ -298,6 +308,7 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
                 'tab-acc': {
                     templateUrl: 'templates/acc/acc-mygames.html',
                     controller: 'ProfGamesCtrl',
+                    controllerAs: 'vm'
                 }
             }
         })
@@ -307,7 +318,8 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
             views: {
                 'tab-acc': {
                     templateUrl: 'templates/acc/acc-createdgames.html',
-                    controller: 'ProfTeacherCtrl'
+                    controller: 'ProfTeacherCtrl',
+                    controllerAs: 'vm'
                 }
             }
         })
@@ -318,7 +330,8 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
             views: {
                 'tab-acc': {
                     templateUrl: 'templates/acc/acc-createmygame.html',
-                    controller: 'ProfTeacherCtrl'
+                    controller: 'ProfTeacherCtrl',
+                    controllerAs: 'vm'
                 }
             }
         })
