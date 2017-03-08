@@ -2016,10 +2016,11 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
                 console.log(e);
             });
     }
-});
+})
+
 .controller('TabCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData) {
 
     $scope.logout = function () {
         authentication.logout();
     }
-})
+});
