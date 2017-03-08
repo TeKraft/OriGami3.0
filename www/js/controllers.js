@@ -1939,7 +1939,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
         };
     })
 
-.controller('LoginCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication) {
+.controller('LoginCtrl', function ($rootScope, $scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication) {
     var vm = this;
     console.log("Login-Controller");
 
@@ -1959,11 +1959,25 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
             })
             .then(function(){
                 $location.path('/acc/afterlogin');
+                $rootScope.loginUser = vm.credentials.email;
             });
     };
 })
 
 .controller('AfterloginCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData){
+    var vm = this;
+    vm.user = {};
+
+    meanData.getProfile()
+        .success(function(data) {
+            vm.user = data;
+        })
+        .error(function (e) {
+            console.log(e);
+        });
+})
+.controller('AccountCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData){
+    console.log("AccountCtrl")
     var vm = this;
     vm.user = {};
 
