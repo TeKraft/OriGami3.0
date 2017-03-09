@@ -2,7 +2,7 @@
     <div style="position:fixed; top:2%; width:100%;">
         <h2 class="techm_h">Your profile</h2>
         <!-- <i class="ion-arrow-left-c back_icon" ng-click="cancelGame()"></i> -->
-        <i class="ion-arrow-left-c back_icon" ui-sref="acc.afterlogin"></i>
+        <i class="ion-arrow-left-c back_icon" ui-sref="acc.account-view"></i>
         <!-- <button ng-click = "createFile()">ASDGFASDGASDG</button> -->
     </div>
     <ion-content style="height:90%;top:10%;">
@@ -16,16 +16,9 @@
 
         <table class="list">
             <tr ng-repeat="friend in vm.user.friends">
-                <td ng-click="friendAccount(friend)" id="friend"><a>{{friend}}</a></td>
+                <td ng-click="friendAccount()" id="friend"><a>{{friend}}</a></td>
             </tr>
         </table>
-
-        <button class="button button-block button-calm" ui-sref="acc.changeUser">Change your userdata</button>
-
-        <form ng-submit="inviteUser()">
-        <input id="newmail" type="text" ng-model="friendInput" placeholder="e-mail">
-        <button class="button button-block button-calm"type="submit">Add user as a friend</button>
-        </form>
 
     </ion-content>
 

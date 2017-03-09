@@ -271,6 +271,16 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
                 }
             }
         })
+        .state('acc.friend-view', {
+            url: '/friendaccount', //     /:accusername',
+            views: {
+                'tab-acc': {
+                    templateUrl: 'templates/acc-friendaccount.html',
+                    controller: 'FriendCtrl',
+                    controllerAs: 'vm'
+                }
+            }
+        })
         .state('acc.register', {
             url: '/register', //     /:accusername',
             views: {

@@ -2023,9 +2023,41 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
         var mail = angular.element('#newmail').val();
         userService.inviteUser(mail)
             .then(function (data) {
-
+                vm.user.friends.push(data.data.userName)
+                userService.update(vm.user)
             })
     }
+    //View friends account
+    $scope.friendAccount = function(friend){
+        userService.friendUser(friend)
+            .success(function (data) {
+                console.log(data)
+                userService.setFriendlID(data._id)
+                $location.path('/acc/friendaccount')
+            })
+            .error(function () {
+                $ionicPopup.alert({
+                    title: 'User is deleted!',
+                })
+            })
+    }
+})
+
+.controller('FriendCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData, userService) {
+    var vm = this;
+    vm.user = {};
+    console.log("FriendCtrl")
+    var friendID = userService.getFriendID();
+    meanData.getProfile2(friendID)
+        .then(function (data) {
+            console.log("foundUser")
+            console.log(data)
+            vm.user = data.data;
+        })
+    $scope.$on('$locationChangeStart', function(event, next, current) {
+        console.log("locationchange")
+        location.reload();
+    })
 })
 
 .controller('TabCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData) {

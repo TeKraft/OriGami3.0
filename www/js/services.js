@@ -931,64 +931,69 @@ angular.module('starter.services', [])
     };
 }])
 
-    .factory('meanData', ['$http', 'authentication','Server', function ($http, authentication, Server) {
-        var base = Server;
-        var getProfile = function () {
-            return $http.get(base + '/profile', {
-                headers: {
-                    Authorization: 'Bearer '+ authentication.getToken()
-                }
-            });
-        };
+.factory('meanData', ['$http', 'authentication','Server', function ($http, authentication, Server) {
+    var base = Server;
+    var getProfile = function () {
+        return $http.get(base + '/profile', {
+            headers: {
+                Authorization: 'Bearer '+ authentication.getToken()
+            }
+        });
+    };
 
-        var getProfile2 = function(id) {
-            return $http.get(base + '/profile/'+ id);
-        };
+    var getProfile2 = function(id) {
+        return $http.get(base + '/profile/'+ id);
+    };
 
 
-        return {
-            getProfile : getProfile,
-            getProfile2: getProfile2,
-        };
-    }])
+    return {
+        getProfile : getProfile,
+        getProfile2: getProfile2,
+    };
+}])
 
-    .factory('userService', ['$http', 'authentication','Server', function ($http, authentication, Server) {
-        var base = Server;
-        function update(user) {
-            return $http.post(base + '/profileUpdate', user, {
-                headers: {
-                    Authorization: 'Bearer ' + authentication.getToken()
-                }})
-        };
+.factory('userService', ['$http', 'authentication','Server', function ($http, authentication, Server) {
+    var base = Server;
+    function update(user) {
+        return $http.post(base + '/profileUpdate', user, {
+            headers: {
+                Authorization: 'Bearer ' + authentication.getToken()
+            }})
+    };
 
-        function deleteUsers(user) {
-            return $http.post(base + '/profileDelete', user, {
-                headers: {
-                    Authorization: 'Bearer ' + authentication.getToken()
-                }})
-        };
+    function deleteUsers(user) {
+        return $http.post(base + '/profileDelete', user, {
+            headers: {
+                Authorization: 'Bearer ' + authentication.getToken()
+            }})
+    };
 
-        function inviteUser(email){
-            console.log("inviteService");
-            console.log(email);
-            return $http.get(base + '/inviteUser/' + email)
-        };
+    function inviteUser(email){
+        console.log("inviteService");
+        console.log(email);
+        return $http.get(base + '/inviteUser/' + email)
+    };
 
-        var collID;
+    function friendUser(userName){
+        return $http.get(base + '/friendUser/' + userName)
+    }
 
-        function setCollID(value){
-            collID = value;
-        };
+    var friendID;
 
-        function getCollID(){
-            return collID;
-        };
+    function setFriendID(value){
+        friendID = value;
+    };
 
-        return {
-            update : update,
-            deleteUsers : deleteUsers,
-            setCollID: setCollID,
-            getCollID: getCollID,
-            inviteUser: inviteUser
-        };
-    }]);
+    function getFriendID(){
+        return friendID;
+    };
+
+    return {
+        update : update,
+        deleteUsers : deleteUsers,
+        setFriendlID: setFriendID,
+        getFriendID: getFriendID,
+        inviteUser: inviteUser,
+        friendUser: friendUser
+    };
+}]);
