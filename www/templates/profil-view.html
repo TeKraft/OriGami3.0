@@ -1,6 +1,6 @@
 <ion-view view-title="Account View" style="background-color:#B22222;">
     <div style="position:fixed; top:2%; width:100%;">
-        <h2 class="techm_h">Your Profile</h2>
+        <h2 class="techm_h">Your profile</h2>
         <!-- <i class="ion-arrow-left-c back_icon" ng-click="cancelGame()"></i> -->
         <i class="ion-arrow-left-c back_icon" ui-sref="acc.afterlogin"></i>
         <!-- <button ng-click = "createFile()">ASDGFASDGASDG</button> -->
@@ -14,7 +14,10 @@
         <p>Birthday: {{vm.user.birthday}}</p>
         <p>Info: {{vm.user.info}}</p>
 
-        <button class="button button-block button-calm" ui-sref="acc.changeUser">Changes</button>
+        <button class="button button-block button-calm" ui-sref="acc.changeUser">Change your userdata</button>
+
+        <input id="newmail" type="text"  runat="server" ng-model="inputVal" ng-init="inputVal='aVal'">
+        <button class="button button-block button-calm" ng-click="inviteUser()">Invite User</button>
 
     </ion-content>
 

@@ -1,15 +1,6 @@
 angular.module('starter.controllers', ['starter.services', 'starter.directives'])
 
-.controller('HomeCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData) {
-    var vm = this;
-    vm.user = {};
-
-    meanData.getProfile()
-        .success(function(data) {
-            vm.user = data;
-            $location.path('/acc/afterlogin');
-        })
-})
+.controller('HomeCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData) {})
 
 // #################################################################################################
 // controller game
@@ -2019,12 +2010,21 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     function deleteUser() {
         userService.deleteUsers(vm.user)
             .then(function(){
-                $location.path('/tab/home');
                 location.reload();
+                $location.path('/tab/home');
             })
             .catch(function (e) {
                 console.log(e);
             });
+    }
+
+    // Invite user as friend
+    $scope.inviteUser = function () {
+        var mail = angular.element('#newmail').val();
+        userService.inviteUser(mail)
+            .then(function (data) {
+                console.log(data)
+            })
     }
 })
 

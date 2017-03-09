@@ -261,16 +261,6 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
         // starting templates for user-game-management
         // ########################################################
 
-        .state('acc.profile', {
-            url: '/profile', //     /:accusername',
-            views: {
-                'tab-acc': {
-                    templateUrl: 'templates/acc-profile.html',
-                    controller: 'HomeCtrl'
-                }
-            }
-        })
-
         .state('acc.account-view', {
             url: '/account', //     /:accusername',
             views: {

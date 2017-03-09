@@ -968,6 +968,12 @@ angular.module('starter.services', [])
                 }})
         };
 
+        function inviteUser(email){
+            console.log("inviteService");
+            console.log(email);
+            return $http.get(base + '/inviteUser/' + email)
+        };
+
         var collID;
 
         function setCollID(value){
@@ -982,6 +988,7 @@ angular.module('starter.services', [])
             update : update,
             deleteUsers : deleteUsers,
             setCollID: setCollID,
-            getCollID: getCollID
+            getCollID: getCollID,
+            inviteUser: inviteUser
         };
     }]);
