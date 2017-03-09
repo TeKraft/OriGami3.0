@@ -2023,7 +2023,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
         var mail = angular.element('#newmail').val();
         userService.inviteUser(mail)
             .then(function (data) {
-                console.log(data)
+
             })
     }
 })
