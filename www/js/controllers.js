@@ -2000,6 +2000,12 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
             alert("Passwörter stimmen nicht überein!");
         } else {
             userService.update(vm.user)
+                .error(function(err){
+                    $ionicPopup.alert({
+                        title: 'Account-update failed!',
+                        template: 'e-mail or Username is already in use!'
+                    });
+                })
                 .then(function () {
                     $location.path('/acc/account');
                     location.reload();
