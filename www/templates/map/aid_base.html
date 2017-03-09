@@ -1,0 +1,62 @@
+<ion-modal-view>
+    <!-- <h1 class="title">{{'add_points' | translate}}</h1> -->
+
+    <!-- <ion-content style="height: 100%; background-color:#4CAF50;">
+        <div class="newpoint_modal">
+            <img src="./img/icons/marker.svg">
+            <h2>New Point</h2>
+            <div class="point_cont">
+                <div class="point_info">
+                    <div class="point_inp">
+                        <span class="input-label">{{'name' | translate}}</span>
+                        <input type="text" ng-model="newWaypoint.name" placeholder="" ng-minlength="1" ng-maxlength="100" required ng-class="name_border">
+                    </div>
+                    <div class="point_inp">
+                        <span class="input-label" ng-class="description_border">{{'instructions' | translate}}</span>
+                        <textarea rows="4" ng-model="newWaypoint.description" ng-minlength="1" ng-maxlength="500" required> </textarea>
+                    </div>
+                </div>
+                <div class="point_butt">
+                    <button class="button button-block button-balanced save_but" ng-click="saveAidPoint()">{{'save' | translate}}</button>
+                    <button class="button button-block  button-balanced canc_but " ng-click="closeModal()">{{'cancel' | translate}}</button>
+                </div>
+            </div>
+        </div>
+    </ion-content> -->
+
+
+    <ion-content class="padding">
+
+        <form name="Form" class="form-background">
+
+            <div class="list">
+
+                <label class="item item-input">
+                    <span class="input-label" ng-class="name_border">{{'name' | translate}}</span>
+                    <input type="text" ng-model="newWaypoint.name" placeholder="" ng-minlength="1" ng-maxlength="100" required ng-class="name_border">
+                </label>
+                <label class="item item-input">
+                    <span class="input-label" ng-class="description_border">{{'instructions' | translate}}</span>
+                    <input type="text" ng-model="newWaypoint.description" placeholder="{{'name_destination' | translate}}" ng-minlength="1" ng-maxlength="500" required>
+                </label>
+
+                <div class="item tabs tabs-secondary tabs-icon-left">
+                    <a class="tab-item" href="#">
+            LAT : {{newWaypoint.lat }}
+          </a>
+                    <a class="tab-item" href="#">
+            LNG : {{newWaypoint.lng }}
+          </a>
+                </div>
+            </div>
+
+            <div class="padding">
+                <button class="button button-block button-balanced" ng-click="saveAidPoint()">{{'save' | translate}}</button>
+                <button class="button button-block button-balanced" ng-click="closeModal()">{{'back' | translate}}</button>
+            </div>
+
+        </form>
+
+    </ion-content>
+
+</ion-modal-view>
