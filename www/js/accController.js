@@ -175,56 +175,89 @@ angular.module('starter')
     $scope.animation = false;
 
     $scope.createGame = function () {
+      console.log("ProfTeacherCtrl - createGame()");
         // $scope.modal.remove();
         Edit.resetGame();
     };
     $scope.cancelGame = function () {
+      console.log("ProfTeacherCtrl - cancelGame()");
         $ionicHistory.goBack();
     };
 
     /* Game Creation Wizard (Test Version) ------------------------------------------------ */
     $scope.newgame = {}; //General description of the game
     $scope.navactivities = []; // List of activities and types
-    $scope.act_type = 0;
+    $scope.game_mode = 0;
 
-    // Rate Game difficulty
-    $scope.newgame.difficulty = 0;
-    $scope.diff = Array.apply(null, Array(5)).map(function () {
+    // set base amount
+    $scope.newgame.baseAmount = 1;  //default 2 bases
+    $scope.base = Array.apply(null, Array(10)).map(function () {
+      console.log("ProfTeacherCtrl - base()");
         return "ion-ios-star-outline"
     });
-    // Rate difficulty of the game in stars
-    $scope.rateGame = function (difficulty) {
-      console.log("ProfTeacherCtrl - rateGame(difficulty)");
-        $scope.diff = Array.apply(null, Array(5)).map(function () {
+    // set base amount of the game in stars
+    $scope.setBaseAmount = function (baseAmount) {
+      console.log("ProfTeacherCtrl - setBaseAmount(baseAmount)");
+        $scope.base = Array.apply(null, Array(10)).map(function () {
             return "ion-ios-star-outline"
         });
-        for (var i = 0; i <= difficulty; i++) {
-            $scope.diff[i] = "ion-ios-star";
+        for (var i = 0; i <= baseAmount; i++) {
+            $scope.base[i] = "ion-ios-star";
         }
-        $scope.newgame.difficulty = difficulty + 1;
+        $scope.newgame.baseAmount = baseAmount + 1;
     };
+
+      $scope.data = {
+         addedTeam: []
+      };
+
+       $scope.forceUnknownOption = function() {
+          $scope.data.addedTeam = [];
+          currentAct.teamnames = [];
+       };
 
     //Show progress after step1
 
     //Choose Activity
-    $scope.act_type = 0;
-    $scope.chooseActType = function (type) {
+    $scope.game_mode = 0;
+    $scope.chooseGameMode = function (type) {
       console.log("ProfTeacherCtrl - chooseActType()");
-        if (type == $scope.act_type)
-            $scope.act_type = 0;
+      console.log(type);
+        if (type == $scope.game_mode)
+            $scope.game_mode = 0;
         else {
-            $scope.act_type = type;
+            $scope.game_mode = type;
         }
     };
 
     var currentAct = {}; // Activity that is currently created
-    $scope.addActivity = function () {
-      console.log("ProfTeacherCtrl - addActivity()");
+    $scope.addMode = function () {
+      console.log("ProfTeacherCtrl - addMode()");
         $scope.newgame.activities = [];
         var newAct = {};
-        currentAct.type = $scope.act_type == 1 ? "Find destination" : "Follow route";
+        currentAct.type = $scope.game_mode == 1 ? "free to play" : "set game";
         currentAct.points = [];
-    }
+    };
+
+
+    $scope.addTeamnames = function (teamname) {
+        var checkTeamname = false;
+        if (teamname != null) {
+            if ($scope.data.addedTeam.length != 0) {
+              console.log()
+                for (var i=0; i<$scope.data.addedTeam.length; i++) {
+                    if ( teamname == $scope.data.addedTeam[i] ) {
+                      checkTeamname = true;
+                    }
+                }
+            }
+        if ( checkTeamname == false ) { $scope.data.addedTeam.push(teamname); }
+        }
+    };
+
+    // $scope.addBase = function () {
+    //
+    // };
 
     /* Map Routine ------------------- */
     $scope.mainMap = {
@@ -411,7 +444,7 @@ angular.module('starter')
 
     // Modal Windows Routine
     var createModal = function (templateUrl, id) {
-      console.log("ProfTeacherCtrl - createModal()");
+      console.log("ProfTeacherCtrl - createModal("+templateUrl +" --- "+ id+")");
         $ionicModal.fromTemplateUrl(templateUrl, {
             id: id,
             scope: $scope,
@@ -651,7 +684,7 @@ angular.module('starter')
       console.log("gameCreator in addGameCreator");
       console.log(gameCreator);
       $scope.newgame.gameCreator = gameCreator;
-    }
+    };
 
     $scope.stopCreation = function () {
       console.log("ProfTeacherCtrl - stopCreation()");
@@ -665,7 +698,7 @@ angular.module('starter')
       console.log("ProfTeacherCtrl - finishGame()");
       console.log("$scope.newgame");
       console.log($scope.newgame);
-        accAPI.saveBaseGame($scope.newgame)
+        accAPI.saveBaseItem($scope.newgame)
             .success(function (data, status, headers, config) {
                 $rootScope.hide();
                 $rootScope.doRefresh(1);
@@ -697,22 +730,22 @@ angular.module('starter')
     $scope.slideTo = function (index) {
       console.log("ProfTeacherCtrl - slideTo()");
         if (index == 1) {
-            $scope.emptyFields = [false, false, false];
-            if ($scope.newgame.name == undefined || $scope.newgame.description == undefined || $scope.newgame.timecompl == undefined) {
+            $scope.emptyFields = [false, false];
+            if ($scope.newgame.name == undefined || $scope.newgame.description == undefined) {
                 if ($scope.newgame.name == undefined) {
                     $scope.emptyFields[0] = true;
                 }
                 if ($scope.newgame.description == undefined) {
                     $scope.emptyFields[1] = true;
                 }
-                if ($scope.newgame.timecompl == undefined) {
-                    $scope.emptyFields[2] = true;
-                }
             } else {
+              console.log("ionicSlideBoxDelegate");
                 $ionicSlideBoxDelegate.slide(index);
             }
+        // } else if (index == 1) {
+        //     console.log("index == 1 --> second page");
         } else if (index == 2) {
-            if ($scope.act_type != 0) {
+            if ($scope.game_mode != 0) {
                 $ionicSlideBoxDelegate.slide(index);
             }
         } else {
@@ -721,6 +754,7 @@ angular.module('starter')
     };
 
     /* ----------------------------------------------------------------------- */
+    // TODO: delete, edit baseGame
 
     // Delete the entire game by clicking on the trash icon
     $scope.deleteBaseItem = function (item, name) {
@@ -995,10 +1029,10 @@ angular.module('starter')
     });
 
     $scope.pathGame = function () {
-        Data.addType("Find destination");
+        Data.addType("free to play");
     };
     $scope.aidGame = function () {
-        Data.addType("Follow route");
+        Data.addType("set game");
     };
 
     //Collapsed list with tasks for each activity

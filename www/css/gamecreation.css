@@ -91,13 +91,13 @@
 
 input.empty_field{
     border-style:solid;
-    border-width:1.5px;	
+    border-width:1.5px;
     border-color:#F44336;
 }
 
 textarea.empty_field{
     border-style:solid;
-    border-width:1.5px;	
+    border-width:1.5px;
     border-color:#F44336;
 }
 
@@ -223,8 +223,18 @@ p {
 
 /* ---------------------- */
 
+/* Step 3: Adding team information */
+.page5 {
+    height: 100%;
+    width: 100%;
+    background-color: #53DF83; /*#64B5F6*/
+    position: relative;
+}
 
-/* Step 3: Adding points to the map */
+
+/* ---------------------- */
+
+/* Step 4: Adding base points to the map */
 
 .page3 {
     height: 100%;
@@ -355,7 +365,7 @@ p {
 /* ------------------------- */
 
 
-/* Step 4: Adding tasks to activity */
+/* Step 5: Adding tasks to activity */
 .tasktp_con{
     width: 100%;
     height: 100%;
@@ -396,7 +406,7 @@ p {
     vertical-align:middle;
 }
 .quiz_t .picture img{
-    display: table-cell; 
+    display: table-cell;
     margin: auto;
 }
 .quiz_t .description{
@@ -417,7 +427,7 @@ p {
     vertical-align:middle;
 }
 .gref_t .picture img{
-    display: table-cell; 
+    display: table-cell;
     margin: auto;
 }
 .gref_t .description{
