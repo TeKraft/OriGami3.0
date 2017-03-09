@@ -1,6 +1,15 @@
 angular.module('starter.controllers', ['starter.services', 'starter.directives'])
 
-.controller('HomeCtrl', function ($scope) {})
+.controller('HomeCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData) {
+    var vm = this;
+    vm.user = {};
+
+    meanData.getProfile()
+        .success(function(data) {
+            vm.user = data;
+            $location.path('/acc/afterlogin');
+        })
+})
 
 // #################################################################################################
 // controller game
@@ -1891,11 +1900,10 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
 // *********************************************************************************************************
 // *********************************************************************************************************
 
-.controller('RegisterCtrl', function ($scope, $rootScope, $cordovaGeolocation, $stateParams, $ionicModal, $ionicLoading,
+.controller('RegisterCtrl', function ($scope, $rootScope, $ionicPopup, $cordovaGeolocation, $stateParams, $ionicModal, $ionicLoading,
               $timeout, leafletData, $translate, GameData, PathData, PlayerStats, $location, authentication) {
 
         var vm = this;
-        console.log("register is running");
 
         // Register the new user
         vm.credentials = {
@@ -1910,29 +1918,24 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
             registrDate: ""
         };
 
-        console.log(vm);
-
         vm.onSubmit = function () {
-            console.log("submit");
             if (vm.credentials.password !== vm.credentials.password2) {
-                console.log("in if");
-                alert("Passwörter stimmen nicht überein!");
+                $ionicPopup.alert({
+                    title: 'Passwords do not match!'
+                });
             } else {
-                console.log('Submitting registration');
-                console.log(vm.credentials)
                 authentication
                     .register(vm.credentials)
                     .error(function (err) {
-                        console.log(err);
-                        alert(err);
+                        $ionicPopup.alert({
+                            title: 'Register failed!',
+                            template: 'e-mail or Username already in use!'
+                        });
                     })
                     .then(function () {
-                        console.log("then");
                         var loc = $location.url();
-                        console.log(loc);
                         $location.path('/acc/afterlogin');
                         var loc2 = $location.url();
-                        console.log(loc2);
                         $rootScope.loginUser = vm.credentials.email;
                     });
             }
@@ -1941,21 +1944,20 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
 
 .controller('LoginCtrl', function ($rootScope, $scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication) {
     var vm = this;
-    console.log("Login-Controller");
 
     vm.credentials = {
         email : "",
         password : ""
     };
-    console.log(vm);
 
     vm.onSubmit = function () {
-        console.log("In submit");
-        console.log("Credentials: " + vm.credentials)
         authentication
             .login(vm.credentials)
             .error(function(err){
-                alert(err);
+                $ionicPopup.alert({
+                    title: 'Login failed!',
+                    template: 'e-mail or Username false!'
+                });
             })
             .then(function(){
                 $location.path('/acc/afterlogin');
@@ -1973,7 +1975,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
             vm.user = data;
         })
         .error(function (e) {
-            console.log(e);
+            $location.path('/tab/home');
         });
 })
 .controller('AccountCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData, userService){
@@ -1989,7 +1991,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
             vm.user = data;
         })
         .error(function (e) {
-            console.log(e);
+            $location.path('/tab/home');
         });
 
     // Save the new user data
@@ -1999,7 +2001,8 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
         } else {
             userService.update(vm.user)
                 .then(function () {
-                    $location.path('/acc/afterlogin');
+                    $location.path('/acc/account');
+                    location.reload();
                 })
                 .catch(function (e) {
                     console.log(e);
@@ -2011,6 +2014,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
         userService.deleteUsers(vm.user)
             .then(function(){
                 $location.path('/tab/home');
+                location.reload();
             })
             .catch(function (e) {
                 console.log(e);
@@ -2022,5 +2026,8 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
 
     $scope.logout = function () {
         authentication.logout();
+        $location.path('/tab/home');
+        location.reload();
+
     }
 });

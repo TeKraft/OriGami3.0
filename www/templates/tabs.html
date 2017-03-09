@@ -31,15 +31,7 @@ navigation history that also transitions its views in and out.
     </ion-tab>
 
     <!-- Logout -->
-    <ion-tab title="Logout" icon-off="ion-close" icon-on="ion-close" ui-sref="tab.home" on-select="logout()">
+    <ion-tab title="Logout" icon-off="ion-close" icon-on="ion-close" ng-click="logout()">
         <ion-nav-view cache-view="false" name="tab-home"></ion-nav-view>
     </ion-tab>
 </ion-tabs>
-<!--
-<script>
-    function logout () {
-        console.log(window.localStorage.getItem('mean-token'));
-        window.localStorage.removeItem('mean-token');
-        console.log(window.localStorage.getItem('mean-token'));
-    }
-</script>-->
