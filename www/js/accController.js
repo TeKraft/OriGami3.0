@@ -78,8 +78,8 @@ angular.module('starter')
         });
 
     //Selected game
-    $scope.gameSelect = function (gameName) {
-        param = "/tab/playgame/" + gameName;
+    $scope.gameSelect = function (userName, gameName) {
+        param = "/acc/playmygame/" + userName + '/' + gameName;
         $location.path(param);
     };
 
@@ -1245,9 +1245,9 @@ angular.module('starter')
 // controller for playing games
 // #################################################################################################
 
-.controller('ProfPlayCtrl', ['$scope', '$stateParams', '$ionicModal', '$ionicPopup', '$ionicLoading', '$location', '$cordovaSocialSharing',
+.controller('ProfPlayCtrl', ['$rootScope', '$scope', '$stateParams', '$ionicModal', '$ionicPopup', '$ionicLoading', '$location', '$cordovaSocialSharing',
                          '$translate', '$timeout', '$cookies', 'GameData', 'GameState', 'accAPI', 'PathData', 'PlayerStats', 'meanData',
-                         function ($scope, $stateParams, $ionicModal, $ionicPopup, $ionicLoading, $location,  $cordovaSocialSharing,
+                         function ($rootScope, $scope, $stateParams, $ionicModal, $ionicPopup, $ionicLoading, $location,  $cordovaSocialSharing,
                                     $translate, $timeout, $cookies, GameData, GameState, accAPI, PathData, PlayerStats, meanData) {
     var vm = this;
     vm.user = {};
@@ -1264,6 +1264,7 @@ angular.module('starter')
     var thisUser = $rootScope.loginUser;
 
     $scope.gameName = $stateParams.gameName;
+    $scope.userName = $stateParams.userName;
     $scope.gameLoaded = false;
     var congratsMessages = ['Good job!', 'Well done!', 'Great!', 'Cool!', 'Perfect!', 'So Fast! :)'];
 
@@ -1302,7 +1303,10 @@ angular.module('starter')
         $scope.TIME_LIMIT = GameData.getConfig('qaTimeLimit'); // time limit to answer question (in seconds)
         $scope.gameLoaded = true;
         $scope.player = {};
-        getPlayerName();
+        // getPlayerName();
+        $scope.player.name = this.user;
+        $cookies.put("player.name", this.user);
+        createModal("gameinfo-modal.html", "info");
         PlayerStats.init($scope.player.name);
     };
 
@@ -1628,7 +1632,7 @@ angular.module('starter')
             });
     };
 
-    GameData.loadGame($scope.gameName).then(initGame, gameLoadFailure);
+    GameData.loadUsergame($scope.userName, $scope.gameName).then(initGame, gameLoadFailure);
 }])
 
 // #################################################################################################

@@ -13,7 +13,7 @@
             <div class="ui-feedback-message">{{error_msg}}</div>
         </div>
         <div class="list card calm-bg download_tiles" style="background-color:#FFEB3B" ng-repeat="game in games | orderBy:'name'">
-            <a ng-click="gameSelect(game.name)" style="width:100%;height:100%;">
+            <a ng-click="gameSelect(game.creator, game.name)" style="width:100%;height:100%;">
 
 
                 <div class="item game-desc">

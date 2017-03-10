@@ -358,11 +358,11 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
         })
 
         .state('acc.playmygame', {
-            url: '/playmygame/:gameName',
+            url: '/playmygame/:userName/:gameName',
             views: {
                 'tab-acc': {
                     templateUrl: 'templates/acc/acc-playmygame.html',
-                    controller: 'ProfPlayCtrl'
+                    controller: 'ProfPlayCtrl',
                 }
             }
         })

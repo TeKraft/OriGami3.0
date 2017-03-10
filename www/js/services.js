@@ -556,6 +556,32 @@ angular.module('starter.services', [])
                 });
         return defer.promise;
     };
+
+    data.loadUsergame = function(userName, gameName){
+        console.log('In loadUsergame')
+        var defer = $q.defer();
+        var baseGames = $http.get(Server + '/baseGames/baseItem/' + userName + '/' + gameName)
+            .then(function (response) {
+                console.log(response);
+                game = response.data[0];
+                loaded = true;
+                if(game.hasOwnProperty('config') == false){
+                    console.log('it has own property');
+                    game.config={};
+                }
+                angular.merge (config, default_config, game.config);
+                $rootScope.$broadcast('gameLoadedEvent');
+                defer.resolve();
+
+            },
+            function (response) {
+                console.log("Fetching ame data. HTTP GET request failed");
+                console.log(response);
+                defer.reject("Unable to fetch game data. HTTP GET request faield")
+            });
+        return defer.promise;
+    };
+
     return data;
 })
 
