@@ -1959,7 +1959,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     };
 })
 
-.controller('AfterloginCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData){
+.controller('AfterloginCtrl', function ($rootScope, $scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData){
     var vm = this;
     vm.user = {};
 
@@ -1972,7 +1972,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
             $location.path('/tab/home');
         });
 })
-.controller('AccountCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData, userService){
+.controller('AccountCtrl', function ($rootScope, $scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData, userService){
     console.log("AccountCtrl")
     var vm = this;
     vm.user = {};
@@ -2035,7 +2035,6 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     $scope.friendAccount = function(friend){
         userService.friendUser(friend)
             .success(function (data) {
-                console.log(data)
                 userService.setFriendlID(data._id)
                 $location.path('/acc/friendaccount')
             })
@@ -2054,12 +2053,9 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     var friendID = userService.getFriendID();
     meanData.getProfile2(friendID)
         .then(function (data) {
-            console.log("foundUser")
-            console.log(data)
             vm.user = data.data;
         })
     $scope.$on('$locationChangeStart', function(event, next, current) {
-        console.log("locationchange")
         location.reload();
     })
 })

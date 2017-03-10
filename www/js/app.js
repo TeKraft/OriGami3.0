@@ -161,6 +161,7 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
             }
         })
 
+
         .state('tab.playgame', {
             url: '/playgame/:gameName',
             views: {

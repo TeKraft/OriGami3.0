@@ -54,28 +54,28 @@ angular.module('starter')
 
     // Fetch all the games from the server
     $scope.games = [];
-    accAPI.getBaseMetadata().success(function (metadata, status, headers, config) {
-      console.log(metadata);
-        $scope.error_msg = null;
-        $scope.games = [];
-        for (var i = 0; i < metadata.length; i++) {
-
-          if (metadata[i].gameCreator == thisUser) {
-            $scope.games.push(metadata[i]);
-            $scope.games[i].diff = Array.apply(null, Array(metadata[i].diff)).map(function () {
-                return "ion-ios-star"
-            });
-          } else {
-            console.log("metadata " + i);
-            // console.log(metadata[i]);
-          }
-
-
-        }
-    }).error(function (data, status, headers, config) {
-        $scope.error_msg = $translate.instant('network_error');
-        console.log("Could not fetch game metadata from server");
-    });
+    console.log(thisUser)
+    accAPI.getAllBaseGames(thisUser)
+        .success(function (games, status, headers, config) {
+            $scope.error_msg = null;
+            $scope.games = [];
+            for (var i = 0; i < games.length; i++) {
+                console.log(games[i].creator)
+                if (games[i].creator == thisUser) {
+                    $scope.games.push(games[i]);
+                    $scope.games[i].diff = Array.apply(null, Array(games[i].diff)).map(function () {
+                    return "ion-ios-star"
+                    });
+                } else {
+                    console.log("metadata " + i);
+                    // console.log(metadata[i]);
+                 }
+                }
+        })
+        .error(function (data, status, headers, config) {
+            $scope.error_msg = $translate.instant('network_error');
+            console.log("Could not fetch game metadata from server");
+        });
 
     //Selected game
     $scope.gameSelect = function (gameName) {
