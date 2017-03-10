@@ -20,14 +20,13 @@ angular.module('starter')
     meanData.getProfile()
         .success(function(data) {
             vm.user = data;
+            $rootScope.loginUser = vm.user.email;
         })
         .error(function (e) {
             console.log(e);
         });
 
     var thisUser = $rootScope.loginUser;
-    console.log("thisUser");
-    console.log(thisUser);
 
     // Info Popups --------------------------------------
     $scope.showPathInfo = function () {
@@ -133,6 +132,7 @@ angular.module('starter')
     meanData.getProfile()
         .success(function(data) {
             vm.user = data;
+            $rootScope.loginUser = vm.user.email;
         })
         .error(function (e) {
             console.log(e);
@@ -876,6 +876,7 @@ angular.module('starter')
     meanData.getProfile()
         .success(function(data) {
             vm.user = data;
+            $rootScope.loginUser = vm.user.email;
         })
         .error(function (e) {
             console.log(e);
@@ -1254,6 +1255,7 @@ angular.module('starter')
     meanData.getProfile()
         .success(function(data) {
             vm.user = data;
+            $rootScope.loginUser = vm.user.email;
         })
         .error(function (e) {
             console.log(e);
@@ -1646,6 +1648,7 @@ angular.module('starter')
     meanData.getProfile()
         .success(function(data) {
             vm.user = data;
+            $rootScope.loginUser = vm.user.email;
         })
         .error(function (e) {
             console.log(e);

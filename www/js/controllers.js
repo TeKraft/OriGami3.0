@@ -1966,6 +1966,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     meanData.getProfile()
         .success(function(data) {
             vm.user = data;
+            $rootScope.loginUser = vm.user.email;
         })
         .error(function (e) {
             $location.path('/tab/home');
@@ -1982,6 +1983,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     meanData.getProfile()
         .success(function(data) {
             vm.user = data;
+            $rootScope.loginUser = vm.user.email;
         })
         .error(function (e) {
             $location.path('/tab/home');
