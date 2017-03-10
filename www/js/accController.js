@@ -123,9 +123,9 @@ angular.module('starter')
 // controller for showing games for editing
 // #################################################################################################
 
-.controller('ProfTeacherCtrl', ['$rootScope', '$scope', '$timeout', '$ionicModal', '$window', '$ionicHistory',
+.controller('ProfTeacherCtrl', ['$rootScope', '$scope', '$timeout', '$ionicPopup', '$ionicModal', '$window', '$ionicHistory',
                             '$translate', '$ionicSlideBoxDelegate', '$cordovaCamera', '$q', 'accAPI', 'Edit', 'meanData',
-                            function ($rootScope, $scope, $timeout, $ionicModal, $window, $ionicHistory,
+                            function ($rootScope, $scope, $timeout, $ionicPopup, $ionicModal, $window, $ionicHistory,
                                     $translate, $ionicSlideBoxDelegate, $cordovaCamera, $q, accAPI, Edit, meanData) {
     var vm = this;
     vm.user = {};
@@ -189,23 +189,23 @@ angular.module('starter')
     $scope.navactivities = []; // List of activities and types
     $scope.game_mode = 0;
 
-    // set base amount
-    $scope.newgame.baseAmount = 1;  //default 2 bases
-    $scope.base = Array.apply(null, Array(10)).map(function () {
-      console.log("ProfTeacherCtrl - base()");
-        return "ion-ios-star-outline"
-    });
-    // set base amount of the game in stars
-    $scope.setBaseAmount = function (baseAmount) {
-      console.log("ProfTeacherCtrl - setBaseAmount(baseAmount)");
-        $scope.base = Array.apply(null, Array(10)).map(function () {
-            return "ion-ios-star-outline"
-        });
-        for (var i = 0; i <= baseAmount; i++) {
-            $scope.base[i] = "ion-ios-star";
-        }
-        $scope.newgame.baseAmount = baseAmount + 1;
-    };
+    // // set base amount
+    // $scope.newgame.baseAmount = 1;  //default 2 bases
+    // $scope.base = Array.apply(null, Array(10)).map(function () {
+    //   console.log("ProfTeacherCtrl - base()");
+    //     return "ion-ios-star-outline"
+    // });
+    // // set base amount of the game in stars
+    // $scope.setBaseAmount = function (baseAmount) {
+    //   console.log("ProfTeacherCtrl - setBaseAmount(baseAmount)");
+    //     $scope.base = Array.apply(null, Array(10)).map(function () {
+    //         return "ion-ios-star-outline"
+    //     });
+    //     for (var i = 0; i <= baseAmount; i++) {
+    //         $scope.base[i] = "ion-ios-star";
+    //     }
+    //     $scope.newgame.baseAmount = baseAmount + 1;
+    // };
 
       $scope.data = {
          addedTeam: []
@@ -213,7 +213,6 @@ angular.module('starter')
 
        $scope.forceUnknownOption = function() {
           $scope.data.addedTeam = [];
-          currentAct.teamnames = [];
        };
 
     //Show progress after step1
@@ -236,7 +235,7 @@ angular.module('starter')
         $scope.newgame.activities = [];
         var newAct = {};
         currentAct.type = $scope.game_mode == 1 ? "free to play" : "set game";
-        currentAct.points = [];
+        currentAct.basepoints = [];
     };
 
 
@@ -439,7 +438,6 @@ angular.module('starter')
         this.lat = "";
         this.lng = "";
         this.name = "";
-        this.tasks = [];
     };
 
     // Modal Windows Routine
@@ -458,12 +456,15 @@ angular.module('starter')
 
     $scope.closeModal = function () {
       console.log("ProfTeacherCtrl - closeModal()");
+      $ionicPopup.alert({
+          title: 'closeModal()',
+          template: 'remove'});
         $scope.modal.remove();
     };
     $scope.noTask = function () {
       console.log("ProfTeacherCtrl - noTask()");
         $scope.modal.remove();
-        $scope.numberTask = 0;
+        // $scope.numberTask = 0;
     };
 
     $scope.$on('$destroy', function () {
@@ -476,41 +477,51 @@ angular.module('starter')
     //Add Waypoint with modal
     $scope.$on('leafletDirectiveMap.contextmenu', function (event, locationEvent) {
       console.log("ProfTeacherCtrl - leafletDirectiveMap.contextmenu()");
-        $scope.newWaypoint = new Waypoint();
-        $scope.newWaypoint.lat = locationEvent.leafletEvent.latlng.lat;
-        $scope.newWaypoint.lng = locationEvent.leafletEvent.latlng.lng;
-        $scope.newWaypoint.tasks = [];
+        $scope.newBasepoint = new Waypoint();
+        $scope.newBasepoint.lat = locationEvent.leafletEvent.latlng.lat;
+        $scope.newBasepoint.lng = locationEvent.leafletEvent.latlng.lng;
+        // $scope.newWaypoint.tasks = [];
 
-        createModal('templates/map/waypoint.html', 'm1');
+        console.log("$scope.newBasepoint");
+        console.log($scope.newBasepoint);
+
+        createModal('templates/map/basepoint.html', 'm1');
         //createModal('templates/tasks/quest_type.html');
     });
 
     $scope.$on('leafletDirectiveMap.click', function (event, locationEvent) {
       console.log("ProfTeacherCtrl - leafletDirectiveMap.click()");
-        $scope.newWaypoint = new Waypoint();
-        $scope.newWaypoint.lat = locationEvent.leafletEvent.latlng.lat;
-        $scope.newWaypoint.lng = locationEvent.leafletEvent.latlng.lng;
-        $scope.newWaypoint.draggable = true;
-        $scope.newWaypoint.message = "You can change this location";
+        $scope.newBasepoint = new Waypoint();
+        $scope.newBasepoint.lat = locationEvent.leafletEvent.latlng.lat;
+        $scope.newBasepoint.lng = locationEvent.leafletEvent.latlng.lng;
+        $scope.newBasepoint.draggable = true;
+        $scope.newBasepoint.message = "You can change this location";
 
         if ($scope.gameMap.markers.length == 0) {
-            $scope.gameMap.markers.push($scope.newWaypoint);
+            $scope.gameMap.markers.push($scope.newBasepoint);
+            console.log("$scope.gameMap.markers");
+            console.log($scope.gameMap.markers);
         }
     });
 
     var newMarker = {};
-    $scope.numberTask = 0;
-    $scope.saveWayPoint = function () {
+    // $scope.numberTask = 0;
+    $scope.saveBasepoint = function () {
       console.log("ProfTeacherCtrl - saveWayPoint()");
-        if (($scope.newWaypoint.name == "" || $scope.newWaypoint.name == undefined) || ($scope.newWaypoint.description == undefined || $scope.newWaypoint.description == "")) {
+      console.log("$scope.name_border");
+      console.log($scope.name_border);
+      console.log("$scope.description_border");
+      console.log($scope.description_border);
 
-            if ($scope.newWaypoint.name == "" || $scope.newWaypoint.name == undefined) {
+        if (($scope.newBasepoint.name == "" || $scope.newBasepoint.name == undefined) || ($scope.newBasepoint.description == undefined || $scope.newBasepoint.description == "")) {
+
+            if ($scope.newBasepoint.name == "" || $scope.newBasepoint.name == undefined) {
                 $scope.name_border = "red";
             } else {
                 $scope.name_border = "";
             }
 
-            if ($scope.newWaypoint.description == undefined || $scope.newWaypoint.description == "") {
+            if ($scope.newBasepoint.description == undefined || $scope.newBasepoint.description == "") {
                 $scope.description_border = "red";
             } else {
                 $scope.description_border = "";
@@ -519,14 +530,24 @@ angular.module('starter')
             $scope.name_border = "";
             $scope.description_border = "";
 
-            newMarker = $scope.newWaypoint;
-            $scope.mainMap.markers.push($scope.newWaypoint);
+            newMarker = $scope.newBasepoint;
+            $scope.mainMap.markers.push($scope.newBasepoint);
             //console.log ($scope.mainMap.markers.length);
 
             $scope.closeModal();
-            createModal('templates/tasks/task_choose.html', 'm2');
+            // createModal('templates/tasks/task_choose.html', 'm2');
         }
     };
+
+    $scope.taskHandlerStart = function () {
+        console.log("ProfTeacherCtrl - taskHandlerStart()")
+        createModal('templates/tasks/task_choose.html', 'm2');
+    };
+
+    // $scope.taskHandlerEnd = function () {
+    //     console.log("ProfTeacherCtrl - taskHandlerEnd()")
+    //     $scope.closeModal();
+    // };
 
     /* Handle Task Creation routine */
     $scope.addQAtask = function () {
@@ -545,7 +566,7 @@ angular.module('starter')
     };
 
     $scope.addGRtask = function () {
-      console.log("ProfTeacherCtrl - addGRtask()");
+        console.log("ProfTeacherCtrl - addGRtask()");
         $scope.geoTask = {};
 
         $scope.closeModal();
@@ -556,9 +577,12 @@ angular.module('starter')
     };
 
     $scope.imgUpload = function(file, $event) {
-      console.log("ProfTeacherCtrl - imgUpload()");
+        console.log("ProfTeacherCtrl - imgUpload()");
+        console.log("file");
+        console.log(file);
         if (file) {
             var upload = accAPI.uploadImage(file);
+            console.log("upload");
             var reader = new FileReader();
             var isQuestion = false;
 
@@ -582,7 +606,7 @@ angular.module('starter')
                     isGeoref = true;
                     break;
             }
-
+            console.log("upload - 01");
             // Previewing the image
             reader.onload = function(event) {
                 if (isGeoref) {
@@ -594,11 +618,12 @@ angular.module('starter')
                 }
                 $scope.$apply();
             }
-
+            console.log("upload - 02");
             reader.readAsDataURL(file);
-
+            console.log("upload - 03");
             upload.then(function(res) {
-                //console.log(res);
+                console.log("res");
+                console.log(res);
                 if (res.status == 200) {
                     //$scope.picFilename[picIndex] = res.data.img_file;
                     if (isGeoref) {
@@ -632,12 +657,13 @@ angular.module('starter')
         $scope.picFile[3] = fileObj;
     };
 
+    $scope.newgame.tasks = [];
     $scope.submitQA = function (imgAnswers) {
         $scope.qaTask.type = "QA";
         //$scope.qaTask.imgans = imgAnswers;
 
-        $scope.numberTask++;
-        $scope.mainMap.markers[$scope.mainMap.markers.length - 1].tasks.push($scope.qaTask);
+        // $scope.numberTask++;
+        $scope.newgame.tasks.push($scope.qaTask);
         //newMarker.tasks.push($scope.qaTask);
 
         $scope.closeModal();
@@ -656,47 +682,42 @@ angular.module('starter')
         //$scope.geoTask.img = "data:image/jpeg;base64," + $scope.georP.base64;
         $scope.geoTask.lat = $scope.gameMap.markers[0].lat;
         $scope.geoTask.lng = $scope.gameMap.markers[0].lng;
-
-        $scope.mainMap.markers[$scope.mainMap.markers.length - 1].tasks.push($scope.geoTask);
+        $scope.newgame.tasks.push($scope.geoTask);
         //newMarker.tasks.push($scope.geoTask);
 
-        $scope.numberTask++;
+        // $scope.numberTask++;
         $scope.closeModal();
         createModal('templates/tasks/task_choose.html');
         // $scope.georP = null;
     };
 
-    // Calculated maximal score
-    $scope.maxScore = 0;
-
     // Add points to the Activity
     $scope.addActPoints = function () {
       console.log("ProfTeacherCtrl - addActPoints()");
-        currentAct.points = $scope.mainMap.markers;
+        currentAct.basepoints = $scope.mainMap.markers;
         $scope.newgame.activities.push(currentAct);
-        $scope.newgame.players = [];
-
-        $scope.maxScore = $scope.numberTask * 50 + $scope.mainMap.markers.length * 20;
     };
 
-    $scope.addGameCreator = function (){
-      console.log("ProfTeacherCtrl - addGameCreator");
-      console.log("gameCreator in addGameCreator");
-      console.log(gameCreator);
-      $scope.newgame.gameCreator = gameCreator;
-    };
+    // $scope.addGameCreator = function (){
+    //   console.log("ProfTeacherCtrl - addGameCreator");
+    //   console.log("gameCreator in addGameCreator");
+    //   console.log(gameCreator);
+    //   $scope.newgame.gameCreator = thisUser;
+    // };
 
     $scope.stopCreation = function () {
       console.log("ProfTeacherCtrl - stopCreation()");
         $ionicHistory.goBack();
         $ionicHistory.goBack();
         $scope.newgame = {};
-        $scope.numberTask = 0;
+        // $scope.numberTask = 0;
     };
 
     $scope.finishGame = function () {
       console.log("ProfTeacherCtrl - finishGame()");
       console.log("$scope.newgame");
+      $scope.newgame.gameCreator = thisUser;
+      $scope.newgame.team = $scope.data.addedTeam;
       console.log($scope.newgame);
         accAPI.saveBaseItem($scope.newgame)
             .success(function (data, status, headers, config) {
@@ -707,7 +728,7 @@ angular.module('starter')
             })
             .error(function (data, status, headers, config) {
                 $rootScope.hide();
-                $rootScope.notify("Oops something went wrong!! Please try again later");
+// TODO:                // $rootScope.notify("Oops something went wrong!! Please try again later");
                 $ionicHistory.goBack();
                 $scope.newgame = {};
                 $scope.numberTask = 0;
@@ -748,44 +769,52 @@ angular.module('starter')
             if ($scope.game_mode != 0) {
                 $ionicSlideBoxDelegate.slide(index);
             }
+        } else if (index == 3) {
+            if ($scope.data.addedTeam != "") {
+                console.log("nicht leer");
+                $ionicSlideBoxDelegate.slide(index);
+            } else { $ionicPopup.alert({
+                title: 'Continue impossible!',
+                template: 'no teams added'}); }
         } else {
             $ionicSlideBoxDelegate.slide(index);
         }
-    };
 
+
+    };
     /* ----------------------------------------------------------------------- */
     // TODO: delete, edit baseGame
 
-    // Delete the entire game by clicking on the trash icon
-    $scope.deleteBaseItem = function (item, name) {
-      console.log("ProfTeacherCtrl - deleteItem()");
-        accAPI.deleteBaseItem(name, $rootScope.getToken())
-            .success(function (data, status, headers, config) {
-                $rootScope.hide();
-            }).error(function (data, status, headers, config) {
-                $rootScope.notify(
-                    $translate.instant('oops_wrong'));
-            });
-        $scope.list.splice($scope.list.indexOf(item), 1);
-    };
-
-    $scope.editBaseItem = function (item) {
-      console.log("ProfTeacherCtrl - editItem()");
-        $scope.navactivities = [];
-
-        accAPI.getOneBaseGame(item.name, thisUser)
-            .success(function (data, status, headers, config) {
-                $scope.deleteGame = data.slice()[0];
-            }).error(function (data, status, headers, config) {
-                $rootScope.notify(
-                    $translate.instant('oops_wrong'));
-            });
-
-        $scope.editedGame = $scope.list[$scope.list.indexOf(item)];
-        $scope.navactivities = $scope.editedGame.activities;
-
-        Edit.pushGame($scope.editedGame);
-    };
+    // // Delete the entire game by clicking on the trash icon
+    // $scope.deleteBaseItem = function (item, name) {
+    //   console.log("ProfTeacherCtrl - deleteItem()");
+    //     accAPI.deleteBaseItem(name, $rootScope.getToken())
+    //         .success(function (data, status, headers, config) {
+    //             $rootScope.hide();
+    //         }).error(function (data, status, headers, config) {
+    //             $rootScope.notify(
+    //                 $translate.instant('oops_wrong'));
+    //         });
+    //     $scope.list.splice($scope.list.indexOf(item), 1);
+    // };
+    //
+    // $scope.editBaseItem = function (item) {
+    //   console.log("ProfTeacherCtrl - editItem()");
+    //     $scope.navactivities = [];
+    //
+    //     accAPI.getOneBaseGame(item.name, thisUser)
+    //         .success(function (data, status, headers, config) {
+    //             $scope.deleteGame = data.slice()[0];
+    //         }).error(function (data, status, headers, config) {
+    //             $rootScope.notify(
+    //                 $translate.instant('oops_wrong'));
+    //         });
+    //
+    //     $scope.editedGame = $scope.list[$scope.list.indexOf(item)];
+    //     $scope.navactivities = $scope.editedGame.activities;
+    //
+    //     Edit.pushGame($scope.editedGame);
+    // };
 
 
     $scope.toggleActivity = function (activity) {
@@ -798,34 +827,37 @@ angular.module('starter')
     };
     $scope.closeModal = function () {
       console.log("ProfTeacherCtrl - closeModal()");
+      $ionicPopup.alert({
+          title: 'closeModal()',
+          template: 'hide'});
         $scope.modal.hide();
     };
 
-    $scope.saveEditedGame = function () {
-      console.log("ProfTeacherCtrl - saveEditedGame()");
-        /*First delete the existing game, then save new instance.
-             Not a very elegant solution, but i want to sleep already.*/
-
-        //  console.log(JSON.stringify($scope.deleteGame) == JSON.stringify($scope.editedGame));
-        accAPI.deleteBaseItem($scope.deleteGame.name, $rootScope.getToken())
-            .success(function (data, status, headers, config) {
-                $rootScope.hide();
-                $scope.list.splice($scope.list.indexOf($scope.deleteGame), 1);
-            }).error(function (data, status, headers, config) {
-                $rootScope.notify(
-                    $translate.instant('oops_wrong'));
-            });
-
-        accAPI.saveBaseItem($scope.editedGame)
-            .success(function (data, status, headers, config) {
-                $scope.list.push($scope.editedGame);
-                $scope.modal.hide();
-            })
-            .error(function (data, status, headers, config) {
-                $rootScope.hide();
-                $translate.instant('oops_wrong');
-            });
-    };
+    // $scope.saveEditedGame = function () {
+    //   console.log("ProfTeacherCtrl - saveEditedGame()");
+    //     /*First delete the existing game, then save new instance.
+    //          Not a very elegant solution, but i want to sleep already.*/
+    //
+    //     //  console.log(JSON.stringify($scope.deleteGame) == JSON.stringify($scope.editedGame));
+    //     accAPI.deleteBaseItem($scope.deleteGame.name, $rootScope.getToken())
+    //         .success(function (data, status, headers, config) {
+    //             $rootScope.hide();
+    //             $scope.list.splice($scope.list.indexOf($scope.deleteGame), 1);
+    //         }).error(function (data, status, headers, config) {
+    //             $rootScope.notify(
+    //                 $translate.instant('oops_wrong'));
+    //         });
+    //
+    //     accAPI.saveBaseItem($scope.editedGame)
+    //         .success(function (data, status, headers, config) {
+    //             $scope.list.push($scope.editedGame);
+    //             $scope.modal.hide();
+    //         })
+    //         .error(function (data, status, headers, config) {
+    //             $rootScope.hide();
+    //             $translate.instant('oops_wrong');
+    //         });
+    // };
 }])
 
 // #################################################################################################

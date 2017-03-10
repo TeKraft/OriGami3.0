@@ -95,7 +95,6 @@
                             <form name="myForm">
                               <label>{{'team_title' | translate}}</label><br>
                               <input class="typeTeamname"  type="text" ng-model="addTeamname" required/>
-
                               <button ng-click="addTeamnames(addTeamname); addTeamname = null">add</button>
 
                               <label for="addTeam"> Multiple select: </label><br>
@@ -130,7 +129,7 @@
                 <div class="content">
                     <h2 style="color:white;">New game</h2>
                     <h3 style="color:white;">create bases</h3>
-                    <p style="color:white;font-size:3vh;"><span>Step 2:</span> Add points to the map</p>
+                    <p style="color:white;font-size:3vh;"><span>Step 4:</span> Add points to the map</p>
                     <div class="content_map" data-tap-disabled="true">
                         <leaflet defaults="mainMap.defaults" layers="mainMap.layers" center="mainMap.center" paths="mainMap.paths" markers="mainMap.markers" geojson="mainMap.geojson" ng-if="mainMap"></leaflet>
                     </div>
@@ -147,8 +146,28 @@
         </div>
     </ion-slide>
 
+    <!-- Step 5: Adding Base Points -->
+    <ion-slide>
+        <div class="page_maininfo page6">
+            <div class="page_content">
+                <div class="content">
+                    <h2 style="color:white;">Add tasks</h2>
+                    <p style="color:white;font-size:3vh;"><span>Step 5:</span> Add tasks to questions catalouge</p>
+                    <button ng-click="taskHandlerStart()">click me</button>
+                </div>
+            </div>
+            <div class="page_menu" ng-hide="allFilled[2]">
+                <div class="navi">
+                    <button class="button button_navi" ng-click="slideTo(5)">
+                        Continue
+                    </button>
+                    <a class="stop_b" ng-click="stopCreation()"><p>STOP</p></a>
+                </div>
+            </div>
+        </div>
+    </ion-slide>
 
-    <!-- Slide 5: Choose Task Type -->
+    <!-- Slide 6: Game created -->
     <ion-slide>
         <div class="page_maininfo page4">
             <div class="page_content">

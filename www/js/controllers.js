@@ -591,6 +591,8 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     };
 
     $scope.finishGame = function () {
+      console.log("$scope.newgame");
+      console.log($scope.newgame);
         API.saveItem($scope.newgame)
             .success(function (data, status, headers, config) {
                 $rootScope.hide();

@@ -1,0 +1,24 @@
+<ion-modal-view>
+    <ion-content style="height: 100%; background-color: #64B5F6;">
+         <a class="skip_b" ng-click="modal.remove()"><p style="color:white;">CANCEL</p></a>
+        <div class="newpoint_modal">
+             <img src="./img/icons/marker.svg">
+            <h2>New Base</h2>
+            <div class="point_cont">
+                <div class="point_info">
+                    <div class="point_inp">
+                        <span class="input-label">{{'name' | translate}}</span>
+                        <input type="text" ng-model="newBasepoint.name" placeholder="" ng-minlength="1" ng-maxlength="100" required ng-class="name_border">
+                    </div>
+                    <div class="point_inp">
+                        <span class="input-label" ng-class="description_border">{{'instructions' | translate}}</span>
+                        <input type="text" ng-model="newBasepoint.description" ng-minlength="1" ng-maxlength="500" required ng-class="name_border">
+                    </div>
+                </div>
+                <div class="point_butt">
+                    <button class="button button-block button-balanced save_but" ng-click="saveBasepoint()">{{'save' | translate}}</button>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-modal-view>

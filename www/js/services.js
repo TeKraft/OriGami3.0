@@ -321,12 +321,12 @@ angular.module('starter.services', [])
             $ionicLoading.hide();
         };
 
-        /*$rootScope.notify = function (text) {
-            $rootScope.show(text);
-            $window.setTimeout(function () {
-                $rootScope.hide();
-            }, 1999);
-        };*/
+        // $rootScope.notify = function (text) {
+        //     $rootScope.show(text);
+        //     $window.setTimeout(function () {
+        //         $rootScope.hide();
+        //     }, 1999);
+        // };
 
         $rootScope.doRefresh = function (tab) {
             if (tab == 1)
@@ -371,8 +371,32 @@ angular.module('starter.services', [])
             method: 'POST',
           });
         },
-
-    }
+        //
+        // deleteItem: function (uniqueKey) {
+        //     return $http.delete(base + '/baseGames/baseItem/' + uniqueKey, {
+        //         method: 'DELETE',
+        //     });
+        // },
+        getImageURL: function(name) {
+            if (name == undefined) {
+                return null
+            }
+            return base + '/baseData/img/' + name;
+        },
+        uploadImage: function(file) {
+            return Upload.upload({
+                url: base + '/baseData/img/upload',
+                data: {
+                    imgfile: file
+                }
+            });
+        } // ,
+        // addPlayerInfo : function(info) {
+        //     return $http.post(base + '/baseGames/player', info, {
+        //         method: 'POST',
+        //     });
+        // }
+    };
 })
 
 /* loads existing games from database */
