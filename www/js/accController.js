@@ -1271,8 +1271,12 @@ angular.module('starter')
     $scope.score = 0;
     $scope.GameData = GameData; // ugly hack to make GameData visible in directives
 
+    console.log("GameData");
+    console.log(GameData);
+
     /* only for debug purposes */
     var debugState = function () {
+      console.log("debugState function()");
         return {
             gameName: $scope.gameName,
             gameloaded: $scope.gameLoaded,
@@ -1286,6 +1290,7 @@ angular.module('starter')
     };
 
     var createModal = function (templateUrl, id) {
+      console.log("createModal - function("+templateUrl+" "+id+")");
         $ionicModal.fromTemplateUrl(templateUrl, {
             id: id,
             scope: $scope,
@@ -1298,6 +1303,7 @@ angular.module('starter')
     };
 
     var initGame = function () {
+      console.log("initGame - function()");
         $translate.use(GameData.getConfig('language'));
         $scope.TIME_LIMIT = GameData.getConfig('qaTimeLimit'); // time limit to answer question (in seconds)
         $scope.gameLoaded = true;
@@ -1306,26 +1312,117 @@ angular.module('starter')
         $scope.player.name = this.user;
         $cookies.put("player.name", this.user);
         PlayerStats.init($scope.player.name);
+        console.log("set basepoints");
+        setBasePoints();
     };
 
     var abortGame = function (message) {
+      console.log("abortGame - function("+message+")");
         $scope.errorMsg = message;
         createModal('error-modal.html', 'error');
     };
 
-    var getPlayerName = function() {
-        /* Read cookie and confirm if same player is playing. Else get name */
-        $scope.newPlayer = false;
-        $scope.player.name = $cookies.get('player.name');
-        if (typeof $scope.player.name == "undefined") {
-            $scope.newPlayer = true;
-            console.log("Setting cookie")
+    // var getPlayerName = function() {
+    //     /* Read cookie and confirm if same player is playing. Else get name */
+    //     $scope.newPlayer = false;
+    //     $scope.player.name = $cookies.get('player.name');
+    //     if (typeof $scope.player.name == "undefined") {
+    //         $scope.newPlayer = true;
+    //         console.log("Setting cookie")
+    //     }
+    //     createModal('player-name.html', 'player');
+    // };
+    var myBases = [];
+    var getBasepoints = function (baseKeys) {
+        myBases = [];
+
+        for (var i=0; i<baseKeys.length; i++) {
+            console.log(accAPI.getOneBaseById(baseKeys[i]).$$state);
+            // console.log(accAPI.getOneBaseById(baseKeys[i]).$$state.value);
+            // console.log(accAPI.getOneBaseById(baseKeys[i]).$$state.value.data);
+            var thisBase = accAPI.getOneBaseById(baseKeys[i]).$$state.value.data;
+            console.log(thisBase);
+            myBases.push(thisBase);
         }
-        createModal('player-name.html', 'player');
+        console.log("myBases");
+        console.log(myBases);
+        return myBases;
+    }
+
+    var setBasePoints = function () {
+        var baseKeys = null
+        var myBases = [];
+
+        console.log("setBasePoints");
+        var gameKey = GameData.getBaseIDs();
+        console.log("baseKeys");
+        console.log(gameKey);
+
+        // accAPI.getOneBaseByKey(gameKey).success(function() {
+        //   // console.log(res);
+        //
+        //
+        // });
+
+        $scope.basepointImgURL = null;
+        $scope.basepoints = accAPI.getOneBaseByKey(gameKey);
+        console.log("$scope.basepoint");
+        console.log($scope.basepoints);
+
+        // if ($scope.basepoints.pic != undefined) {
+        //     $scope.basepointsImgURL = API.getImageURL($scope.basepoints.pic);
+        // }
+        $scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
+
+        //
+        // for (var i=0; i<baseKeys.length; i++) {
+        //     console.log(accAPI.getOneBaseByKey(baseKeys[i]).$$state);
+        //     // console.log(accAPI.getOneBaseById(baseKeys[i]).$$state.value);
+        //     // console.log(accAPI.getOneBaseById(baseKeys[i]).$$state.value.data);
+        //     // var thisBase = accAPI.getOneBaseById(baseKeys[i]).$$state.value.data;
+        //     console.log(accAPI.getOneBaseByKey(baseKeys[i]).$$state.status);
+        //     // console.log(thisBase);
+        //     myBases.push(accAPI.getOneBaseByKey(baseKeys[i]).$$state.value.data);
+        // };
+
+        // console.log("myBases");
+        // console.log(myBases);
+
+        // GameData.getBaseIDs().then(function(res) {
+        //     console.log(res);
+        //     baseKeys = res;
+        //     console.log("baseKeys");
+        //     console.log(baseKeys);
+        //
+        //     getBasepoints(baseKeys).then(function() {
+        //       // console.log(specialBases);
+        //       // console.log(specialBases[0]);
+        //       // console.log(specialBases[0].value);
+        //       // console.log(specialBases[0].value.data);
+        //       console.log("res");
+        //     });
+        // });
+
+
+
+
+        //
+        // $scope.basepointImgURL = null;
+        // $scope.basepoints = GameData.getBasepoints();
+        // console.log("$scope.basepoint");
+        // console.log($scope.basepoints);
+        // // if ($scope.basepoints.pic != undefined) {
+        // //     $scope.basepointsImgURL = API.getImageURL($scope.basepoints.pic);
+        // // }
+        // $scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
+
     };
 
     var handleNextActivity = function () {
+      console.log("handleNextActivity - function()");
         var index = GameState.todoActivityIndex(); // Get next pending activity
+        console.log("index");
+        console.log(index);
         if (index == GameState.ERR_NO_ACTIVITIES) {
             abortGame($translate.instant('selected_game'));
         } else if (GameState.gameOver()) {
@@ -1507,6 +1604,7 @@ angular.module('starter')
     $scope.$on('modal.hidden', function (event, modal) {
         // Start playing once the game info dialog is dismissed
         if (modal.id === 'info') {
+          setBasePoints();
             handleNextActivity();
         } else if (modal.id === 'endgame') {
             $location.path('/');
@@ -1781,23 +1879,29 @@ angular.module('starter')
     };
 
     /* Add more markers once game is loaded */
-    $scope.$on('waypointLoadedEvent', function (event, waypoint) {
-        PlayerStats.startWaypoint(waypoint);
-        $ionicModal.fromTemplateUrl('waypointinfo-modal.html', {
-            scope: $scope,
-            animation: 'slide-in-up'
-        }).then(function (modal) {
-            $scope.modal = modal;
-            $scope.waypointName = waypoint.name;
-            $scope.modal.show();
-        });
+    $scope.$on('basepointLoadedEvent', function (event, basepoints) {
+        // PlayerStats.startWaypoint(waypoint);
+        console.log("basepoints");
+        console.log(basepoints);
+        // $ionicModal.fromTemplateUrl('waypointinfo-modal.html', {
+        //     scope: $scope,
+        //     animation: 'slide-in-up'
+        // }).then(function (modal) {
+        //     $scope.modal = modal;
+        //     $scope.waypointName = waypoint.name;
+        //     $scope.modal.show();
+        // });
+
+        //TODO: set marker for basepoints
         var marker = {
-            lat: waypoint.lat,
-            lng: waypoint.lng,
-            message: waypoint.name,
+            lat: basepoints.lat,
+            lng: basepoints.lng,
+            message: basepoints.name,
             focus: true
         };
         $scope.map.markers.NextWaypoint = marker;
+        console.log("$scope.map.markers.NextWaypoint");
+        console.log($scope.map.markers.NextWaypoint);
         $scope.destination = {
             lat: marker.lat,
             lng: marker.lng,

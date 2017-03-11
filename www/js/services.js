@@ -371,6 +371,25 @@ angular.module('starter.services', [])
             method: 'POST',
           });
         },
+        getOneBaseByKey: function (Key) {
+          // console.log($http.get(base + '/bases/' + id, {
+          //     method: 'GET',
+          // }));
+            $http.get(base + '/bases/' + Key, {
+                method: 'GET',
+            }).success(function(res) {
+              console.log(res);
+              var baseData = [];
+              for (var i=0; i<res.length; i++) {
+                console.log(i);
+                  baseData.push(res[i]);
+                  if (res.length -1 == i) {
+                    console.log(baseData);
+                    return baseData;
+                  }
+              }
+            });
+        },
         //
         // deleteItem: function (uniqueKey) {
         //     return $http.delete(base + '/baseGames/baseItem/' + uniqueKey, {
@@ -485,6 +504,10 @@ angular.module('starter.services', [])
         return -1;
     };
     data.getWaypoint = function (actIndex, pointIndex) {
+      console.log("data");
+      console.log(data);
+      console.log("game");
+      console.log(game);
         if (loaded) {
             return game.activities[actIndex].points[pointIndex];
         }
@@ -534,6 +557,7 @@ angular.module('starter.services', [])
         return null;
     };
     data.loadGame = function (name) {
+      console.log("loadGame - function()"+name);
         var defer = $q.defer();
         //var games = $http.get('test_data/games.json')
         var games = $http.get(Server + '/games/item/' + name)
@@ -555,6 +579,19 @@ angular.module('starter.services', [])
                     defer.reject("Unable to fetch game data. HTTP GET request failed");
                 });
         return defer.promise;
+    };
+
+    // for base game
+
+
+    data.getBaseIDs = function () {
+      console.log("getBasepoints");
+      console.log("game");
+      console.log(game);
+        if (loaded) {
+            console.log("loaded");
+            return game.uniqueKey;
+        }
     };
 
     data.loadUsergame = function(userName, gameName){
@@ -846,6 +883,8 @@ angular.module('starter.services', [])
         data.totalScore = score;
         data.activities = activities;
         data.trajectory = PathData.getPath();
+        console.log("data endGame playerstats");
+        console.log(data);
         LocalDB.saveItem(data);
         /*
         origami_stats = localStorage.getItem('origami_stats')
@@ -991,8 +1030,8 @@ angular.module('starter.services', [])
         });
     };
 
-    var getProfile2 = function(id) {
-        return $http.get(base + '/profile/'+ id);
+    var getProfile2 = function(username) {
+        return $http.get(base + '/profile/'+ username);
     };
 
 
