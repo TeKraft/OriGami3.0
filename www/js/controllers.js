@@ -1972,7 +1972,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
             $location.path('/tab/home');
         });
 })
-.controller('AccountCtrl', function ($rootScope, $scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData, userService){
+.controller('AccountCtrl', function ($stateParams, $rootScope, $scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData, userService){
     console.log("AccountCtrl")
     var vm = this;
     vm.user = {};
@@ -2031,33 +2031,66 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
                 userService.update(vm.user)
             })
     }
-    //View friends account
-    $scope.friendAccount = function(friend){
-        userService.friendUser(friend)
-            .success(function (data) {
-                userService.setFriendlID(data._id)
-                $location.path('/acc/friendaccount')
-            })
-            .error(function () {
-                $ionicPopup.alert({
-                    title: 'User is deleted!',
-                })
-            })
-    }
+    $scope.friendAccount = function (friend) {
+        param = "/acc/friendaccount/" + friend;
+        $location.path(param);
+    };
 })
 
-.controller('FriendCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData, userService) {
+.controller('FriendCtrl', function ($rootScope, $scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData, userService, $stateParams) {
     var vm = this;
     vm.user = {};
     console.log("FriendCtrl")
-    var friendID = userService.getFriendID();
-    meanData.getProfile2(friendID)
+    $scope.friend = $stateParams.friend;
+    meanData.getProfile2($scope.friend)
         .then(function (data) {
             vm.user = data.data;
+            if(vm.user == null){
+                meanData.getProfile()
+                    .success(function(data) {
+                        vm.user2 = data;
+                        $rootScope.loginUser = vm.user2.email;
+                        var confirmPopup = $ionicPopup.confirm({
+                            title: 'User is deleted',
+                            template: 'Do you want to remove this user from your friends list?'
+                        });
+                        confirmPopup.then(function(res) {
+                            if(res) {
+                                var index = vm.user2.friends.indexOf($scope.friend)
+                                console.log(vm.user2.friends)
+                                vm.user2.friends.splice(index, 1)
+                                userService.update(vm.user2)
+                                    .then(function(){
+                                        location.reload();
+                                        $location.path("/acc/account")
+                                    })
+                            }
+                        });
+                    })
+            }
         })
-    $scope.$on('$locationChangeStart', function(event, next, current) {
-        location.reload();
-    })
+    $scope.deleteFriend = function () {
+        meanData.getProfile()
+            .success(function(data) {
+                vm.user2 = data;
+                $rootScope.loginUser = vm.user2.email;
+                var confirmPopup = $ionicPopup.confirm({
+                    title: 'Do you really want to delete this user as a friend?',
+                });
+                confirmPopup.then(function(res) {
+                    if(res) {
+                        var index = vm.user2.friends.indexOf($scope.friend)
+                        console.log(vm.user2.friends)
+                        vm.user2.friends.splice(index, 1)
+                        userService.update(vm.user2)
+                            .then(function(){
+                                location.reload();
+                                $location.path("/acc/account")
+                            })
+                    }
+                });
+            })
+    }
 })
 
 .controller('TabCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData) {
