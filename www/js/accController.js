@@ -1298,7 +1298,6 @@ angular.module('starter')
     };
 
     var initGame = function () {
-        GameState.resetAll();
         $translate.use(GameData.getConfig('language'));
         $scope.TIME_LIMIT = GameData.getConfig('qaTimeLimit'); // time limit to answer question (in seconds)
         $scope.gameLoaded = true;
@@ -1306,7 +1305,6 @@ angular.module('starter')
         // getPlayerName();
         $scope.player.name = this.user;
         $cookies.put("player.name", this.user);
-        createModal("gameinfo-modal.html", "info");
         PlayerStats.init($scope.player.name);
     };
 
@@ -1324,14 +1322,6 @@ angular.module('starter')
             console.log("Setting cookie")
         }
         createModal('player-name.html', 'player');
-    };
-
-    $scope.setPlayerName = function(name) {
-        $scope.player.name = name;
-        $cookies.put('player.name', name);
-        //console.log($cookies.get('playerName'));
-        //console.log("Player name set to -", $scope.playerName);
-        createModal('gameinfo-modal.html', 'info');
     };
 
     var handleNextActivity = function () {
@@ -1508,11 +1498,6 @@ angular.module('starter')
         });
     };
 
-    var gameLoadFailure = function (errString) {
-        // Game did not load for some reason at this point
-        console.log(errString);
-    };
-
     $scope.$on('waypointReachedEvent', function (event) {
         $scope.congratsMessage = congratsMessages[Math.floor(Math.random() * congratsMessages.length)]; // show random congrats message
         PlayerStats.endWaypoint();
@@ -1632,7 +1617,7 @@ angular.module('starter')
             });
     };
 
-    GameData.loadUsergame($scope.userName, $scope.gameName).then(initGame, gameLoadFailure);
+    GameData.loadUsergame($scope.userName, $scope.gameName).then(initGame);
 }])
 
 // #################################################################################################

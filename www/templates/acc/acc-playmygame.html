@@ -3,82 +3,6 @@
         <ion-nav-back-button class="button-clear"></ion-nav-back-button>
     </ion-nav-bar>
 
-    <!-- Information about how to play the game -->
-    <script id="gameinfo-modal.html" type="text/ng-template">
-        <ion-modal-view>
-            <!-- <ion-header-bar class="bar-positive">
-                <h1 class="title">{{'game_info' | translate}}</h1>
-            </ion-header-bar> -->
-
-            <ion-content style="height: 100%; background-color: #1976D2">
-                <div class="plan-route" style="background-color:#3F51B5">
-                    <div class="information">
-                        <div class="info-icon">
-                            <i class="ion-android-map"></i>
-                            <!-- <h1>{{'step' | translate}} 1</h1> -->
-                        </div>
-                        <p>{{'plan_route' | translate}}</p>
-                    </div>
-                </div>
-
-                <div class="plan-route" style="background-color:#673AB7;">
-                    <div class="information">
-                        <i class="ion-android-walk"></i>
-                        <!-- <h1>{{'step' | translate}} 2</h1> -->
-                        <p>{{'start_heading' | translate}}</p>
-                    </div>
-                </div>
-
-                <div class="plan-route">
-                    <div class="information">
-                        <i class="ion-happy-outline"></i>
-                        <!-- <h1>{{'keep_mind' | translate}} </h1> -->
-                        <p>{{'smiley_indicates' | translate}}</p>
-                    </div>
-                </div>
-            </ion-content>
-
-            <ion-footer-bar class="bar-positive" ng-click="modal.remove()" class="title_foot">
-                <p class="title">{{'start_playing' | translate}}</p>
-            </ion-footer-bar>
-
-        </ion-modal-view>
-    </script>
-
-    <!-- Get or show player name -->
-    <script id="player-name.html" type="text/ng-template">
-        <ion-modal-view>
-            <ion-content style="height: 100%; background-color:#64B5F6;">
-                <div class="playerNameInput" ng-show="newPlayer == false">
-                    <h1>
-                        <span class="nameOuter">
-                            {{ 'hello'| translate}} <span class="nameInner"> {{player.name}}</span>!
-                        </span>
-                        {{ 'player_name_confirm' | translate }}
-                     </h1>
-                     <div class="playerNameButtonContainer">
-                        <button class="button button-balanced ion-checkmark" ng-click="setPlayerName(player.name); modal.remove()"> </button>
-                        <button class="button button-assertive ion-close" ng-click="player.name=null; newPlayer=true"> </button>
-                    </div>
-                </div>
-                <div class="playerNameInput" ng-show="newPlayer==true">
-                    <h1>Please enter your name</h1>
-                    <div class="list">
-                        <div class="item item-input-inset">
-                            <label class="item-input-wrapper">
-                                <input type="text" placeholder="name" ng-model="player.name">
-                            </label>
-                        </div>
-                    </div>
-                     <div class="playerNameButtonContainer">
-                         <button class="button button-positive" ng-show="player.name" ng-click="setPlayerName(player.name); modal.remove()"> OK </button>
-                     </div>
-                </div>
-            </ion-content>
-        </ion-modal-view>
-    </script>
-
-
     <!-- Information about the next waypoint -->
     <script id="waypointinfo-modal.html" type="text/ng-template">
         <ion-modal-view>
@@ -308,7 +232,7 @@
             </div>
             <div id="smiley" class="smiley">
                 <canvas class="smiley" smiley></canvas>
-                <img class="bearing" src="./img/bearing.png" alt="ARROW" style="transform: rotate({{bearing}}deg)">
+                <img class="bearing" src="../../img/bearing.png" alt="ARROW" style="transform: rotate({{bearing}}deg)">
             </div>
             <div id="button-container">
                 <!--Button to display modal with waypoint info (hide during georeferencing task) -->
