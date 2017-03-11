@@ -1307,114 +1307,21 @@ angular.module('starter')
         $translate.use(GameData.getConfig('language'));
         $scope.TIME_LIMIT = GameData.getConfig('qaTimeLimit'); // time limit to answer question (in seconds)
         $scope.gameLoaded = true;
-        $scope.player = {};
-        // getPlayerName();
-        $scope.player.name = this.user;
-        $cookies.put("player.name", this.user);
-        PlayerStats.init($scope.player.name);
         console.log("set basepoints");
         setBasePoints();
     };
 
-    var abortGame = function (message) {
-      console.log("abortGame - function("+message+")");
-        $scope.errorMsg = message;
-        createModal('error-modal.html', 'error');
-    };
-
-    // var getPlayerName = function() {
-    //     /* Read cookie and confirm if same player is playing. Else get name */
-    //     $scope.newPlayer = false;
-    //     $scope.player.name = $cookies.get('player.name');
-    //     if (typeof $scope.player.name == "undefined") {
-    //         $scope.newPlayer = true;
-    //         console.log("Setting cookie")
-    //     }
-    //     createModal('player-name.html', 'player');
-    // };
-    var myBases = [];
-    var getBasepoints = function (baseKeys) {
-        myBases = [];
-
-        for (var i=0; i<baseKeys.length; i++) {
-            console.log(accAPI.getOneBaseById(baseKeys[i]).$$state);
-            // console.log(accAPI.getOneBaseById(baseKeys[i]).$$state.value);
-            // console.log(accAPI.getOneBaseById(baseKeys[i]).$$state.value.data);
-            var thisBase = accAPI.getOneBaseById(baseKeys[i]).$$state.value.data;
-            console.log(thisBase);
-            myBases.push(thisBase);
-        }
-        console.log("myBases");
-        console.log(myBases);
-        return myBases;
-    }
-
     var setBasePoints = function () {
         var baseKeys = null
-        var myBases = [];
-
-        console.log("setBasePoints");
         var gameKey = GameData.getBaseIDs();
-        console.log("baseKeys");
-        console.log(gameKey);
-
-        // accAPI.getOneBaseByKey(gameKey).success(function() {
-        //   // console.log(res);
-        //
-        //
-        // });
 
         $scope.basepointImgURL = null;
-        $scope.basepoints = accAPI.getOneBaseByKey(gameKey);
-        console.log("$scope.basepoint");
-        console.log($scope.basepoints);
+        accAPI.getOneBaseByKey(gameKey)
+            .then(function (res) {
+                $scope.basepoints = res;
+                $scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
+            });
 
-        // if ($scope.basepoints.pic != undefined) {
-        //     $scope.basepointsImgURL = API.getImageURL($scope.basepoints.pic);
-        // }
-        $scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
-
-        //
-        // for (var i=0; i<baseKeys.length; i++) {
-        //     console.log(accAPI.getOneBaseByKey(baseKeys[i]).$$state);
-        //     // console.log(accAPI.getOneBaseById(baseKeys[i]).$$state.value);
-        //     // console.log(accAPI.getOneBaseById(baseKeys[i]).$$state.value.data);
-        //     // var thisBase = accAPI.getOneBaseById(baseKeys[i]).$$state.value.data;
-        //     console.log(accAPI.getOneBaseByKey(baseKeys[i]).$$state.status);
-        //     // console.log(thisBase);
-        //     myBases.push(accAPI.getOneBaseByKey(baseKeys[i]).$$state.value.data);
-        // };
-
-        // console.log("myBases");
-        // console.log(myBases);
-
-        // GameData.getBaseIDs().then(function(res) {
-        //     console.log(res);
-        //     baseKeys = res;
-        //     console.log("baseKeys");
-        //     console.log(baseKeys);
-        //
-        //     getBasepoints(baseKeys).then(function() {
-        //       // console.log(specialBases);
-        //       // console.log(specialBases[0]);
-        //       // console.log(specialBases[0].value);
-        //       // console.log(specialBases[0].value.data);
-        //       console.log("res");
-        //     });
-        // });
-
-
-
-
-        //
-        // $scope.basepointImgURL = null;
-        // $scope.basepoints = GameData.getBasepoints();
-        // console.log("$scope.basepoint");
-        // console.log($scope.basepoints);
-        // // if ($scope.basepoints.pic != undefined) {
-        // //     $scope.basepointsImgURL = API.getImageURL($scope.basepoints.pic);
-        // // }
-        // $scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
 
     };
 
@@ -1436,6 +1343,23 @@ angular.module('starter')
     $scope.showWaypointInfoModal = function() {
         createModal('waypointinfo-modal.html', 'wpinfo');
     };
+
+    // load modal to invite users to a game
+    $scope.inviteUsersModal = function(){
+        createModal('inviteusers-modal.html', 'inviteusers')
+    };
+
+    //invite the new player
+    $scope.inviteUser = function () {
+        var mail = angular.element('#newUsermail').val();
+        userService.inviteUser(mail)
+            /*.then(function (data) {
+                vm.user.friends.push(data.data.userName)
+                userService.update(vm.user)
+            })*/
+    }
+
+
 
    var handleNextWaypoint = function () {
         GameState.todoWaypointIndex(); // Get pending waypoint
@@ -1581,19 +1505,6 @@ angular.module('starter')
         $scope.congratsMessage = congratsMessages[Math.floor(Math.random() * congratsMessages.length)]; // show random congrats message
         createModal('qa-result-modal.html', 'qaResult');
     });
-
-    /* Show message, then execute proc is supplied as argument */
-    var showPopup = function (title, msg, proc) {
-        var alertPopup = $ionicPopup.alert({
-            title: title,
-            template: msg
-        });
-        alertPopup.then(function (res) {
-            if (typeof proc !== "undefined") {
-                proc();
-            }
-        });
-    };
 
     $scope.$on('waypointReachedEvent', function (event) {
         $scope.congratsMessage = congratsMessages[Math.floor(Math.random() * congratsMessages.length)]; // show random congrats message
@@ -1748,7 +1659,7 @@ angular.module('starter')
     $scope.showMarker = false;
 
     // Initialize map after game is loaded. Needed because config settings are in game data
-    $scope.$on('gameLoadedEvent', function (event, args) {
+    $scope.$on('usergameLoadedEvent', function (event, args) {
         $scope.initialize();
     });
 
@@ -1880,34 +1791,23 @@ angular.module('starter')
 
     /* Add more markers once game is loaded */
     $scope.$on('basepointLoadedEvent', function (event, basepoints) {
-        // PlayerStats.startWaypoint(waypoint);
-        console.log("basepoints");
-        console.log(basepoints);
-        // $ionicModal.fromTemplateUrl('waypointinfo-modal.html', {
-        //     scope: $scope,
-        //     animation: 'slide-in-up'
-        // }).then(function (modal) {
-        //     $scope.modal = modal;
-        //     $scope.waypointName = waypoint.name;
-        //     $scope.modal.show();
-        // });
 
-        //TODO: set marker for basepoints
-        var marker = {
-            lat: basepoints.lat,
-            lng: basepoints.lng,
-            message: basepoints.name,
-            focus: true
-        };
-        $scope.map.markers.NextWaypoint = marker;
-        console.log("$scope.map.markers.NextWaypoint");
-        console.log($scope.map.markers.NextWaypoint);
-        $scope.destination = {
+        for(var i=0; i<basepoints.data.length; i++ ){
+            var marker = {
+                lat: basepoints.data[i].latitude,
+                lng: basepoints.data[i].longitude,
+                message: basepoints.data[i].name + "<br><button> Attack! </button>",
+                focus: true
+            };
+            console.log($scope.map.markers);
+            $scope.map.markers[basepoints.data[i].name]= marker;
+        }
+        /*$scope.destination = {
             lat: marker.lat,
             lng: marker.lng,
             name: marker.message
         };
-        $scope.waypointLoaded = true; // reset this flag
+        $scope.waypointLoaded = true; // reset this flag*/
     });
 
     /* Get bearing in degrees to destination */

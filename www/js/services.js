@@ -372,23 +372,20 @@ angular.module('starter.services', [])
           });
         },
         getOneBaseByKey: function (Key) {
-          // console.log($http.get(base + '/bases/' + id, {
-          //     method: 'GET',
-          // }));
-            $http.get(base + '/bases/' + Key, {
+             return $http.get(base + '/bases/' + Key, {
                 method: 'GET',
-            }).success(function(res) {
-              console.log(res);
-              var baseData = [];
-              for (var i=0; i<res.length; i++) {
-                console.log(i);
-                  baseData.push(res[i]);
-                  if (res.length -1 == i) {
-                    console.log(baseData);
-                    return baseData;
-                  }
-              }
-            });
+                }).success(function(res) {
+                  console.log(res);
+                  /*var baseData = [];
+                  for (var i=0; i<res.length; i++) {
+                    console.log(i);
+                      baseData.push(res[i]);
+                      if (res.length -1 == i) {
+                        console.log(baseData);
+                        return baseData;
+                      }
+                  }*/
+                });
         },
         //
         // deleteItem: function (uniqueKey) {
@@ -607,7 +604,7 @@ angular.module('starter.services', [])
                     game.config={};
                 }
                 angular.merge (config, default_config, game.config);
-                $rootScope.$broadcast('gameLoadedEvent');
+                $rootScope.$broadcast('usergameLoadedEvent');
                 defer.resolve();
 
             },

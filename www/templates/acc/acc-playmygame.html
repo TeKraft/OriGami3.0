@@ -46,50 +46,6 @@
         </ion-modal-view>
     </script>
 
-    <!-- Game Over Modal -->
-    <script id="gameover-modal.html" type="text/ng-template">
-        <ion-modal-view style="height:75%; ">
-            <ion-content style="height: 100%; background-color:#64B5F6">
-                <div class="answer_output">
-                   <!-- <img src="./img/icons/Medal.png" /> -->
-                    <h1 ng-show="score > 0">{{'congrat' | translate}} {{player.name}}</h1>
-                    <h1 ng-hide="score > 0" style="margin-top:10%;">{{'wrong_ans_1' | translate}}</h1>
-                    <!-- <p> {{'you_completed' | translate}} </p> -->
-                    <p style="font-size:3vh;margin-top:1%;">Your Score: <span style="font-size:3.5vh">{{score}} points</span></p>
-
-                    <div ng-show="score > 0">
-                        <!--<p style="font-size:3vh;margin-top:5%;">Add your name to leaderboards</p>-->
-                        <!--<div class="lead_name">
-                            <input type="text" ng-model="player.name" required>
-                            <button id="fab" ng-click="addLeader()" class="button button-positive button-fab" style="background-color:#53DF83;"><i class="icon ion-android-done" style="font-size:3vh;color:#1565C0;"></i></button>
-                        </div>-->
-                        <p style="font-size:3vh;margin-top:1%;">Leaderboard</p>
-                        <!-- Facebook Scharing Button
-                    <button id="fab" ng-show="shareButtons" ng-click="shareViaFacebook('I completed OriGami task! ', null, null)" class="button button-positive button-fab" style="background-color:#3b5998"><i class="icon ion-social-facebook" style="color:white"></i></button>-->
-
-                        <div class="leaderboard">
-                            <div class="row header">
-                                <div class="col">Position</div>
-                                <div class="col">Name</div>
-                                <div class="col">{{'points' | translate}}</div>
-                            </div>
-                            <div class="row content" ng-repeat="data in bestPlayers | orderBy:'-points'">
-                                <div class="col">{{$index + 1}}</div>
-                                <div class="col">{{data.name}}</div>
-                                <div class="col">{{data.points}}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </ion-content>
-            <div class="exit_butt">
-                <button class="button button-block button-balanced save_but" ng-click="modal.remove()">{{'exit' | translate}}</button>
-            </div>
-        </ion-modal-view>
-    </script>
-
-
     <!-- Error Modal -->
     <script id="error-modal.html" type="text/ng-template">
         <ion-modal-view>
@@ -195,6 +151,27 @@
         </ion-modal-view>
     </script>
 
+    <!-- model to invite users to the game -->
+    <script id="inviteusers-modal.html" type="text/ng-template">
+        <ion-modal-view>
+            <ion-content style="height: 100%; background-color:#64B5F6">
+                <p>Invite new users to the game!</p>
+                <form method="post">
+                    <div class="list list-inset" >
+                        <label class="item item-input">
+                            <input id="newUsermail" type="text" id="firstName" class="form-control" ng-model="vm.user.firstName" placeholder="e-mail"/>
+                        </label>
+                    </div>
+                    <button class="button button-block button-calm" ng-click="inviteUser()">Invite!</button>
+                </form>
+            </ion-content>
+
+            <ion-footer-bar class="bar-positive" ng-click="modal.remove()">
+                <p class="title">OK</p>
+            </ion-footer-bar>
+        </ion-modal-view>
+    </script>
+
     <!-- QA result Modal -->
     <script id="qa-result-modal.html" type="text/ng-template" class="qa_font">
         <ion-modal-view style="padding: 0; margin:0; dispay:block; background-color: #64B5F6;">
@@ -235,6 +212,8 @@
                 <img class="bearing" src="../../img/bearing.png" alt="ARROW" style="transform: rotate({{bearing}}deg)">
             </div>
             <div id="button-container">
+                <!--Button to display modal where you can add players -->
+                <button class="button button-fab map-button next {{geoLocButtonColor}} icon ion-person-add waves-effect waves-button waves-light" ng-click="inviteUsersModal()"></button>
                 <!--Button to display modal with waypoint info (hide during georeferencing task) -->
                 <button class="button button-fab map-button next {{geoLocButtonColor}} icon ion-information waves-effect waves-button waves-light" ng-click="showWaypointInfoModal()" ng-hide="task.type == 'GeoReference'"></button>
                 <!--Button to display modal georeferencing question -->
