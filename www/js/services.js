@@ -356,8 +356,8 @@ angular.module('starter.services', [])
                 method: 'GET',
             });
         },
-        getOneBaseGame: function (name, user) {
-            return $http.get(base + '/baseGames/baseItem/' + name + '/' + user, {
+        getOneBaseGame: function (user, name) {
+            return $http.get(base + '/baseGames/baseItem/' + user + '/' + name, {
                 method: 'GET',
             });
         },
@@ -406,12 +406,10 @@ angular.module('starter.services', [])
                     imgfile: file
                 }
             });
-        } // ,
-        // addPlayerInfo : function(info) {
-        //     return $http.post(base + '/baseGames/player', info, {
-        //         method: 'POST',
-        //     });
-        // }
+        },
+        updateBasegame: function (data) {
+            return $http.post(base + '/updateBasegame', data)
+        }
     };
 })
 
@@ -579,8 +577,6 @@ angular.module('starter.services', [])
     };
 
     // for base game
-
-
     data.getBaseIDs = function () {
       console.log("getBasepoints");
       console.log("game");
@@ -596,11 +592,9 @@ angular.module('starter.services', [])
         var defer = $q.defer();
         var baseGames = $http.get(Server + '/baseGames/baseItem/' + userName + '/' + gameName)
             .then(function (response) {
-                console.log(response);
                 game = response.data[0];
                 loaded = true;
                 if(game.hasOwnProperty('config') == false){
-                    console.log('it has own property');
                     game.config={};
                 }
                 angular.merge (config, default_config, game.config);
@@ -1028,7 +1022,7 @@ angular.module('starter.services', [])
     };
 
     var getProfile2 = function(username) {
-        return $http.get(base + '/profile/'+ username);
+        return $http.get(base + '/profile/' + username);
     };
 
 
@@ -1046,6 +1040,9 @@ angular.module('starter.services', [])
                 Authorization: 'Bearer ' + authentication.getToken()
             }})
     };
+    function updateFriend(user){
+        return $http.post(base + '/friendUpdate', user)
+    }
 
     function deleteUsers(user) {
         return $http.post(base + '/profileDelete', user, {
@@ -1055,8 +1052,6 @@ angular.module('starter.services', [])
     };
 
     function inviteUser(email){
-        console.log("inviteService");
-        console.log(email);
         return $http.get(base + '/inviteUser/' + email)
     };
 
@@ -1080,6 +1075,7 @@ angular.module('starter.services', [])
         setFriendlID: setFriendID,
         getFriendID: getFriendID,
         inviteUser: inviteUser,
-        friendUser: friendUser
+        friendUser: friendUser,
+        updateFriend: updateFriend
     };
 }]);

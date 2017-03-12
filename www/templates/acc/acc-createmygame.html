@@ -98,11 +98,11 @@
                               <button ng-click="addTeamnames(addTeamname); addTeamname = null">add</button>
 
                               <label for="addTeam"> Multiple select: </label><br>
-                              <div name="addTeam" id="selectTeam" ng-model="shownTeamnames" multiple ng-repeat="teamname in data.addedTeam">
+                              <div name="addTeam" id="selectTeam" ng-model="shownTeamnames" multiple ng-repeat="teamname in addedTeam">
                                   {{teamname}}
                               </div>
                               <br>
-                              <tt>multipleSelect = {{data.addedTeam}}</tt><br/>
+                              <tt>multipleSelect = {{addedTeam}}</tt><br/>
                               <button ng-click="forceUnknownOption()">clear input</button><br>
                             </form>
 

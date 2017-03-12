@@ -122,9 +122,7 @@ angular.module('starter')
 // controller for showing games for editing
 // #################################################################################################
 
-.controller('ProfTeacherCtrl', ['$rootScope', '$scope', '$timeout', '$ionicPopup', '$ionicModal', '$window', '$ionicHistory',
-                            '$translate', '$ionicSlideBoxDelegate', '$cordovaCamera', '$q', 'accAPI', 'Edit', 'meanData',
-                            function ($rootScope, $scope, $timeout, $ionicPopup, $ionicModal, $window, $ionicHistory,
+.controller('ProfTeacherCtrl', function ($rootScope, $scope, $timeout, $ionicPopup, $ionicModal, $window, $ionicHistory,
                                     $translate, $ionicSlideBoxDelegate, $cordovaCamera, $q, accAPI, Edit, meanData) {
     var vm = this;
     vm.user = {};
@@ -207,12 +205,16 @@ angular.module('starter')
     //     $scope.newgame.baseAmount = baseAmount + 1;
     // };
 
-      $scope.data = {
-         addedTeam: []
-      };
+    $scope.addedTeam = [];
+    $scope.gameTeams = [];
+    $scope.team = {
+        teamName: String,
+        teamMates: []
+    };
 
        $scope.forceUnknownOption = function() {
-          $scope.data.addedTeam = [];
+          $scope.gameTeams = [];
+          $scope.addedTeam = [];
        };
 
     //Show progress after step1
@@ -242,15 +244,23 @@ angular.module('starter')
     $scope.addTeamnames = function (teamname) {
         var checkTeamname = false;
         if (teamname != null) {
-            if ($scope.data.addedTeam.length != 0) {
-              console.log()
-                for (var i=0; i<$scope.data.addedTeam.length; i++) {
-                    if ( teamname == $scope.data.addedTeam[i] ) {
-                      checkTeamname = true;
+            if ($scope.addedTeam.length != 0) {
+                console.log("$scope.addedTeam.length != 0");
+                for (var i=0; i<$scope.addedTeam.length; i++) {
+                    if ( teamname == $scope.addedTeam[i] ) {
+                        checkTeamname = true;
                     }
                 }
             }
-        if ( checkTeamname == false ) { $scope.data.addedTeam.push(teamname); }
+            if ( checkTeamname == false ) {
+                $scope.team.teamName = teamname;
+                $scope.addedTeam = teamname;
+                console.log("$scope.team");
+                console.log($scope.team);
+                console.log($scope.addedTeam);
+                $scope.gameTeams.push($scope.team);
+                console.log($scope.gameTeams)
+            }
         }
     };
 
@@ -717,10 +727,11 @@ angular.module('starter')
       console.log("ProfTeacherCtrl - finishGame()");
       console.log("$scope.newgame");
       $scope.newgame.gameCreator = thisUser;
-      $scope.newgame.team = $scope.data.addedTeam;
+      $scope.newgame.team = $scope.gameTeams;
       console.log($scope.newgame);
         accAPI.saveBaseItem($scope.newgame)
             .success(function (data, status, headers, config) {
+                console.log("FINISH")
                 $rootScope.hide();
                 $rootScope.doRefresh(1);
                 $ionicHistory.goBack();
@@ -770,7 +781,7 @@ angular.module('starter')
                 $ionicSlideBoxDelegate.slide(index);
             }
         } else if (index == 3) {
-            if ($scope.data.addedTeam != "") {
+            if ($scope.team != "") {
                 console.log("nicht leer");
                 $ionicSlideBoxDelegate.slide(index);
             } else { $ionicPopup.alert({
@@ -858,7 +869,7 @@ angular.module('starter')
     //             $translate.instant('oops_wrong');
     //         });
     // };
-}])
+})
 
 // #################################################################################################
 // controller for new game creation
@@ -1245,9 +1256,7 @@ angular.module('starter')
 // controller for playing games
 // #################################################################################################
 
-.controller('ProfPlayCtrl', ['$rootScope', '$scope', '$stateParams', '$ionicModal', '$ionicPopup', '$ionicLoading', '$location', '$cordovaSocialSharing',
-                         '$translate', '$timeout', '$cookies', 'GameData', 'GameState', 'accAPI', 'PathData', 'PlayerStats', 'meanData',
-                         function ($rootScope, $scope, $stateParams, $ionicModal, $ionicPopup, $ionicLoading, $location,  $cordovaSocialSharing,
+.controller('ProfPlayCtrl', function (userService, $rootScope, $scope, $stateParams, $ionicModal, $ionicPopup, $ionicLoading, $location,  $cordovaSocialSharing,
                                     $translate, $timeout, $cookies, GameData, GameState, accAPI, PathData, PlayerStats, meanData) {
     var vm = this;
     vm.user = {};
@@ -1270,6 +1279,7 @@ angular.module('starter')
 
     $scope.score = 0;
     $scope.GameData = GameData; // ugly hack to make GameData visible in directives
+    var gameKey = GameData.getBaseIDs();
 
     console.log("GameData");
     console.log(GameData);
@@ -1303,12 +1313,20 @@ angular.module('starter')
     };
 
     var initGame = function () {
-      console.log("initGame - function()");
         $translate.use(GameData.getConfig('language'));
         $scope.TIME_LIMIT = GameData.getConfig('qaTimeLimit'); // time limit to answer question (in seconds)
         $scope.gameLoaded = true;
-        console.log("set basepoints");
+        accAPI.getOneBaseGame($scope.userName, $scope.gameName)
+            .then(function (data) {
+                $scope.game = data.data[0];
+                $scope.gameDatascope = data.data[0].players;
+                $scope.gameTeamscope = data.data[0].team;
+                console.log($scope.gameDatascope);
+                console.log($scope.gameTeamscope);
+                console.log($scope.game);
+            })
         setBasePoints();
+
     };
 
     var setBasePoints = function () {
@@ -1321,8 +1339,6 @@ angular.module('starter')
                 $scope.basepoints = res;
                 $scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
             });
-
-
     };
 
     var handleNextActivity = function () {
@@ -1353,13 +1369,32 @@ angular.module('starter')
     $scope.inviteUser = function () {
         var mail = angular.element('#newUsermail').val();
         userService.inviteUser(mail)
-            /*.then(function (data) {
-                vm.user.friends.push(data.data.userName)
-                userService.update(vm.user)
-            })*/
+            .success(function (dataUser) {
+                dataUser.games.push($scope.gameName);
+                userService.updateFriend(dataUser)
+                    .then(function () {
+                        accAPI.getOneBaseGame($scope.userName, $scope.gameName)
+                            .success(function (dataGame) {
+                                dataGame[0].players.push(dataUser.userName);
+                                accAPI.updateBasegame(dataGame[0])
+                                    .then(function (dataGameUpdated) {
+                                        $scope.gameDatascope = dataGameUpdated.config.data.players;
+                                    })
+                            })
+                    })
+            })
     }
-
-
+    $scope.playerToTeam = function(players, team){
+        for(var i=0; i<$scope.gameTeamscope; i++){
+            if($scope.gameTeamscope[i].teamName == team){
+                $scope.game.team[i].teamMates.push(players);
+                accAPI.uppdateBasegame(scope.game)
+                    .then(function(gameUpdate){
+                        console.log(gameUpdate);
+                    })
+            }
+        }
+    }
 
    var handleNextWaypoint = function () {
         GameState.todoWaypointIndex(); // Get pending waypoint
@@ -1626,8 +1661,9 @@ angular.module('starter')
             });
     };
 
-    GameData.loadUsergame($scope.userName, $scope.gameName).then(initGame);
-}])
+    GameData.loadUsergame($scope.userName, $scope.gameName)
+        .then(initGame);
+})
 
 // #################################################################################################
 // controller for map in origami play mode

@@ -164,6 +164,22 @@
                     </div>
                     <button class="button button-block button-calm" ng-click="inviteUser()">Invite!</button>
                 </form>
+                    <p>Players without a team</p>
+                    <table class="list">
+                        <tr class="list" ng-repeat="players in gameDatascope">
+                            <td class="item" id="players">
+                                {{players}}
+                                <button ng-click="assignPlayer = !assignPlayer">Assign Player to a Team!</button>
+                                <table>
+                                    <tr ng-repeat="team in gameTeamscope">
+                                        <td>
+                                            <button ng-click="playerToTeam(players, team)">{{team}}</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
             </ion-content>
 
             <ion-footer-bar class="bar-positive" ng-click="modal.remove()">
