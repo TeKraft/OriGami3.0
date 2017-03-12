@@ -207,10 +207,7 @@ angular.module('starter')
 
     $scope.addedTeam = [];
     $scope.gameTeams = [];
-    $scope.team = {
-        teamName: String,
-        teamMates: []
-    };
+
 
        $scope.forceUnknownOption = function() {
           $scope.gameTeams = [];
@@ -253,11 +250,15 @@ angular.module('starter')
                 }
             }
             if ( checkTeamname == false ) {
+                $scope.team = {
+                    teamName: String,
+                    teamMates: []
+                };
                 $scope.team.teamName = teamname;
-                $scope.addedTeam = teamname;
                 console.log("$scope.team");
                 console.log($scope.team);
                 console.log($scope.addedTeam);
+                $scope.addedTeam.push(teamname)
                 $scope.gameTeams.push($scope.team);
                 console.log($scope.gameTeams)
             }
@@ -1319,11 +1320,16 @@ angular.module('starter')
         accAPI.getOneBaseGame($scope.userName, $scope.gameName)
             .then(function (data) {
                 $scope.game = data.data[0];
+                $scope.gameTeamnamescope = [];
+                for(var i=0; i<data.data[0].team.length; i++){
+                    $scope.gameTeamnamescope.push(data.data[0].team[i].teamName)
+                }
                 $scope.gameDatascope = data.data[0].players;
                 $scope.gameTeamscope = data.data[0].team;
                 console.log($scope.gameDatascope);
                 console.log($scope.gameTeamscope);
                 console.log($scope.game);
+                console.log($scope.gameTeamnamescope);
             })
         setBasePoints();
 
@@ -1376,7 +1382,7 @@ angular.module('starter')
                         accAPI.getOneBaseGame($scope.userName, $scope.gameName)
                             .success(function (dataGame) {
                                 dataGame[0].players.push(dataUser.userName);
-                                accAPI.updateBasegame(dataGame[0])
+                                accAPI.updateBasegamePlayer(dataGame[0])
                                     .then(function (dataGameUpdated) {
                                         $scope.gameDatascope = dataGameUpdated.config.data.players;
                                     })
@@ -1385,12 +1391,19 @@ angular.module('starter')
             })
     }
     $scope.playerToTeam = function(players, team){
-        for(var i=0; i<$scope.gameTeamscope; i++){
+        console.log("playerToTeam")
+        for(var i=0; i<$scope.gameTeamnamescope.length; i++){
             if($scope.gameTeamscope[i].teamName == team){
                 $scope.game.team[i].teamMates.push(players);
-                accAPI.uppdateBasegame(scope.game)
-                    .then(function(gameUpdate){
-                        console.log(gameUpdate);
+                accAPI.updateBasegameTeammates($scope.game, $scope.game.team[i].teamName)
+                    .then(function (data) {
+                        $scope.game = data.config.data;
+                        $scope.gameTeamnamescope = [];
+                        for(var i=0; i<data.config.data.team.length; i++){
+                            $scope.gameTeamnamescope.push(data.config.data.team[i].teamName)
+                        }
+                        $scope.gameDatascope = data.config.data.players;
+                        $scope.gameTeamscope = data.config.data.team;
                     })
             }
         }

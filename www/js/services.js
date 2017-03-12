@@ -407,8 +407,11 @@ angular.module('starter.services', [])
                 }
             });
         },
-        updateBasegame: function (data) {
-            return $http.post(base + '/updateBasegame', data)
+        updateBasegamePlayer: function (data) {
+            return $http.post(base + '/updateBasegameplayer', data)
+        },
+        updateBasegameTeammates: function (data, teamName) {
+            return $http.post(base + '/updateBasegameteammates/' + teamName, data)
         }
     };
 })
