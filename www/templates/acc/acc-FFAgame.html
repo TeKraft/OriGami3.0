@@ -1,0 +1,56 @@
+<ion-view view-title="{{'play_FFA' | translate}} - {{}}" cache-view="false">
+    <ion-nav-bar class="bar-positive">
+        <ion-nav-back-button class="button-clear"></ion-nav-back-button>
+    </ion-nav-bar>
+
+    <script id="userInformation-modal.html" type="text/ng-template">
+        <ion-modal-view>
+            <ion-header-bar class="bar-positive">
+                <h1 class="title">{{'user_info' | translate}}</h1>
+            </ion-header-bar>
+
+            <ion-content style="height: 100%; background-color:#64B5F6">
+                <div class="plan-route" style="background-color:#64B5F6">
+                    <div class="information">
+                        <i class="ion-alert-circled"></i>
+                        <h1>{{username}}</h1>
+                        <p> {{userinfo}} </p>
+                    </div>
+                </div>
+            </ion-content>
+            <ion-footer-bar class="bar-positive" ng-click="modal.remove()">
+                <p class="title">OK</p>
+            </ion-footer-bar>
+
+        </ion-modal-view>
+    </script>
+
+    <div class="bar bar-subheader bar-assertive" ng-show="showInfo" class="ng-show">
+        <h2 class="title">{{subHeaderInfo}}</h2>
+    </div>
+
+    <ion-content scroll=false data-tap-disabled="true">
+        <div class="map-container" ng-controller="FFAMapCtrl">
+            <div id="map">
+                <leaflet defaults="map.defaults" layers="map.layers" center="map.center" paths="map.paths" markers="map.markers" event-broadcast="map.events" ng-if="map"></leaflet>
+            </div>
+            <div id="smiley" class="smiley">
+                <canvas class="smiley" smiley></canvas>
+                <img class="bearing" src="../../img/bearing.png" alt="ARROW" style="transform: rotate({{bearing}}deg)">
+            </div>
+            <div id="button-container">
+                <!--Button to display modal where you can add players -->
+                <button class="button button-fab map-button next {{geoLocButtonColor}} icon ion-person-add waves-effect waves-button waves-light" ng-click="inviteUsersModal()"></button>
+                <!--Button to display modal with waypoint info (hide during georeferencing task) -->
+                <button class="button button-fab map-button next {{geoLocButtonColor}} icon ion-information waves-effect waves-button waves-light" ng-click="showWaypointInfoModal()" ng-hide="task.type == 'GeoReference'"></button>
+                <!--Button to display modal georeferencing question -->
+                <button class="button button-fab map-button next {{geoLocButtonColor}} icon ion-help waves-effect waves-button waves-light" ng-click="performGeoReferencingTask()" ng-show="task.type == 'GeoReference'"></button>
+                <!--Button to dislpay player's position on map as icon. Icon is hidden after 5 seconds -->
+                <button class="button button-fab map-button {{playerMarkerButtonColor}} icon ion-pin waves-button waves-light" ng-click="showUsersPosition()"></button>
+                <!--Button to center map with geolocation information. Map panning is disabled as long as this button is active -->
+                <button class="button button-fab map-button next {{geoLocButtonColor}} icon ion-android-locate waves-effect waves-button waves-light" ng-hide="geolocationAlwaysOn" ng-click="toggleGeoLocation(true)"></button>
+            </div>
+        </div>
+    </ion-content>
+
+</ion-view>

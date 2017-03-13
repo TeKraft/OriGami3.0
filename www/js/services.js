@@ -416,6 +416,303 @@ angular.module('starter.services', [])
     };
 })
 
+.factory('FFAdefault', function ($rootScope, $http, $ionicLoading, $window, Server, Upload) {
+    var base = Server;
+    /*$rootScope.show = function (text) {
+        $rootScope.loading = $ionicLoading.show({
+            content: text ? text : 'Loading',
+            animation: 'fade-in',
+            showBackdrop: true,
+            maxWidth: 200,
+            showDelay: 0
+        });
+    };*/
+    $rootScope.hide = function () {
+        $ionicLoading.hide();
+    };
+
+    /*$rootScope.notify = function (text) {
+        $rootScope.show(text);
+        $window.setTimeout(function () {
+            $rootScope.hide();
+        }, 1999);
+    };*/
+
+    $rootScope.doRefresh = function (tab) {
+        if (tab == 1)
+            $rootScope.$broadcast('fetchAll');
+        else
+            $rootScope.$broadcast('fetchCompleted');
+
+        $rootScope.$broadcast('scroll.refreshComplete');
+    };
+
+    $rootScope.setToken = function (token) {
+        return $window.localStorage.token = token;
+    }
+
+    $rootScope.getToken = function () {
+        return $window.localStorage.token;
+    };
+
+    $rootScope.isSessionActive = function () {
+        return $window.localStorage.token ? true : false;
+    };
+    return {
+        // sensebox FFA game
+        createFFA: function (form) {
+          console.log("form");
+          console.log(form);
+            return $http.post(base + '/FFAGameCreation', form, {
+                method: 'POST',
+            });
+        },
+        getBoxJSON: function () {
+          var www = "https://";
+          return $http.get(www + 'api.opensensemap.org/boxes', {
+              method: 'GET',
+          });
+        },
+        getBaseMarkerFromFFA: function (name) {
+          return $http.get(Server + '/FFAGame/item/' + name, {
+            method: 'GET',
+          });
+        },
+
+        saveSenseBoxMarkerToFFA: function (form) {
+          return $http.post(base + '/FFABaseSave', form, {
+            method: 'POST',
+          });
+        }
+    }
+})
+
+/* loads existing games from database */
+.factory('SenseBox', function ($rootScope, $http, $filter, $q, Server) {
+    var data = {};
+    var game = {};
+    // var loaded = false;
+    var config = {};
+    /* Specify default configuration settings. Can be overridden by game specific configs*/
+    var default_config = {
+        // Defaults for leaflet map
+        map: {
+            maxZoom: 19,
+            maxNativeZoom: 18,
+            zoomControlPosition: 'bottomleft',
+            defaultZoom: 18,
+            enableZoom: true,
+            defaultLayer : 'satellite' // choose from : satellite / streets / topographic
+        },
+        geolocationAlwaysOn : false, // always use GPS. If true, also hide map button to toggle geolocation
+        thresholdDistance: 30, // distance (in metres) to target waypoint below which target is treated as reached
+        radiusDistance: 10000, // distance (in metres) to possible base targets
+        thresholdDistanceGeolocOn: 10, // same when geolocation is on
+        georefThresholdDistance : 25, // threshold distance for georeference game to treat answer as correct and gain points
+        // scores and penalties for various scenarios
+        score: {
+            waypointCorrect: 10, // points gained when waypoint reached
+            answerCorrect : 10, // points gained when question answered correctly
+            answerIncorrect : 0, // points lost when question answered incorrectly
+            georefCorrect : 10, // points gained when georeference is below 'georefThresholdDistance'
+            georefIncorrect : 0 // points lost when georeference is more than 'georefThresholdDistance'
+        },
+        qaTimeLimit : 30, // time limit (in seconds) to choose answer in question-answer game
+        playerLocationHintTimeout : 5, // time limit (in seconds) to show player's position marker when button is pressed
+        language : "en" // recommmended interface language for game (alternatives - de / es / pt / en)
+
+    };
+    // data.isLoaded = function () {
+    //     return loaded;
+    // };
+    // data.getId = function() {
+    //     if (loaded) {
+    //         return game._id;
+    //     }
+    //     return null;
+    // };
+    // data.getName = function() {
+    //     if (loaded) {
+    //         return game.name;
+    //     }
+    //     return null;
+    // };
+    // data.getNumActivities = function () {
+    //     if (loaded) {
+    //         if ('activities' in game) {
+    //             return game.activities.length;
+    //         }
+    //         return 0;
+    //     }
+    //     return -1;
+    // };
+    // data.getNumWaypoints = function (activityIndex) {
+    //     if (loaded) {
+    //         if (typeof game.activities[activityIndex] === 'undefined') {
+    //             return 0;
+    //         }
+    //         if ('points' in game.activities[activityIndex]) {
+    //             return game.activities[activityIndex].points.length;
+    //         }
+    //         return 0;
+    //     }
+    //     return -1;
+    // };
+    // data.getNumTasks = function (activityIndex, waypointIndex) {
+    //     if (loaded) {
+    //         if ('tasks' in game.activities[activityIndex].points[waypointIndex]) {
+    //             return game.activities[activityIndex].points[waypointIndex].tasks.length;
+    //         }
+    //         return 0;
+    //     }
+    //     return -1;
+    // };
+    // data.getActivity = function (index) {
+    //     if (loaded) {
+    //         return game.activities[index];
+    //     }
+    //     return -1;
+    // };
+    // data.getWaypoint = function (actIndex, pointIndex) {
+    //   console.log("data");
+    //   console.log(data);
+    //   console.log("game");
+    //   console.log(game);
+    //     if (loaded) {
+    //         return game.activities[actIndex].points[pointIndex];
+    //     }
+    //     return -1;
+    // };
+    // data.getTask = function (actIndex, pointIndex, taskIndex) {
+    //     if (loaded) {
+    //         return game.activities[actIndex].points[pointIndex].tasks[taskIndex];
+    //     }
+    //     return -1;
+    // };
+    // data.getAllConfigs = function() {
+    //     if (loaded) {
+    //         return config;
+    //     }
+    //     return null;
+    // };
+    data.getConfig = function (prop) {
+        /*
+            Check if object has nested keys. Angular don't provide inbuilt functions for the same
+            e.g. objHasProp (myObj, 'foo.bar.xyz')
+            checks if myObj has 'foo', then 'bar', then 'xyz' as it's properties
+            Second argument is a string
+        */
+        var objHasProp = function (obj, keys) {
+            keys = keys.split('.');
+            var next = keys.shift();
+            return (typeof obj[next] != 'undefined') && (!keys.length || objHasProp(obj[next], keys.join('.')));
+        };
+        /*
+             Get nested key from obj - e.g.. getProp (myObj, 'foo.bar.xyz') gives myObj.foo.bar.xyz
+             As with previous function, second argument is a string
+        */
+        var getProp = function (obj, keys) {
+            for (var i = 0, keys = keys.split('.'), len = keys.length; i < len; i++) {
+                obj = obj[keys[i]];
+            };
+            return obj;
+        };
+        if (loaded) {
+            if (objHasProp(config, prop)) {
+                return getProp(config, prop);
+            }
+            console.log("Warning! No property found in config for - ", prop);
+            return null;
+        }
+        return null;
+    };
+    // data.FFA = function (name) {
+    //     console.log('In loadFFAGame');
+    //     console.log(name);
+    //     console.log(Server);
+    //     var defer = $q.defer();
+    //     var FFAgame = $http.get(Server + '/FFAgame/item/' + name)
+    //         .then(function (response) {
+    //           console.log(response);
+    //             // game = response.data[0];
+    //             // loaded = true;
+    //             // if(game.hasOwnProperty('config') == false){
+    //             //     game.config={};
+    //             // }
+    //             // angular.merge (config, default_config, game.config);
+    //             // $rootScope.$broadcast('usergameLoadedEvent');
+    //             // defer.resolve();
+    //
+    //         },
+    //         function (response) {
+    //             console.log("Fetching game data. HTTP GET request failed");
+    //             console.log(response);
+    //             defer.reject("Unable to fetch game data. HTTP GET request faield")
+    //         });
+    //         console.log("FFAgame");
+    //         console.log(FFAgame);
+    //     return defer.promise;
+    // };
+    data.FFA = function(name){
+        console.log('In FFA service')
+        var defer = $q.defer();
+        var FFAgame = $http.get(Server + '/FFAGame/item/' + name)
+            .then(function (response) {
+              console.log(response);
+                game = response.data[0];
+                loaded = true;
+                if(game.hasOwnProperty('config') == false){
+                    game.config={};
+                }
+                angular.merge (config, default_config, game.config);
+                $rootScope.$broadcast('FFAgameLoadedEvent');
+                defer.resolve();
+            },
+            function (response) {
+                console.log("Fetching ame data. HTTP GET request failed");
+                console.log(response);
+                defer.reject("Unable to fetch game data. HTTP GET request faield")
+            });
+        return defer.promise;
+    };
+
+    // // for base game
+    // data.getBaseIDs = function () {
+    //   console.log("getBasepoints");
+    //   console.log("game");
+    //   console.log(game);
+    //     if (loaded) {
+    //         console.log("loaded");
+    //         return game.uniqueKey;
+    //     }
+    // };
+
+    // data.loadUsergame = function(userName, gameName){
+    //     console.log('In loadUsergame')
+    //     var defer = $q.defer();
+    //     var baseGames = $http.get(Server + '/baseGames/baseItem/' + userName + '/' + gameName)
+    //         .then(function (response) {
+    //             game = response.data[0];
+    //             loaded = true;
+    //             if(game.hasOwnProperty('config') == false){
+    //                 game.config={};
+    //             }
+    //             angular.merge (config, default_config, game.config);
+    //             $rootScope.$broadcast('usergameLoadedEvent');
+    //             defer.resolve();
+    //
+    //         },
+    //         function (response) {
+    //             console.log("Fetching ame data. HTTP GET request failed");
+    //             console.log(response);
+    //             defer.reject("Unable to fetch game data. HTTP GET request faield")
+    //         });
+    //     return defer.promise;
+    // };
+
+    return data;
+})
+
 /* loads existing games from database */
 .factory('GameData', function ($rootScope, $http, $filter, $q, Server) {
     var data = {};
@@ -576,6 +873,8 @@ angular.module('starter.services', [])
                     console.log(response);
                     defer.reject("Unable to fetch game data. HTTP GET request failed");
                 });
+                console.log("games");
+                console.log(games);
         return defer.promise;
     };
 
@@ -591,10 +890,12 @@ angular.module('starter.services', [])
     };
 
     data.loadUsergame = function(userName, gameName){
+      console.log("loadUsergame function()");
         console.log('In loadUsergame')
         var defer = $q.defer();
         var baseGames = $http.get(Server + '/baseGames/baseItem/' + userName + '/' + gameName)
             .then(function (response) {
+              console.log(response);
                 game = response.data[0];
                 loaded = true;
                 if(game.hasOwnProperty('config') == false){

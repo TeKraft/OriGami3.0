@@ -367,6 +367,28 @@ angular.module('starter', ['ionic', 'naif.base64', 'ngMdIcons', 'pascalprecht.tr
             }
         })
 
+        .state('acc.chooseGameMode', {
+            url: '/chooseGameMode',
+            views: {
+                'tab-acc': {
+                    templateUrl: 'templates/acc/acc-chooseGameMode.html',
+                    controller: 'ProfGamesCtrl',
+                    controllerAs: 'vm'
+                }
+            }
+        })
+
+        .state('acc.FFAgame', {
+            url: '/FFA/:userName',
+            views: {
+                'tab-acc': {
+                    templateUrl: 'templates/acc/acc-FFAgame.html',
+                    controller: 'FFACtrl',
+                    controllerAs: 'vm'
+                }
+            }
+        })
+
         // ########################################################
         // starting templates for usermanagement creating games
         // ########################################################

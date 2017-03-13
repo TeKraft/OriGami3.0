@@ -58,6 +58,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
 
     // Create Activity
     $scope.submitPoint = function () {
+      console.log("submitPoint()");
 
         $scope.gamestype = Data.getType();
         var points = [];
@@ -1089,7 +1090,8 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
 
     $scope.score = 0;
     $scope.GameData = GameData; // ugly hack to make GameData visible in directives
-
+console.log("$scope.GameData");
+console.log($scope.GameData);
     /* only for debug purposes */
     var debugState = function () {
         return {
@@ -1959,7 +1961,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     };
 })
 
-.controller('AfterloginCtrl', function ($rootScope, $scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData){
+.controller('AfterloginCtrl', function ($rootScope, $scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData, FFAdefault){
     var vm = this;
     vm.user = {};
 
@@ -1967,10 +1969,47 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
         .success(function(data) {
             vm.user = data;
             $rootScope.loginUser = vm.user.email;
+            $rootScope.loginUserName = vm.user.userName;
+            $scope.$broadcast('senseBoxLoginLoad', $rootScope.loginUserName);
         })
         .error(function (e) {
             $location.path('/tab/home');
         });
+
+        /* Add sensboxes as markers once game is loaded */
+        $scope.$on('senseBoxLoginLoad', function (event, userName) {
+          console.log("userName");
+          console.log(userName);
+          FFAdefault.getBoxJSON()
+              .then(function(res) {
+                  var object = res;
+                  console.log("object");
+                  console.log(object);
+                  var markerArray = [];
+                  for (var i=0; i<object.data.length; i++) {
+                      var dt = new Date(object.data[i].updatedAt);
+                      if (dt != "Invalid Date") {
+                                var marker = {
+                                    lat: object.data[i].loc[0].geometry.coordinates[1],
+                                    lng: object.data[i].loc[0].geometry.coordinates[0],
+                                    id: object.data[i]._id,
+                                    sensors: object.data[i].sensors,
+                                    message: "" + object.data[i].name + "\n" + object.data[i]._id, // "" + object.data[i].name + "\n" + object.data[i]._id + "\n" + "<button ng-click='attackBase(" + object.data[i]._id + ")'> Attack! </button>", //"+ object.data[i]._id +"
+                                    focus: true
+                                };
+                                //TODO: set radius around center to get only a few marker!
+                                //
+                                // $scope.map.markers[object.data[i]._id] = marker;
+                                markerArray.push(marker);
+                  }
+                }
+                  console.log("markerArray");
+                  console.log(markerArray);  // all marker as 1 array
+                  FFAdefault.saveSenseBoxMarkerToFFA(markerArray); //save marker in base
+
+                })
+        });
+
 })
 .controller('AccountCtrl', function ($stateParams, $rootScope, $scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData, userService){
     console.log("AccountCtrl")
@@ -1984,6 +2023,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
         .success(function(data) {
             vm.user = data;
             $rootScope.loginUser = vm.user.email;
+            $rootScope.loginUserName = vm.user.userName;
         })
         .error(function (e) {
             $location.path('/tab/home');

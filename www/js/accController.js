@@ -21,6 +21,7 @@ angular.module('starter')
         .success(function(data) {
             vm.user = data;
             $rootScope.loginUser = vm.user.email;
+            $rootScope.loginUserName = vm.user.userName;
         })
         .error(function (e) {
             console.log(e);
@@ -51,6 +52,62 @@ angular.module('starter')
 
     console.log("accAPI.getBaseMetadata()");
     console.log(accAPI.getBaseMetadata());
+
+    //################################################################
+    //################################################################
+    //################################################################
+    // create FFA game and set to default
+    $scope.createFFAgame = function() {
+      console.log("createFFAgame");
+        $scope.ffagameschema = {};
+        var teamNamesFFA = [];
+        teamNamesFFA.push("FIRE");
+        teamNamesFFA.push("ICE");
+        teamNamesFFA.push("LEAF");
+        teamNamesFFA.push("AIR");
+        teamNamesFFA.push("NIGHT");
+
+        var teamObjectsFFA = [];
+        for (var i=0; i<teamNamesFFA.length; i++) {
+          var oneTeamFFA = {
+              teamName: String,
+              teamMates: []
+          };
+          oneTeamFFA.teamName = teamNamesFFA[i];
+            teamObjectsFFA.push(oneTeamFFA);
+        }
+        $scope.ffagameschema.name = "Open World OriGami";
+        $scope.ffagameschema.team = teamObjectsFFA;
+
+        FFAdefault.createFFA($scope.ffagameschema)
+            .success(function (data, status, headers, config) {
+                console.log("success - data");
+                console.log(data);
+            })
+            .error(function (data, status, headers, config) {
+                console.log("error - data");
+                console.log(data);
+            });
+    };
+    $scope.playFFA = function () {
+        $location.path('/acc/FFA/'+$scope.userName);
+        console.log("playFFA");
+        // createModal('starting-modal.html', 'welcome');
+    };
+    // set game mode index
+    $scope.choose_mode = 0;
+    $scope.chooseMode = function (type) {
+      console.log("type");
+      console.log(type);
+        if (type == $scope.choose_mode)
+            $scope.choose_mode = 0;
+        else {
+            $scope.choose_mode = type;
+        }
+    };
+    //################################################################
+    //################################################################
+    //################################################################
 
     // Fetch all the games from the server
     $scope.games = [];
@@ -131,6 +188,7 @@ angular.module('starter')
         .success(function(data) {
             vm.user = data;
             $rootScope.loginUser = vm.user.email;
+            $rootScope.loginUserName = vm.user.userName;
         })
         .error(function (e) {
             console.log(e);
@@ -889,6 +947,7 @@ angular.module('starter')
         .success(function(data) {
             vm.user = data;
             $rootScope.loginUser = vm.user.email;
+            $rootScope.loginUserName = vm.user.userName;
         })
         .error(function (e) {
             console.log(e);
@@ -1266,6 +1325,7 @@ angular.module('starter')
         .success(function(data) {
             vm.user = data;
             $rootScope.loginUser = vm.user.email;
+            $rootScope.loginUserName = vm.user.userName;
         })
         .error(function (e) {
             console.log(e);
@@ -1319,6 +1379,8 @@ angular.module('starter')
         $scope.gameLoaded = true;
         accAPI.getOneBaseGame($scope.userName, $scope.gameName)
             .then(function (data) {
+              console.log("data");
+              console.log(data);
                 $scope.game = data.data[0];
                 $scope.gameTeamnamescope = [];
                 for(var i=0; i<data.data[0].team.length; i++){
@@ -1368,7 +1430,7 @@ angular.module('starter')
 
     // load modal to invite users to a game
     $scope.inviteUsersModal = function(){
-        createModal('inviteusers-modal.html', 'inviteusers')
+        createModal('inviteusers-modal.html', 'inviteusers');
     };
 
     //invite the new player
@@ -1696,6 +1758,7 @@ angular.module('starter')
         .success(function(data) {
             vm.user = data;
             $rootScope.loginUser = vm.user.email;
+            $rootScope.loginUserName = vm.user.userName;
         })
         .error(function (e) {
             console.log(e);
@@ -1709,11 +1772,13 @@ angular.module('starter')
 
     // Initialize map after game is loaded. Needed because config settings are in game data
     $scope.$on('usergameLoadedEvent', function (event, args) {
+      console.log("usergameLoadedEvent function()");
         $scope.initialize();
     });
 
     /* Initialize view of map */
     $scope.initialize = function () {
+      console.log("initialize function()");
         $scope.thresholdDistance = GameData.getConfig('thresholdDistance');
         $scope.geolocationAlwaysOn = GameData.getConfig('geolocationAlwaysOn');
         var defaultLayer = GameData.getConfig('map.defaultLayer')
@@ -1795,7 +1860,7 @@ angular.module('starter')
         }
 
 
-        $scope.$emit('mapLoadedEvent');
+        // $scope.$emit('mapLoadedEvent');
     };
 
     $scope.updatePlayerPosMarker = function (position) {
@@ -2121,5 +2186,696 @@ angular.module('starter')
     }
 
     //$scope.initialize();
+
+}])
+
+// #################################################################################################
+// controller for playing FFA games
+// #################################################################################################
+
+.controller('FFACtrl', ['SenseBox', '$rootScope', '$scope', '$stateParams', '$ionicModal', '$ionicPopup', '$ionicLoading', '$ionicHistory', '$window', '$location', '$cordovaSocialSharing',
+                                    '$translate', '$timeout', '$cookies', 'accAPI', 'PathData', 'PlayerStats', 'meanData', 'userService', 'authentication', 'GameData', 'FFAdefault',
+                                    function (SenseBox, $rootScope, $scope, $stateParams, $ionicModal, $ionicPopup, $ionicLoading, $ionicHistory, $window, $location, $cordovaSocialSharing,
+                                    $translate, $timeout, $cookies, accAPI, PathData, PlayerStats, meanData, userService, authentication, GameData, FFAdefault) {
+    var vm = this;
+    vm.user = {};
+
+    meanData.getProfile()
+        .success(function(data) {
+            vm.user = data;
+            $rootScope.loginUser = vm.user.email;
+            $rootScope.loginUserName = vm.user.userName;
+        })
+        .error(function (e) {
+            console.log(e);
+        });
+
+    var thisUser = $rootScope.loginUserName;
+    console.log("thisUser");
+    console.log(thisUser);
+
+    $scope.userName = thisUser;
+    console.log("$scope.userName");
+    console.log($scope.userName);
+
+    // go back in History to
+    $scope.cancelGame = function () {
+        $ionicHistory.goBack();
+    };
+
+
+
+    var createModal = function (templateUrl, id) {
+      console.log("createModal - function("+templateUrl+" "+id+")");
+        $ionicModal.fromTemplateUrl(templateUrl, {
+            id: id,
+            scope: $scope,
+            animation: 'slide-in-up',
+            backdropClickToClose: false
+        }).then(function (modal) {
+            $scope.modal = modal;
+            $scope.modal.show();
+        });
+    };
+    //
+    // $scope.closeModal = function () {
+    //   console.log("click");
+    //   $ionicPopup.alert({
+    //       title: 'closeModal()',
+    //       template: 'remove'});
+    //     $scope.modal.remove();
+    // };
+
+
+    var configGame = function () {
+      console.log("configGame");
+        $translate.use(SenseBox.getConfig('language'));
+        // $scope.TIME_LIMIT = SenseBox.getConfig('qaTimeLimit'); // time limit to answer question (in seconds)
+        // $scope.gameLoaded = true;
+        // accAPI.getFFAGame($scope.userName)
+        //     .then(function (data) {
+        //       console.log("data");
+        //       console.log(data);
+        //         // $scope.game = data.data[0];
+        //         // $scope.gameTeamnamescope = [];
+        //         // for(var i=0; i<data.data[0].team.length; i++){
+        //         //     $scope.gameTeamnamescope.push(data.data[0].team[i].teamName)
+        //         // }
+        //         // $scope.gameDatascope = data.data[0].players;
+        //         // $scope.gameTeamscope = data.data[0].team;
+        //         // console.log($scope.gameDatascope);
+        //         // console.log($scope.gameTeamscope);
+        //         // console.log($scope.game);
+        //         // console.log($scope.gameTeamnamescope);
+        //     })
+        initializeMarker($scope.userName);
+    };
+
+    var initializeMarker = function (user) {
+      console.log("initializeMarker()");
+      $scope.$broadcast('senseBoxLoadedEvent', user);
+    };
+
+    $scope.showUserInformation = function () {
+      createModal('userInformation-modal.html', 'userinfo');
+    };
+
+    //TODO: show online user/ show user playing FFA
+    //TODO: bei annäherung an eine Base --> attack button --> angreifen der Base
+    //TODO: tasks anzeigen
+
+    // $scope.$on('modal.hidden', function (event, modal) {
+    //     // Start playing once the game info dialog is dismissed
+    //     if (modal.id === 'info') {
+    //       setBasePoints();
+    //         handleNextActivity();
+    //     } else if (modal.id === 'error') {
+    //         $location.path('/');
+    //     } else if (modal.id === 'georef') {
+    //         $scope.$broadcast('georefEvent', $scope.task);
+    //     } else if (modal.id === 'qa') {
+    //         $scope.$broadcast('qaEvent', $scope.task);
+    //     } else if (modal.id === 'georefResult') {
+    //         handleTask();
+    //     } else if (modal.id === 'qaResult') {
+    //         handleTask();
+    //     } else if (modal.id === 'waypoint') {
+    //         handleTask();
+    //     }
+    // });
+
+    //TODO: Wofür?
+    $scope.$on('$destroy', function () {
+        if (typeof $scope.modal != 'undefined') {
+            $scope.modal.remove();
+        }
+    });
+
+    SenseBox.FFA($scope.userName)
+        .then(configGame);
+}])
+
+// #################################################################################################
+// controller for map in origami play mode
+// #################################################################################################
+/* - Controller for map in origami play mode
+ * - Only shows waypoint and emits signal when waypoint is reached or georeference game is played
+ * - Is not concerned with GameState or the game progression logic - that is a job for PlayCtrl
+ */
+.controller('FFAMapCtrl', ['$scope', '$rootScope', '$cordovaGeolocation', '$stateParams', '$ionicModal', '$ionicLoading',
+                                '$timeout', 'leafletData', '$translate', 'GameData', 'PathData', 'PlayerStats', 'meanData', 'SenseBox', 'FFAdefault', '$compile',
+                                function ($scope, $rootScope, $cordovaGeolocation, $stateParams, $ionicModal, $ionicLoading,
+                                            $timeout, leafletData, $translate, GameData, PathData, PlayerStats, meanData, SenseBox, FFAdefault, $compile) {
+    var vm = this;
+    vm.user = {};
+
+    meanData.getProfile()
+        .success(function(data) {
+            vm.user = data;
+            $rootScope.loginUser = vm.user.email;
+            $rootScope.loginUserName = vm.user.userName;
+        })
+        .error(function (e) {
+            console.log(e);
+        });
+
+    var thisUser = $rootScope.loginUser;
+
+    $scope.allowEdit = false; // flag to toggle map editing when marking in georeferencing game
+    $scope.showMarker = false;
+
+    $scope.$on('FFAgameLoadedEvent', function(event, args) {
+      console.log("FFAgameLoadedEvent");
+        $scope.init();
+    });
+
+    $scope.init = function () {
+        $scope.thresholdDistance = SenseBox.getConfig('thresholdDistance');
+        $scope.geolocationAlwaysOn = SenseBox.getConfig('geolocationAlwaysOn');
+        var defaultLayer = SenseBox.getConfig('map.defaultLayer')
+        var isDefaultLayer = function(layerName) { return (defaultLayer === layerName) ? true : false; };
+
+        $scope.map = {
+            defaults: {
+                tileLayer: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                maxNativeZoom: SenseBox.getConfig('map.maxNativeZoom'),
+                maxZoom: SenseBox.getConfig('map.maxZoom'),
+                doubleClickZoom: SenseBox.getConfig('map.enableZoom'),
+                touchZoom: SenseBox.getConfig('map.enableZoom'),
+                scrollWheelZoom: SenseBox.getConfig('map.enableZoom'),
+                zoomControl : SenseBox.getConfig('map.enableZoom'),
+                zoomControlPosition: SenseBox.getConfig('map.zoomControlPosition')
+            },
+            layers: {
+                baselayers: {
+                    satellite: {
+                        name: 'Satellite View',
+                        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                        type: 'xyz',
+                        top: isDefaultLayer('satellite'),
+                        layerOptions: {
+                            attribution: '&copy; Source: Esri, DigitalGlobe, GeoEye, Earthstar Geographics, CNES/Airbus DS, USDA, USGS, AEX, Getmapping, Aerogrid, IGN, IGP, swisstopo, and the GIS User Community',
+                            continuousWorld: false
+                        }
+                    },
+                    streets: {
+                        name: 'OpenStreetMap View',
+                        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        type: 'xyz',
+                        top: isDefaultLayer('streets'),
+                        layerOptions: {
+                            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                            continuousWorld: false
+                        }
+                    },
+                    topographic: {
+                        name: 'Topographic View',
+                        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+                        type: 'xyz',
+                        top: isDefaultLayer('topographic'),
+                        layerOptions: {
+                            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
+                            continuousWorld: false
+                        }
+                    }
+                }
+            },
+            events: {
+                map: {
+                    enable: ['contextmenu', 'move', 'zoomend'],
+                    logic: 'emit'
+                }
+            },
+            center: {
+                lat: 0,
+                lng: 0,
+                zoom: SenseBox.getConfig('map.defaultZoom')
+            },
+            markers: {}, // must be initialized even if empty, else markers and paths won't show up later
+            paths: {}
+        };
+
+        $scope.geoLocButtonColor = "button-calm";
+        $scope.playerMarkerButtonColor = "button-calm";
+        /*  initialDistance is a pseudo value for initial calculation of distance to map center.
+            Otherwise chances are high that first waypoint is reached as soon as map is loaded.
+            Actual distance is computed once map 'move' event is triggered.
+            Also used to calculate max frown curvature for smile, beyond which smiley doesn't frown anymore
+        */
+        $scope.initialDistance = 500;
+        $scope.currentDistance = 0;
+        $scope.locate();
+        if ($scope.geolocationAlwaysOn) {
+            $scope.toggleGeoLocation(true);
+        }
+        // $scope.$emit('mapLoadedEvent');
+    };
+
+    $scope.updatePlayerPosMarker = function (position) {
+        if (typeof $scope.map.markers.PlayerPos === "undefined") {
+            var playerMarker = './img/icons/marker-transparent.png';
+            var marker = {
+                lat: position.lat,
+                lng: position.lng,
+                message: "You are here",
+                draggable: false,
+                icon: {
+                    iconUrl: playerMarker,
+                    iconSize: [48, 48],
+                    iconAnchor: [24, 48]
+                }
+            };
+            $scope.map.markers.PlayerPos = marker;
+        } else {
+            $scope.map.markers.PlayerPos.lat = position.lat;
+            $scope.map.markers.PlayerPos.lng = position.lng;
+        }
+    };
+
+    /* Center map on user's current position */
+    $scope.locate = function () {
+        $cordovaGeolocation
+            .getCurrentPosition()
+            .then(function (position) {
+                $scope.map.center.lat = position.coords.latitude;
+                $scope.map.center.lng = position.coords.longitude;
+                //$scope.map.center.zoom = 15;
+                $scope.updatePlayerPosMarker({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                });
+            }, function (err) {
+                // error
+                console.log("Geolocation error!");
+                console.log(err);
+            });
+    };
+
+
+    /* Add sensboxes as markers once game is loaded */
+    $scope.$on('senseBoxLoadedEvent', function (event, userEmail) {
+      console.log("userEmail");
+      console.log(userEmail);
+      console.log($scope.userName);
+
+        FFAdefault.getBaseMarkerFromFFA($scope.userName)
+                .then(function(res) {
+                  var object = res;
+                  console.log("object");
+                  console.log(object);
+                  var boxArray = [];
+                  boxArray = object.data[0].bases;
+                  // leafletData.getMap()
+                  //              .then(function (map) {
+                  //   // console.log("res");
+                  //   // console.log(res);
+                  //   // console.log(JSON.stringify(hi));
+                    for (var i=0; i<boxArray.length; i++) {
+                      // if (distance < Vorgegeben) {
+                          // console.log(dt);
+                          // console.log(dt.toUTCString());
+                            // var basepoints = object[i];
+                            console.log("boxArray["+i+"]");
+                            console.log(boxArray[i]);
+                            var functionAttack = null;
+                            functionAttack = boxArray[i];
+                            var marker = {
+                                lat: boxArray[i].lat,
+                                lng: boxArray[i].lng,
+                                id: boxArray[i].id,
+                                sensors: boxArray[i].sensors,
+                                message: boxArray[i].message,// + "<button ng-click='attackBase(" + functionAttack + ")'> Attack! </button>",
+                                focus: boxArray[i].focus
+                            };
+
+                            //TODO: set radius around center to get only a few marker!
+                        $scope.map.markers[boxArray[i].id] = marker;
+                                  // console.log("object.data["+i+"]._id");
+                                  // console.log(object.data[i]._id);
+                                  // console.log(marker);
+                    }
+                  //   console.log("map.getCenter()");
+                  //   console.log(map.getCenter());
+                      console.log("$scope.map.markers");
+                      console.log($scope.map.markers);  // all marker as 1 array
+                  //     // FFAdefault.saveSenseBoxMarkerToFFA($scope.map.markers); //save marker in base
+                  //
+                  //     var counter = 0;
+                  //       for (var i=0; i<$scope.map.markers.length; i++) {
+                  //         counter ++;
+                  //           var center = map.getCenter();
+                  //           var dest = L.latLng($scope.$scope.map.markers[i].lat, $scope.$scope.map.markers[i].lng);
+                  //           var distance = center.distanceTo(dest);
+                  //           if ($scope.initialDistance == -1) {
+                  //               $scope.initialDistance = distance;
+                  //               //console.log("Setting initial distance to ", distance);
+                  //           }
+                  //           $scope.currentDistance = distance;
+                  //           $scope.getBearing(center, dest);
+                  //
+                  //           /* Don't place marker on map center if geolocation tracking is on. This is handled separately */
+                  //           if (!$scope.getRealTimePos) {
+                  //               $scope.updatePlayerPosMarker(center);
+                  //           }
+                  //
+                  //           if (typeof $scope.drawSmiley !== "undefined") {
+                  //               var maxDistance = parseFloat($scope.initialDistance) * 2;
+                  //               // normalize distance to stop frowning once distance exceeds twice the initial distance to destination
+                  //               // otherwise smiley frowns too much
+                  //               var normalizedDistance = (parseFloat($scope.currentDistance) > maxDistance) ? maxDistance : parseFloat($scope.currentDistance);
+                  //               $scope.drawSmiley($scope.canvas, $scope.canvasContext, normalizedDistance);
+                  //           }
+                  //           // If map center is within the threshold distance to destination, then the activity is complete
+                  //           if (distance < $scope.radiusDistance) {
+                  //             console.log("distance < $scope.radiusDistance");
+                  //               $scope.$emit('BasepointReachedEvent');
+                  //           }
+                  //         }
+                  //         console.log("counter");
+                  //         console.log(counter);
+                  //       }, function (err) {
+                  //           console.log("Could not get Leaflet map object - " + err);
+                  //       });
+
+              })/*.then(function() {
+                  console.log("finished with this");
+                  leafletData.getMap()
+                      .then(function (map) {
+                          console.log("map.getCenter()");
+                          console.log(map.getCenter());
+                          console.log("$scope.map.markers");
+                          console.log($scope.map.markers);  // all marker as 1 array
+                  });
+              });*/
+          });
+// $compile("<span><a href='' ng-click='dosomething()''>info</a></span>")($scope)
+    $scope.attackBase = function (id) {
+      console.log("id - $scope");
+      console.log(id);
+    };
+
+    var attackBase = function (id) {
+      console.log("id var");
+      console.log(id);
+    };
+
+    //####################################################
+    //#### compute distance to marker ####################
+    //####################################################
+
+        /* Get bearing in degrees to destination */
+        $scope.getBearing = function (orig, dest) {
+            Number.prototype.toRadians = function () {
+                return this * Math.PI / 180;
+            };
+            Number.prototype.toDegrees = function () {
+                return this * 180 / Math.PI;
+            };
+
+            var lat1_radian = orig.lat.toRadians();
+            var lng1_radian = orig.lng.toRadians();
+            var lat2_radian = dest.lat.toRadians();
+            var lng2_radian = dest.lng.toRadians();
+            var lat_delta = (lat2_radian - lat1_radian).toRadians();
+            var lng_delta = (lng2_radian - lng1_radian).toRadians();
+            var y = Math.sin(lng2_radian - lng1_radian) * Math.cos(lat2_radian);
+            var x = Math.cos(lat1_radian) * Math.sin(lat2_radian) - Math.sin(lat1_radian) * Math.cos(lat2_radian) * Math.cos(lng2_radian - lng1_radian);
+            var bearing = Math.atan2(y, x).toDegrees();
+            $scope.bearing = bearing;
+            console.log("$scope.bearing");
+            console.log($scope.bearing);
+        };
+
+        $scope.updatePlayerPosMarker = function (position) {
+            if (typeof $scope.map.markers.PlayerPos === "undefined") {
+                var playerMarker = './img/icons/marker-transparent.png';
+                var marker = {
+                    lat: position.lat,
+                    lng: position.lng,
+                    message: "You are here",
+                    draggable: false,
+                    icon: {
+                        iconUrl: playerMarker,
+                        iconSize: [48, 48],
+                        iconAnchor: [24, 48]
+                    }
+                };
+                $scope.map.markers.PlayerPos = marker;
+            } else {
+                $scope.map.markers.PlayerPos.lat = position.lat;
+                $scope.map.markers.PlayerPos.lng = position.lng;
+            }
+        };
+
+        /* (Re)compute distance to destination once map moves */
+        $scope.$on('leafletDirectiveMap.move', function (event, args) {
+          console.log("leafletDirectiveMap.move - function()");
+                var map = args.leafletEvent.target;
+                var center = map.getCenter();
+
+                // PathData.addCoord(center.lat, center.lng);
+
+                leafletData.getMap()
+                    .then(function (map) {
+                      // for (var i=0; i<$scope.map.markers.length; i++) {
+                      console.log($scope.map.markers);
+                          var center = map.getCenter();
+                          // var dest = L.latLng($scope.$scope.map.markers.lat, $scope.$scope.map.markers.lng);
+                          // var distance = center.distanceTo(dest);
+                          // if ($scope.initialDistance == -1) {
+                          //     $scope.initialDistance = distance;
+                          //     //console.log("Setting initial distance to ", distance);
+                          // }
+                          // $scope.currentDistance = distance;
+                          // $scope.getBearing(center, dest);
+                          //
+                          // /* Don't place marker on map center if geolocation tracking is on. This is handled separately */
+                          // if (!$scope.getRealTimePos) {
+                          //     $scope.updatePlayerPosMarker(center);
+                          // }
+                          //
+                          // if (typeof $scope.drawSmiley !== "undefined") {
+                          //     var maxDistance = parseFloat($scope.initialDistance) * 2;
+                          //     // normalize distance to stop frowning once distance exceeds twice the initial distance to destination
+                          //     // otherwise smiley frowns too much
+                          //     var normalizedDistance = (parseFloat($scope.currentDistance) > maxDistance) ? maxDistance : parseFloat($scope.currentDistance);
+                          //     $scope.drawSmiley($scope.canvas, $scope.canvasContext, normalizedDistance);
+                          // }
+                          // // If map center is within the threshold distance to destination, then the activity is complete
+                          // if (distance < $scope.thresholdDistance) {
+                          //   console.log("distance < $scope.thresholdDistance");
+                          //     $scope.$emit('BasepointReachedEvent');
+                          // }
+                        // }
+                      }, function (err) {
+                          console.log("Could not get Leaflet map object - " + err);
+                      });
+        });
+
+        $scope.$on('BasepointReachedEvent', function (event) {
+            console.log("hey du hast eine Base erreicht");
+            // $scope.congratsMessage = congratsMessages[Math.floor(Math.random() * congratsMessages.length)]; // show random congrats message
+            // PlayerStats.endWaypoint();
+            // createModal('waypoint-reached-modal.html', 'waypoint');
+        });
+
+        //####################################################
+        //############### for georef task ####################
+        //####################################################
+
+        // $scope.$on('leafletDirectiveMap.zoomend', function (event, args) {
+        //     if ($scope.getRealTimePos) {
+        //         $scope.toggleGeoLocation(false);
+        //         $scope.locate();
+        //         $scope.toggleGeoLocation(false);
+        //     }
+        // });
+        // $scope.$on('leafletDirectiveMap.contextmenu', function (event, locationEvent) {
+        //     if ($scope.allowEdit) {
+        //         leafletData.getMap()
+        //             .then(function (map) {
+        //                 $scope.newGeoRefPoint = new GeoRefPoint();
+        //                 $scope.newGeoRefPoint.lat = locationEvent.leafletEvent.latlng.lat;
+        //                 $scope.newGeoRefPoint.lng = locationEvent.leafletEvent.latlng.lng;
+        //
+        //                 var marker = {
+        //                     lat: $scope.newGeoRefPoint.lat,
+        //                     lng: $scope.newGeoRefPoint.lng,
+        //                     message: "Marked photograph location",
+        //                     focus: true,
+        //                     icon: {
+        //                         iconUrl: './img/icons/PhotoMarker2.png',
+        //                         iconSize: [24, 38],
+        //                         iconAnchor: [12, 38]
+        //                     }
+        //                 };
+        //                 var marker2 = {
+        //                     lat: $scope.georef.lat,
+        //                     lng: $scope.georef.lng,
+        //                     message: "Original photograph location",
+        //                     focus: true,
+        //                     icon: {
+        //                         iconUrl: './img/icons/PhotoMarker1.png',
+        //                         iconSize: [24, 38],
+        //                         iconAnchor: [12, 38]
+        //                     }
+        //                 };
+        //                 $scope.map.markers.playerPhotoMark = marker;
+        //                 $scope.map.markers.origPhotoMark = marker2;
+        //
+        //                 var origLocation = L.latLng($scope.georef.lat, $scope.georef.lng);
+        //                 var markedLocation = L.latLng($scope.newGeoRefPoint.lat, $scope.newGeoRefPoint.lng);
+        //                 var distance = parseInt(origLocation.distanceTo(markedLocation));
+        //
+        //                 /* Georef task - Path from where the photograph was originally taken to where the player marked */
+        //                 var path = {
+        //                     type: "polyline",
+        //                     color: 'red',
+        //                     weight: 5,
+        //                     latlngs: [origLocation, markedLocation]
+        //                 };
+        //
+        //                 $scope.map.paths = {
+        //                     'georefTaskPath': path
+        //                 };
+        //
+        //                 $scope.map.center = {
+        //                     lat: $scope.georef.lat,
+        //                     lng: $scope.georef.lng,
+        //                     zoom: $scope.map.center.zoom
+        //                 };
+        //
+        //                 $scope.allowEdit = false;
+        //                 /* Draw and show path between original and marked locations for 2 seconds. Then show modal*/
+        //                 $timeout(function () {
+        //                     delete $scope.map.paths.georefTaskPath;
+        //                     delete $scope.map.markers.playerPhotoMark;
+        //                     delete $scope.map.markers.origPhotoMark;
+        //                     PlayerStats.endTask ({
+        //                         "marked_lat" : $scope.newGeoRefPoint.lat,
+        //                         "marked_lng" : $scope.newGeoRefPoint.lng,
+        //                         "distance_in_m" : distance
+        //                     });
+        //                     $scope.$emit('geoRefMarkedEvent', distance);
+        //                 }, 2000);
+        //                 //$scope.map.markers.pop();
+        //                 //$scope.map.markers.pop();
+        //             });
+        //     };
+        // });
+        //
+        // $scope.$on('georefEvent', function (event, args) {
+        //     $scope.allowEdit = true;
+        //     $scope.georef = {};
+        //
+        //     /* Dummy values. Remove after georeferecing task editing has been implemented*/
+        //     if (typeof args.lat === "undefined") {
+        //         $scope.georef.lat = 51.9649;
+        //         $scope.georef.lng = 7.601;
+        //         args.lat = 51.94;
+        //         args.lng = 7.60;
+        //     } else {
+        //         $scope.georef.lat = args.lat;
+        //         $scope.georef.lng = args.lng;
+        //     }
+        // });
+        //
+        $scope.trackPosition = function () {
+            var watchOptions = {
+                frequency: 100,
+                maximumAge: 1000,
+                timeout: 10000,
+                enableHighAccuracy: true // may cause errors if true
+            };
+            $scope.trackWatch = $cordovaGeolocation.watchPosition(watchOptions);
+            $scope.trackWatch.then(
+                null,
+                function (err) {
+                    $ionicLoading.show({
+                        template: $translate.instant('error_geolocat'),
+                        noBackdrop: true,
+                        duration: 1000
+                    });
+                    console.log($translate.instant('error_watching'));
+                    console.log(err);
+                },
+                function (position) {
+                    $scope.map.center.lat = position.coords.latitude;
+                    $scope.map.center.lng = position.coords.longitude;
+                    $scope.updatePlayerPosMarker({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    });
+                });
+        };
+
+        $scope.toggleGeoLocation = function (showInfo) {
+            if ($scope.getRealTimePos == false) {
+                $scope.getRealTimePos = true;
+
+                // Geolocation is now ON
+                if (showInfo) {
+                    $ionicLoading.show({
+                        template: $translate.instant('now_using_geo'),
+                        noBackdrop: true,
+                        duration: 2000
+                    });
+                }
+                leafletData.getMap()
+                    .then(function (map) {
+                        map.dragging.disable();
+                    });
+                $scope.geoLocButtonColor = "button-balanced";
+                $scope.thresholdDistance = GameData.getConfig('thresholdDistanceGeolocOn');
+                $scope.trackPosition();
+            } else {
+                $scope.getRealTimePos = false;
+                leafletData.getMap()
+                    .then(function (map) {
+                        map.dragging.enable();
+                    });
+                $scope.thresholdDistance = GameData.getConfig('thresholdDistance');
+                $scope.geoLocButtonColor = "button-calm";
+                $scope.trackWatch.clearWatch();
+            }
+        };
+
+        // $scope.$on('gameOverEvent', function (event) {
+        //     if ($scope.getRealTimePos == true) {
+        //         // Turn off geolocation watch and reenable map drag
+        //         $scope.toggleGeoLocation(false);
+        //     }
+        // });
+
+        //####################################################
+        //######### show position of user ####################
+        //####################################################
+
+        // Show player position if button is pressed
+        $scope.showUsersPosition = function () {
+          console.log("showUsersPosition");
+            if ($scope.showMarker == false) {
+                $scope.showMarker = true;
+                $scope.playerMarkerButtonColor = "button-balanced";
+
+                if (typeof $scope.map.markers.PlayerPos != "undefined") {
+                  console.log("$scope.map.markers.PlayerPos");
+                  console.log($scope.map.markers.PlayerPos);
+                    $scope.map.markers.PlayerPos.icon = {
+                        iconUrl: './img/icons/Youarehere.png',
+                        iconSize: [48, 48],
+                        iconAnchor: [24, 48]
+                    };
+                    // Hide marker again after 5 seconds
+                    $timeout(function () {
+                        $scope.map.markers.PlayerPos.icon = {
+                            iconUrl: './img/icons/marker-transparent.png'
+                        };
+                        $scope.playerMarkerButtonColor = "button-calm";
+                        $scope.showMarker = false;
+                    }, SenseBox.getConfig('playerLocationHintTimeout') * 1000);
+                }
+            }
+        }
 
 }])

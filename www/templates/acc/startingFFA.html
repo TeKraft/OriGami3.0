@@ -1,0 +1,13 @@
+<ion-modal-view>
+    <ion-content style="height: 100%; background-color:#64B5F6;">
+        <div class="answer_output">
+            <i class="ion-android-pin"></i>
+            <h1>{{'Welcome_Back' | translate}}</h1>
+            <p>{{userEmail}}</p>
+        </div>
+    </ion-content>
+
+    <ion-footer-bar class="bar-positive" ng-click="closeModal()">
+        <p class="title">{{'continue' | translate}}</p>
+    </ion-footer-bar>
+</ion-modal-view>

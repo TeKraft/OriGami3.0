@@ -1,0 +1,47 @@
+<ion-view cache-view="false" align-title="center" style="background-color:#53DF83;" view-title="Choose Gamemode">
+    <div style="position:fixed; top:2%; width:100%;">
+        <h2 class="techm_h">Choose Gamemode</h2>
+        <i class="ion-arrow-left-c back_icon" ng-click="cancelGame()"></i>
+    </div>
+    <ion-content style="height:90%;top:10%;">
+        <!-- Display error message if http request fails to fetch games -->
+        <div class="page_maininfo page2">
+            <!-- <div class="step_done" ng-show="done.game_mode"><img src="./img/icons/work-done.svg"></div> -->
+            <div class="page_content">
+                <div class="content">
+                    <h2 style="color:white;">Choose Game Mode</h2>
+                    <div class="act_conts">
+                      <button ng-click="createFFAgame()">create FFA gameschema</button>
+                        <div class="act">
+                            <a ng-click="chooseMode(1); playFFA()">
+                                <div class="act_cont" ng-class="{isChoosen: choose_mode == 1}">
+                                    <div class="dest_route">
+                                        <div style="margin-bottom:25px;">
+                                            <h5>FFA</h5>
+                                            <p>free to play</p>
+                                        </div>
+                                        <div><img src="./img/icons/dest.svg"></div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="act">
+                            <a ng-click="chooseMode(2)" ui-sref="acc.mygames">
+                                <div class="act_cont" ng-class="{isChoosen: choose_mode == 2}">
+                                    <div class="dest_route">
+                                        <div style="margin-bottom:25px;">
+                                            <h5>Story</h5>
+                                            <p>set game</p>
+                                        </div>
+                                        <!-- <div style = "margin-bottom:25px;"><p style="font-size:2vh;">Students will follow the route, consisting of several points</p></div> -->
+                                        <div><img src="./img/icons/route.svg"></div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>
