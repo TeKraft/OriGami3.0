@@ -11,9 +11,9 @@ angular.module('starter')
 // #################################################################################################
 
 .controller('ProfGamesCtrl', [ '$rootScope', '$scope', '$http', '$location', '$ionicModal', '$window', '$timeout',
-                            '$ionicPopup', '$ionicHistory', '$translate', 'accAPI', 'Data', 'meanData',
+                            '$ionicPopup', '$ionicHistory', '$translate', 'accAPI', 'Data', 'meanData', 'FFAdefault',
                             function ($rootScope, $scope, $http, $location, $ionicModal, $window, $timeout,
-                                        $ionicPopup, $ionicHistory, $translate, accAPI, Data, meanData) {
+                                        $ionicPopup, $ionicHistory, $translate, accAPI, Data, meanData, FFAdefault) {
     var vm = this;
     vm.user = {};
 
