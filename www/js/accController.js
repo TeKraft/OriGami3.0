@@ -2223,8 +2223,6 @@ angular.module('starter')
         $ionicHistory.goBack();
     };
 
-
-
     var createModal = function (templateUrl, id) {
       console.log("createModal - function("+templateUrl+" "+id+")");
         $ionicModal.fromTemplateUrl(templateUrl, {
@@ -2471,144 +2469,70 @@ angular.module('starter')
             });
     };
 
-
-    /* Add sensboxes as markers once game is loaded */
-    $scope.$on('senseBoxLoadedEvent', function (event, userName) {
-      console.log("userName");
-      console.log(userName);
-      console.log($scope.userName);
-
-        FFAdefault.getBaseMarkerFromFFA(userName)
+    /* (Re)compute distance to destination once map moves */
+    $scope.$on('leafletDirectiveMap.move', function (event, args) {
+        console.log("leafletDirectiveMap.move - function()");
+        var map = args.leafletEvent.target;
+        var center = map.getCenter();
+        FFAdefault.getBaseMarkerFromFFA($scope.userName)
                 .then(function(res) {
                   var object = res;
-                  console.log("object");
-                  console.log(object);
+                  var possibleToSee = false;
                   var boxArray = [];
                   boxArray = object.data[0].bases;
-                  // leafletData.getMap()
-                  //              .then(function (map) {
-                  //   // console.log("res");
-                  //   // console.log(res);
-                  //   // console.log(JSON.stringify(hi));
-                    for (var i=0; i<boxArray.length; i++) {
-                      // if (distance < Vorgegeben) {
-                          // console.log(dt);
-                          // console.log(dt.toUTCString());
-                            // var basepoints = object[i];
-                            console.log("boxArray["+i+"]");
-                            console.log(boxArray[i]);
-                            var functionAttack = null;
-                            functionAttack = boxArray[i];
-                            var marker = {
-                                lat: boxArray[i].lat,
-                                lng: boxArray[i].lng,
-                                id: boxArray[i].id,
-                                sensors: boxArray[i].sensors,
-                                message: boxArray[i].message,// + "<button ng-click='attackBase(" + functionAttack + ")'> Attack! </button>",
-                                focus: boxArray[i].focus
-                            };
 
+                  var count = 0;
+                  var potBoxes = [];
+                  for (var i=0; i<boxArray.length; i++) {
+                      var add = 0.01;
+                      var latitude = false;
+                      var longitude = false;
+                      var subtrLat = center.lat -add;
+                      var subtrLng = center.lng -add;
+                      var addLat = center.lat +add;
+                      var addLng = center.lng +add;
 
-
-                            // if () {}
-
-                            //TODO: set radius around center to get only a few marker!
-                        $scope.map.markers[boxArray[i].id] = marker;
-                                  // console.log("object.data["+i+"]._id");
-                                  // console.log(object.data[i]._id);
-                                  // console.log(marker);
-                    }
-                  //   console.log("map.getCenter()");
-                  //   console.log(map.getCenter());
-                      console.log("$scope.map.markers");
-                      console.log($scope.map.markers);  // all marker as 1 array
-                  //     // FFAdefault.saveSenseBoxMarkerToFFA($scope.map.markers); //save marker in base
-                  //
-                  //     var counter = 0;
-                  //       for (var i=0; i<$scope.map.markers.length; i++) {
-                  //         counter ++;
-                  //           var center = map.getCenter();
-                  //           var dest = L.latLng($scope.$scope.map.markers[i].lat, $scope.$scope.map.markers[i].lng);
-                  //           var distance = center.distanceTo(dest);
-                  //           if ($scope.initialDistance == -1) {
-                  //               $scope.initialDistance = distance;
-                  //               //console.log("Setting initial distance to ", distance);
-                  //           }
-                  //           $scope.currentDistance = distance;
-                  //           $scope.getBearing(center, dest);
-                  //
-                  //           /* Don't place marker on map center if geolocation tracking is on. This is handled separately */
-                  //           if (!$scope.getRealTimePos) {
-                  //               $scope.updatePlayerPosMarker(center);
-                  //           }
-                  //
-                  //           if (typeof $scope.drawSmiley !== "undefined") {
-                  //               var maxDistance = parseFloat($scope.initialDistance) * 2;
-                  //               // normalize distance to stop frowning once distance exceeds twice the initial distance to destination
-                  //               // otherwise smiley frowns too much
-                  //               var normalizedDistance = (parseFloat($scope.currentDistance) > maxDistance) ? maxDistance : parseFloat($scope.currentDistance);
-                  //               $scope.drawSmiley($scope.canvas, $scope.canvasContext, normalizedDistance);
-                  //           }
-                  //           // If map center is within the threshold distance to destination, then the activity is complete
-                  //           if (distance < $scope.radiusDistance) {
-                  //             console.log("distance < $scope.radiusDistance");
-                  //               $scope.$emit('BasepointReachedEvent');
-                  //           }
-                  //         }
-                  //         console.log("counter");
-                  //         console.log(counter);
-                  //       }, function (err) {
-                  //           console.log("Could not get Leaflet map object - " + err);
-                  //       });
-
-              })/*.then(function() {
-                  console.log("finished with this");
-                  leafletData.getMap()
-                      .then(function (map) {
-                          console.log("map.getCenter()");
-                          console.log(map.getCenter());
-                          console.log("$scope.map.markers");
-                          console.log($scope.map.markers);  // all marker as 1 array
-                  });
-              });*/
-          });
+                      if (subtrLat <= boxArray[i].lat && boxArray[i].lat <= center.lat || center.lat <= boxArray[i].lat && boxArray[i].lat <= addLat) {
+                          latitude = true;
+                      }
+                      if (subtrLng <= boxArray[i].lng && boxArray[i].lng <= center.lng || center.lng <= boxArray[i].lng && boxArray[i].lng <= addLng) {
+                          longitude = true;
+                      }
+                      if (latitude == true && longitude == true) {
+                          potBoxes.push(boxArray[i]);
+                          count ++;
+                          possibleToSee = true;
+                          var marker = {
+                              lat: boxArray[i].lat,
+                              lng: boxArray[i].lng,
+                              id: boxArray[i].id,
+                              sensors: boxArray[i].sensors,
+                              message: boxArray[i].message,// + "<button ng-click='attackBase(" + functionAttack + ")'> Attack! </button>",
+                              focus: false
+                          };
+                            $scope.map.markers[boxArray[i].id] = marker;
+                      }
+                       else {
+                        console.log("no marker");
+                        possibleToSee = false;
+                      }
+                }
+        })
+    });
 // $compile("<span><a href='' ng-click='dosomething()''>info</a></span>")($scope)
-    $scope.attackBase = function (id) {
-      console.log("id - $scope");
-      console.log(id);
-    };
-
-    var attackBase = function (id) {
-      console.log("id var");
-      console.log(id);
-    };
+    // $scope.attackBase = function (id) {
+    //   console.log("id - $scope");
+    //   console.log(id);
+    // };
+    //
+    // var attackBase = function (id) {
+    //   console.log("id var");
+    //   console.log(id);
+    // };
 
     //####################################################
     //#### compute distance to marker ####################
     //####################################################
-
-        /* Get bearing in degrees to destination */
-        $scope.getBearing = function (orig, dest) {
-            Number.prototype.toRadians = function () {
-                return this * Math.PI / 180;
-            };
-            Number.prototype.toDegrees = function () {
-                return this * 180 / Math.PI;
-            };
-
-            var lat1_radian = orig.lat.toRadians();
-            var lng1_radian = orig.lng.toRadians();
-            var lat2_radian = dest.lat.toRadians();
-            var lng2_radian = dest.lng.toRadians();
-            var lat_delta = (lat2_radian - lat1_radian).toRadians();
-            var lng_delta = (lng2_radian - lng1_radian).toRadians();
-            var y = Math.sin(lng2_radian - lng1_radian) * Math.cos(lat2_radian);
-            var x = Math.cos(lat1_radian) * Math.sin(lat2_radian) - Math.sin(lat1_radian) * Math.cos(lat2_radian) * Math.cos(lng2_radian - lng1_radian);
-            var bearing = Math.atan2(y, x).toDegrees();
-            $scope.bearing = bearing;
-            console.log("$scope.bearing");
-            console.log($scope.bearing);
-        };
 
         $scope.updatePlayerPosMarker = function (position) {
             if (typeof $scope.map.markers.PlayerPos === "undefined") {
@@ -2630,54 +2554,6 @@ angular.module('starter')
                 $scope.map.markers.PlayerPos.lng = position.lng;
             }
         };
-
-        /* (Re)compute distance to destination once map moves */
-        $scope.$on('leafletDirectiveMap.move', function (event, args) {
-          console.log("leafletDirectiveMap.move - function()");
-                var map = args.leafletEvent.target;
-                // var center = map.getCenter();
-                // console.log(center);
-                // console.log($scope.map.markers);
-
-                // PathData.addCoord(center.lat, center.lng);
-
-                leafletData.getMap()
-                    .then(function (map) {
-                      // for (var i=0; i<$scope.map.markers.length; i++) {
-                      console.log($scope.map.markers);
-                          var center = map.getCenter();
-                          console.log(center);
-                          // var dest = L.latLng($scope.map.markers.lat, $scope.map.markers.lng);
-                          // var distance = center.distanceTo(dest);
-                          // if ($scope.initialDistance == -1) {
-                          //     $scope.initialDistance = distance;
-                          //     //console.log("Setting initial distance to ", distance);
-                          // }
-                          // $scope.currentDistance = distance;
-                          // $scope.getBearing(center, dest);
-                          //
-                          // /* Don't place marker on map center if geolocation tracking is on. This is handled separately */
-                          // if (!$scope.getRealTimePos) {
-                          //     $scope.updatePlayerPosMarker(center);
-                          // }
-                          //
-                          // if (typeof $scope.drawSmiley !== "undefined") {
-                          //     var maxDistance = parseFloat($scope.initialDistance) * 2;
-                          //     // normalize distance to stop frowning once distance exceeds twice the initial distance to destination
-                          //     // otherwise smiley frowns too much
-                          //     var normalizedDistance = (parseFloat($scope.currentDistance) > maxDistance) ? maxDistance : parseFloat($scope.currentDistance);
-                          //     $scope.drawSmiley($scope.canvas, $scope.canvasContext, normalizedDistance);
-                          // }
-                          // // If map center is within the threshold distance to destination, then the activity is complete
-                          // if (distance < $scope.thresholdDistance) {
-                          //   console.log("distance < $scope.thresholdDistance");
-                          //     $scope.$emit('BasepointReachedEvent');
-                          // }
-                        // }
-                      }, function (err) {
-                          console.log("Could not get Leaflet map object - " + err);
-                      });
-        });
 
         $scope.$on('BasepointReachedEvent', function (event) {
             console.log("hey du hast eine Base erreicht");
