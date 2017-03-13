@@ -2473,12 +2473,12 @@ angular.module('starter')
 
 
     /* Add sensboxes as markers once game is loaded */
-    $scope.$on('senseBoxLoadedEvent', function (event, userEmail) {
-      console.log("userEmail");
-      console.log(userEmail);
+    $scope.$on('senseBoxLoadedEvent', function (event, userName) {
+      console.log("userName");
+      console.log(userName);
       console.log($scope.userName);
 
-        FFAdefault.getBaseMarkerFromFFA($scope.userName)
+        FFAdefault.getBaseMarkerFromFFA(userName)
                 .then(function(res) {
                   var object = res;
                   console.log("object");
@@ -2507,6 +2507,10 @@ angular.module('starter')
                                 message: boxArray[i].message,// + "<button ng-click='attackBase(" + functionAttack + ")'> Attack! </button>",
                                 focus: boxArray[i].focus
                             };
+
+
+
+                            // if () {}
 
                             //TODO: set radius around center to get only a few marker!
                         $scope.map.markers[boxArray[i].id] = marker;
@@ -2631,7 +2635,9 @@ angular.module('starter')
         $scope.$on('leafletDirectiveMap.move', function (event, args) {
           console.log("leafletDirectiveMap.move - function()");
                 var map = args.leafletEvent.target;
-                var center = map.getCenter();
+                // var center = map.getCenter();
+                // console.log(center);
+                // console.log($scope.map.markers);
 
                 // PathData.addCoord(center.lat, center.lng);
 
@@ -2640,7 +2646,8 @@ angular.module('starter')
                       // for (var i=0; i<$scope.map.markers.length; i++) {
                       console.log($scope.map.markers);
                           var center = map.getCenter();
-                          // var dest = L.latLng($scope.$scope.map.markers.lat, $scope.$scope.map.markers.lng);
+                          console.log(center);
+                          // var dest = L.latLng($scope.map.markers.lat, $scope.map.markers.lng);
                           // var distance = center.distanceTo(dest);
                           // if ($scope.initialDistance == -1) {
                           //     $scope.initialDistance = distance;

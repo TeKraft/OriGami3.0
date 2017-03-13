@@ -474,6 +474,8 @@ angular.module('starter.services', [])
           });
         },
         getBaseMarkerFromFFA: function (name) {
+          console.log("name#########################################");
+          console.log(name);
           return $http.get(Server + '/FFAGame/item/' + name, {
             method: 'GET',
           });
