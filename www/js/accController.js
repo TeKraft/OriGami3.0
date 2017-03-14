@@ -1966,7 +1966,13 @@ angular.module('starter')
 
             leafletData.getMap()
                 .then(function (map) {
+                    $sope.centerOfMap = null;
                     var center = map.getCenter();
+                    console.log("center");
+                    console.log(center);
+                    $scope.centerOfMap = center;
+                    console.log("$sope.centerOfMap");
+                    console.log($scope.centerOfMap);
                     var dest = L.latLng($scope.destination.lat, $scope.destination.lng);
                     var distance = center.distanceTo(dest);
                     if ($scope.initialDistance == -1) {
@@ -2332,9 +2338,9 @@ angular.module('starter')
  * - Only shows waypoint and emits signal when waypoint is reached or georeference game is played
  * - Is not concerned with GameState or the game progression logic - that is a job for PlayCtrl
  */
-.controller('FFAMapCtrl', ['$scope', '$rootScope', '$cordovaGeolocation', '$stateParams', '$ionicModal', '$ionicLoading',
+.controller('FFAMapCtrl', ['$scope', '$rootScope', '$cordovaGeolocation', '$stateParams', '$ionicModal', '$ionicPopup', '$ionicLoading',
                                 '$timeout', 'leafletData', '$translate', 'GameData', 'PathData', 'PlayerStats', 'meanData', 'SenseBox', 'FFAdefault', '$compile',
-                                function ($scope, $rootScope, $cordovaGeolocation, $stateParams, $ionicModal, $ionicLoading,
+                                function ($scope, $rootScope, $cordovaGeolocation, $stateParams, $ionicModal, $ionicPopup, $ionicLoading,
                                             $timeout, leafletData, $translate, GameData, PathData, PlayerStats, meanData, SenseBox, FFAdefault, $compile) {
     var vm = this;
     vm.user = {};
@@ -2487,6 +2493,11 @@ angular.module('starter')
         console.log("leafletDirectiveMap.move - function()");
         var map = args.leafletEvent.target;
         var center = map.getCenter();
+        console.log("center");
+        console.log(center);
+        $scope.centerOfMap = center;
+        console.log("$sope.centerOfMap");
+        console.log($scope.centerOfMap);
         FFAdefault.getBaseMarkerFromFFA($scope.userName)
                 .then(function(res) {
                   $scope.gameTaskscope = res.data[0].questions;
@@ -2545,6 +2556,23 @@ angular.module('starter')
     });
 
         $scope.attackBase = function(lat, lng){
+            // window.alert("ATTACK!");
+            console.log("attackBase");
+            console.log("$scope.centerOfMap");
+            console.log($scope.centerOfMap);
+            var centerOfMap = $scope.centerOfMap;
+            var dest = L.latLng(lat, lng);
+            var distance = centerOfMap.distanceTo(dest);
+            console.log(distance);
+            // If map center is within the threshold distance to destination, then the activity is complete
+            if (distance < $scope.thresholdDistance) {
+                $ionicPopup.alert({
+                    title: 'ATTACK',
+                    template: 'you can Attack'});
+            } else { $ionicPopup.alert({
+                title: 'NO attack',
+                template: 'you are not close enough'}); }
+// ################################################################
             var min = 0;
             var max = $scope.gameTaskscope.length - 1;
             var random  = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -2564,7 +2592,7 @@ angular.module('starter')
                               }
                         }*/
                   }
-                };
+                }
             }
             else if($scope.gameTaskscope[random].type == "GeoReference"){
 
@@ -2572,7 +2600,7 @@ angular.module('starter')
             else if($scope.gameTaskscope[random].type == "sport"){
 
             }
-        }
+        };
 
         //####################################################
         //#### compute distance to marker ####################
