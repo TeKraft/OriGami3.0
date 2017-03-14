@@ -719,14 +719,14 @@ angular.module('starter')
     $scope.newgame.tasks = [];
     $scope.submitQA = function (imgAnswers) {
         $scope.qaTask.type = "QA";
-        //$scope.qaTask.imgans = imgAnswers;
+        $scope.qaTask.imgans = imgAnswers;
 
         // $scope.numberTask++;
         $scope.newgame.tasks.push($scope.qaTask);
         //newMarker.tasks.push($scope.qaTask);
 
         $scope.closeModal();
-        createModal('templates/tasks/task_choose.html');
+        createModal('templates/tasks/task_choose_AQ_SP.html');
     };
 
 
@@ -1463,7 +1463,12 @@ angular.module('starter')
                 }
             }
             else if($scope.gameTaskscope[random].type == "GeoReference"){
+                if($scope.gameTaskscope[random].base.lat == lat && $scope.gameTaskscope[random].base.lng == lng){
 
+                }
+                else{
+                    $scope.attackBase(lat, lng);
+                }
             }
             else if($scope.gameTaskscope[random].type == "sport"){
 
@@ -1507,8 +1512,13 @@ angular.module('starter')
         $scope.ansChoosen = false;
         $scope.answer = null; // true - right; false - wrong;
 
-        $scope.answerArray = $scope.gameTaskscope[random].answers;
-        $scope.answerArray = randomSort($scope.answerArray);
+        $scope.answerArray=[];
+        for(var i=0; i<4; i++){
+            $scope.answerArray.push($scope.gameTaskscope[random].answers[i])
+        }
+        setTimeout(function () {
+            $scope.answerArray = randomSort($scope.answerArray);
+        },50);
 
         $scope.imgAnsURL_0 = accAPI.getImageURL($scope.answerArray[0].img);
         $scope.imgAnsURL_1 = accAPI.getImageURL($scope.answerArray[1].img);
