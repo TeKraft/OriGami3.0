@@ -625,6 +625,14 @@ angular.module('starter')
     // add sports task
     $scope.addSPtask = function () {
         console.log("ProfTeacherCtrl - addSPtask()");
+        $scope.sportTask = {};
+
+        $scope.closeModal();
+        createModal('templates/tasks/sports_type.html');
+    };
+
+    $scope.submitSP = function () {
+        console.log("ProfTeacherCtrl - submitSP()");
     };
 
     $scope.imgUpload = function(file, $event) {
