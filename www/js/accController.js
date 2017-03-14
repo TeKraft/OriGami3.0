@@ -274,7 +274,7 @@ angular.module('starter')
       console.log("ProfTeacherCtrl - addMode()");
         $scope.newgame.activities = [];
         var newAct = {};
-        currentAct.type = $scope.game_mode == 1 ? "free to play" : "set game";
+        currentAct.type = "set game";
         currentAct.basepoints = [];
     };
 
@@ -534,9 +534,6 @@ angular.module('starter')
         $scope.newBasepoint.lng = locationEvent.leafletEvent.latlng.lng;
         // $scope.newWaypoint.tasks = [];
 
-        console.log("$scope.newBasepoint");
-        console.log($scope.newBasepoint);
-
         createModal('templates/map/basepoint.html', 'm1');
         //createModal('templates/tasks/quest_type.html');
     });
@@ -546,13 +543,11 @@ angular.module('starter')
         $scope.newBasepoint = new Waypoint();
         $scope.newBasepoint.lat = locationEvent.leafletEvent.latlng.lat;
         $scope.newBasepoint.lng = locationEvent.leafletEvent.latlng.lng;
-        $scope.newBasepoint.draggable = true;
+        $scope.newBasepoint.draggable = false;
         $scope.newBasepoint.message = "You can change this location";
 
         if ($scope.gameMap.markers.length == 0) {
             $scope.gameMap.markers.push($scope.newBasepoint);
-            console.log("$scope.gameMap.markers");
-            console.log($scope.gameMap.markers);
         }
     });
 
@@ -560,10 +555,7 @@ angular.module('starter')
     // $scope.numberTask = 0;
     $scope.saveBasepoint = function () {
       console.log("ProfTeacherCtrl - saveWayPoint()");
-      console.log("$scope.name_border");
-      console.log($scope.name_border);
-      console.log("$scope.description_border");
-      console.log($scope.description_border);
+      $scope.actBaseMarker = {};
 
         if (($scope.newBasepoint.name == "" || $scope.newBasepoint.name == undefined) || ($scope.newBasepoint.description == undefined || $scope.newBasepoint.description == "")) {
 
@@ -585,6 +577,7 @@ angular.module('starter')
             newMarker = $scope.newBasepoint;
             $scope.mainMap.markers.push($scope.newBasepoint);
             //console.log ($scope.mainMap.markers.length);
+            $scope.actBaseMarker = $scope.newBasepoint;
 
             $scope.closeModal();
             // createModal('templates/tasks/task_choose.html', 'm2');
@@ -620,6 +613,7 @@ angular.module('starter')
     $scope.addGRtask = function () {
         console.log("ProfTeacherCtrl - addGRtask()");
         $scope.geoTask = {};
+        $scope.geoTask.base = {};
 
         $scope.closeModal();
         createModal('templates/tasks/georef_type.html');
@@ -731,6 +725,8 @@ angular.module('starter')
       console.log("ProfTeacherCtrl - submitGR()");
         /*Creation of game content */
         $scope.geoTask.type = "GeoReference";
+        $scope.geoTask.base.lat = $scope.actBaseMarker.lat;
+        $scope.geoTask.base.lng = $scope.actBaseMarker.lng;
         //$scope.geoTask.img = "data:image/jpeg;base64," + $scope.georP.base64;
         $scope.geoTask.lat = $scope.gameMap.markers[0].lat;
         $scope.geoTask.lng = $scope.gameMap.markers[0].lng;
@@ -739,7 +735,7 @@ angular.module('starter')
 
         // $scope.numberTask++;
         $scope.closeModal();
-        createModal('templates/tasks/task_choose.html');
+        createModal('templates/tasks/task_georef.html', 'createGR');
         // $scope.georP = null;
     };
 
@@ -767,10 +763,8 @@ angular.module('starter')
 
     $scope.finishGame = function () {
       console.log("ProfTeacherCtrl - finishGame()");
-      console.log("$scope.newgame");
       $scope.newgame.gameCreator = thisUser;
       $scope.newgame.team = $scope.gameTeams;
-      console.log($scope.newgame);
         accAPI.saveBaseItem($scope.newgame)
             .success(function (data, status, headers, config) {
                 console.log("FINISH")
@@ -818,20 +812,20 @@ angular.module('starter')
             }
         // } else if (index == 1) {
         //     console.log("index == 1 --> second page");
-        } else if (index == 2) {
-            if ($scope.game_mode != 0) {
-                $ionicSlideBoxDelegate.slide(index);
-            }
-        } else if (index == 3) {
-            if ($scope.team != "") {
-                console.log("nicht leer");
-                $ionicSlideBoxDelegate.slide(index);
-            } else { $ionicPopup.alert({
-                title: 'Continue impossible!',
-                template: 'no teams added'}); }
-        } else {
-            $ionicSlideBoxDelegate.slide(index);
-        }
+        // } else if (index == 2) {
+        //     if ($scope.game_mode != 0) {
+        //         $ionicSlideBoxDelegate.slide(index);
+        //     }
+      } else if (index == 2) {
+          if ($scope.team != "") {
+              console.log("nicht leer");
+              $ionicSlideBoxDelegate.slide(index);
+          } else { $ionicPopup.alert({
+              title: 'Continue impossible!',
+              template: 'no teams added'}); }
+      } else {
+          $ionicSlideBoxDelegate.slide(index);
+      }
 
 
     };
@@ -2283,7 +2277,8 @@ angular.module('starter')
         //         // console.log($scope.game);
         //         // console.log($scope.gameTeamnamescope);
         //     })
-        initializeMarker($scope.userName);
+
+        // initializeMarker($scope.userName);
     };
 
     var initializeMarker = function (user) {
@@ -2367,6 +2362,7 @@ angular.module('starter')
     $scope.init = function () {
         $scope.thresholdDistance = SenseBox.getConfig('thresholdDistance');
         $scope.geolocationAlwaysOn = SenseBox.getConfig('geolocationAlwaysOn');
+        $scope.radiusDistance = SenseBox.getConfig('radiusDistance');
         var defaultLayer = SenseBox.getConfig('map.defaultLayer')
         var isDefaultLayer = function(layerName) { return (defaultLayer === layerName) ? true : false; };
 
@@ -2493,6 +2489,14 @@ angular.module('starter')
         var center = map.getCenter();
         FFAdefault.getBaseMarkerFromFFA($scope.userName)
                 .then(function(res) {
+                  $scope.gameTaskscope = res.data[0].questions;
+                  var playerpos = null;
+                  playerpos = $scope.map.markers.PlayerPos;
+                  $scope.map.markers = {};
+                  $scope.map.markers.PlayerPos = playerpos;
+                  // $scope.locate();         // TODO: uf on mobile device
+
+
                   var object = res;
                   var possibleToSee = false;
                   var boxArray = [];
@@ -2524,10 +2528,13 @@ angular.module('starter')
                               lng: boxArray[i].lng,
                               id: boxArray[i].id,
                               sensors: boxArray[i].sensors,
-                              message: boxArray[i].message,// + "<button ng-click='attackBase(" + functionAttack + ")'> Attack! </button>",
+                              message: boxArray[i].name + '<br><button class="attackButton" ng-click="attackBase(' + boxArray[i].lat + "," + boxArray[i].lng + ')"> Attack! </button>',
+                              getMessageScope: function () {
+                                return $scope;
+                              },
                               focus: false
                           };
-                            $scope.map.markers[boxArray[i].id] = marker;
+                          $scope.map.markers[boxArray[i].id] = marker;
                       }
                        else {
                         console.log("no marker");
@@ -2536,46 +2543,46 @@ angular.module('starter')
                 }
         })
     });
-// $compile("<span><a href='' ng-click='dosomething()''>info</a></span>")($scope)
-    // $scope.attackBase = function (id) {
-    //   console.log("id - $scope");
-    //   console.log(id);
-    // };
-    //
-    // var attackBase = function (id) {
-    //   console.log("id var");
-    //   console.log(id);
-    // };
 
-    //####################################################
-    //#### compute distance to marker ####################
-    //####################################################
-
-        $scope.updatePlayerPosMarker = function (position) {
-            if (typeof $scope.map.markers.PlayerPos === "undefined") {
-                var playerMarker = './img/icons/marker-transparent.png';
-                var marker = {
-                    lat: position.lat,
-                    lng: position.lng,
-                    message: "You are here",
-                    draggable: false,
-                    icon: {
-                        iconUrl: playerMarker,
-                        iconSize: [48, 48],
-                        iconAnchor: [24, 48]
-                    }
+        $scope.attackBase = function(lat, lng){
+            var min = 0;
+            var max = $scope.gameTaskscope.length - 1;
+            var random  = Math.floor(Math.random() * (max - min + 1)) + min;
+            if($scope.gameTaskscope[random].type == "QA"){
+                console.log("QA")
+                for(var i=0; i<$scope.basepoints.length; i++){
+                    if($scope.basepoints[i].latitude == lat && $scope.basepoints[i].longitude == lng){
+                        performQATask(random, $scope.basepoints[i]._id)
+                        console.log($scope.basepoints[i]);
+                        /*var oTeam = $scope.basepoints[i].ownerTeam;
+                        for(var k=0; k<$scope.Teamscope.length; k++){
+                            if( $scope.Teamscope[k].teamName == oTeam){
+                              var indexTeam = $scope.Teamscope.indexOf(oTeam);
+                              var inTeam = $scope.Teamscope[indexTeam].indexOf($rootScope.userName);
+                              if(inTeam = -1){
+                                  $scope.basepoints[i].power = $scope.basepoints[i].power + 1;
+                              }
+                        }*/
+                  }
                 };
-                $scope.map.markers.PlayerPos = marker;
-            } else {
-                $scope.map.markers.PlayerPos.lat = position.lat;
-                $scope.map.markers.PlayerPos.lng = position.lng;
             }
-        };
+            else if($scope.gameTaskscope[random].type == "GeoReference"){
+
+            }
+            else if($scope.gameTaskscope[random].type == "sport"){
+
+            }
+        }
+
+        //####################################################
+        //#### compute distance to marker ####################
+        //####################################################
 
         $scope.$on('BasepointReachedEvent', function (event) {
             console.log("hey du hast eine Base erreicht");
             // $scope.congratsMessage = congratsMessages[Math.floor(Math.random() * congratsMessages.length)]; // show random congrats message
             // PlayerStats.endWaypoint();
+            //TODO: on BasepointAttackEvent create Modal Questions
             // createModal('waypoint-reached-modal.html', 'waypoint');
         });
 
@@ -2726,7 +2733,7 @@ angular.module('starter')
                         map.dragging.disable();
                     });
                 $scope.geoLocButtonColor = "button-balanced";
-                $scope.thresholdDistance = GameData.getConfig('thresholdDistanceGeolocOn');
+                $scope.thresholdDistance = SenseBox.getConfig('thresholdDistanceGeolocOn');
                 $scope.trackPosition();
             } else {
                 $scope.getRealTimePos = false;
@@ -2734,7 +2741,7 @@ angular.module('starter')
                     .then(function (map) {
                         map.dragging.enable();
                     });
-                $scope.thresholdDistance = GameData.getConfig('thresholdDistance');
+                $scope.thresholdDistance = SenseBox.getConfig('thresholdDistance');
                 $scope.geoLocButtonColor = "button-calm";
                 $scope.trackWatch.clearWatch();
             }

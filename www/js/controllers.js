@@ -1990,11 +1990,12 @@ console.log($scope.GameData);
                       var dt = new Date(object.data[i].updatedAt);
                       if (dt != "Invalid Date") {
                                 var marker = {
+                                    name: object.data[i].name,
                                     lat: object.data[i].loc[0].geometry.coordinates[1],
                                     lng: object.data[i].loc[0].geometry.coordinates[0],
                                     id: object.data[i]._id,
                                     sensors: object.data[i].sensors,
-                                    message: "" + object.data[i].name + "\n" + object.data[i]._id, // "" + object.data[i].name + "\n" + object.data[i]._id + "\n" + "<button ng-click='attackBase(" + object.data[i]._id + ")'> Attack! </button>", //"+ object.data[i]._id +"
+                                    message: object.data[i].name + " " + object.data[i]._id, // "" + object.data[i].name + "\n" + object.data[i]._id + "\n" + "<button ng-click='attackBase(" + object.data[i]._id + ")'> Attack! </button>", //"+ object.data[i]._id +"
                                     focus: true
                                 };
                                 //TODO: set radius around center to get only a few marker!

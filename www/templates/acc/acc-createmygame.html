@@ -32,64 +32,14 @@
         </div>
     </ion-slide>
 
-    <!-- Step 2: Choosing the right activity -->
-    <ion-slide>
-        <div class="page_maininfo page2">
-            <!-- <div class="step_done" ng-show="done.game_mode"><img src="./img/icons/work-done.svg"></div> -->
-            <div class="page_content">
-                <div class="content">
-                    <h2 style="color:white;">New game</h2>
-                    <p style="color:white;font-size:3vh;"><span>Step 2:</span> Choose game mode</p>
-                    <div class="act_conts">
-                        <div class="act">
-                            <a ng-click="chooseGameMode(1)">
-                                <div class="act_cont" ng-class="{isChoosen: game_mode == 1}">
-                                    <div class="dest_route">
-                                        <div style="margin-bottom:25px;">
-                                            <p>free to play</p>
-                                        </div>
-                                        <div><img src="./img/icons/dest.svg"></div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="act">
-                            <a ng-click="chooseGameMode(2)">
-                                <div class="act_cont" ng-class="{isChoosen: game_mode == 2}">
-                                    <div class="dest_route">
-                                        <div style="margin-bottom:25px;">
-                                            <p>set game</p>
-                                        </div>
-                                        <!-- <div style = "margin-bottom:25px;"><p style="font-size:2vh;">Students will follow the route, consisting of several points</p></div> -->
-                                        <div><img src="./img/icons/route.svg"></div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Navigation buttons -->
-                <div class="page_menu">
-                    <div class="navi">
-                        <button class="button button_navi" ng-click="addMode(); slideTo(2)">
-                            Continue
-                        </button>
-                        <a class="stop_b" ng-click="stopCreation()"><p>STOP</p></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </ion-slide>
-
-
-    <!-- Step 3:  General Information -->
+    <!-- Step 2:  Team Information -->
     <ion-slide>
         <div class="page_maininfo page5">
             <div class="step_done" ng-show="done.main_info"><img src="./img/icons/work-done.svg"></div>
             <div class="page_content">
                 <div class="content">
                     <h2>New baseGame</h2>
-                    <p style="font-size:3vh;">Step3: Team Information</p>
+                    <p style="font-size:3vh;">Step2: Team Information</p>
                     <div class="main_info">
                         <div class="row">
                             <form name="myForm">
@@ -113,7 +63,7 @@
             <!-- Navigation buttons -->
             <div class="page_menu">
                 <div class="navi">
-                    <button class="button button_navi" ng-click="slideTo(3)">
+                    <button class="button button_navi" ng-click="addMode(); slideTo(2)">
                         Continue
                     </button>
                      <a class="stop_b" ng-click="stopCreation()"><p>STOP</p></a>
@@ -122,14 +72,14 @@
         </div>
     </ion-slide>
 
-    <!-- Step 4: Adding Base Points -->
+    <!-- Step 3: Adding Base Points -->
     <ion-slide>
         <div class="page_maininfo page3">
             <div class="page_content">
                 <div class="content">
                     <h2 style="color:white;">New game</h2>
                     <h3 style="color:white;">create bases</h3>
-                    <p style="color:white;font-size:3vh;"><span>Step 4:</span> Add points to the map</p>
+                    <p style="color:white;font-size:3vh;"><span>Step 3:</span> Add points to the map</p>
                     <div class="content_map" data-tap-disabled="true">
                         <leaflet defaults="mainMap.defaults" layers="mainMap.layers" center="mainMap.center" paths="mainMap.paths" markers="mainMap.markers" geojson="mainMap.geojson" ng-if="mainMap"></leaflet>
                     </div>
@@ -137,7 +87,7 @@
             </div>
             <div class="page_menu" ng-hide="allFilled[2]">
                 <div class="navi">
-                    <button class="button button_navi" ng-click="addActPoints(); slideTo(4)">
+                    <button class="button button_navi" ng-click="addActPoints(); slideTo(3)">
                         Continue
                     </button>
                     <a class="stop_b" ng-click="stopCreation()"><p>STOP</p></a>
@@ -152,13 +102,13 @@
             <div class="page_content">
                 <div class="content">
                     <h2 style="color:white;">Add tasks</h2>
-                    <p style="color:white;font-size:3vh;"><span>Step 5:</span> Add tasks to questions catalouge</p>
+                    <p style="color:white;font-size:3vh;"><span>Step 4:</span> Add tasks to questions catalouge</p>
                     <button ng-click="taskHandlerStart()">click me</button>
                 </div>
             </div>
             <div class="page_menu" ng-hide="allFilled[2]">
                 <div class="navi">
-                    <button class="button button_navi" ng-click="slideTo(5)">
+                    <button class="button button_navi" ng-click="slideTo(4)">
                         Continue
                     </button>
                     <a class="stop_b" ng-click="stopCreation()"><p>STOP</p></a>
