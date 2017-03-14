@@ -580,13 +580,13 @@ angular.module('starter')
             $scope.actBaseMarker = $scope.newBasepoint;
 
             $scope.closeModal();
-            // createModal('templates/tasks/task_choose.html', 'm2');
+            createModal('templates/tasks/task_georef.html', 'm3');
         }
     };
 
     $scope.taskHandlerStart = function () {
         console.log("ProfTeacherCtrl - taskHandlerStart()")
-        createModal('templates/tasks/task_choose.html', 'm2');
+        createModal('templates/tasks/task_choose_AQ_SP.html', 'm3');
     };
 
     // $scope.taskHandlerEnd = function () {
@@ -607,7 +607,7 @@ angular.module('starter')
         $scope.imgQuestionPrvw = null;
 
         $scope.modal.remove();
-        $scope.qamodal = createModal('templates/tasks/quest_type.html');
+        createModal('templates/tasks/quest_type.html');
     };
 
     $scope.addGRtask = function () {
@@ -620,6 +620,11 @@ angular.module('starter')
 
         $scope.georP = null;
         $scope.gameMap.markers = [];
+    };
+
+    // add sports task
+    $scope.addSPtask = function () {
+        console.log("ProfTeacherCtrl - addSPtask()");
     };
 
     $scope.imgUpload = function(file, $event) {
