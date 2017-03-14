@@ -151,6 +151,31 @@
         </ion-modal-view>
     </script>
 
+    <!-- QA result Modal -->
+    <script id="qa-result-modal.html" type="text/ng-template" class="qa_font">
+        <ion-modal-view style="padding: 0; margin:0; dispay:block; background-color: #64B5F6;">
+            <ion-content style="height: 100%; width:100%;" ng-class="{right_ans: answer == true,clicked_answ: answer == false}">
+                <div class="answer_output">
+                    <i class="{{icon}}"></i>
+                    <h1>{{answerResult}}</h1>
+                    <p ng-show="!answer && !nonTextAnswer">{{'right_answer' | translate}}: {{rightAnswer.txt}}</p>
+                    <div ng-show="!answer && nonTextAnswer" style='max-width:40%; max-height:40%; margin: 0 auto 0 auto;'>
+                        <p>{{'right_answer' | translate}}</p>
+                        <img ng-show="!answer && nonTextAnswer" ng-src="{{imgRightAnswerURL}}" style='max-width:100%; max-height:100%'>
+                    </div>
+                    <p ng-hide="answer">{{GameData.getConfig('score.answerIncorrect')}} {{'points' | translate}}</p>
+                    <p ng-show="answer">{{GameData.getConfig('score.answerCorrect')}} {{'points' | translate}}</p>
+                    <p>{{'total' | translate}}: {{score}} {{'points' | translate}}</p>
+                </div>
+            </ion-content>
+
+            <ion-footer-bar class="bar-positive" ng-click="modal.remove()">
+                <p class="title">{{'continue' | translate}}</p>
+            </ion-footer-bar>
+
+        </ion-modal-view>
+    </script>
+
     <!-- model to invite users to the game -->
     <script id="inviteusers-modal.html" type="text/ng-template">
         <ion-modal-view>
@@ -187,32 +212,6 @@
             </ion-footer-bar>
         </ion-modal-view>
     </script>
-
-    <!-- QA result Modal -->
-    <script id="qa-result-modal.html" type="text/ng-template" class="qa_font">
-        <ion-modal-view style="padding: 0; margin:0; dispay:block; background-color: #64B5F6;">
-            <ion-content style="height: 100%; width:100%;" ng-class="{right_ans: answer == true,clicked_answ: answer == false}">
-                <div class="answer_output">
-                    <i class="{{icon}}"></i>
-                    <h1>{{answerResult}}</h1>
-                    <p ng-show="!answer && !nonTextAnswer">{{'right_answer' | translate}}: {{rightAnswer.txt}}</p>
-                    <div ng-show="!answer && nonTextAnswer" style='max-width:40%; max-height:40%; margin: 0 auto 0 auto;'>
-                        <p>{{'right_answer' | translate}}</p>
-                        <img ng-show="!answer && nonTextAnswer" ng-src="{{imgRightAnswerURL}}" style='max-width:100%; max-height:100%'>
-                    </div>
-                    <p ng-hide="answer">{{GameData.getConfig('score.answerIncorrect')}} {{'points' | translate}}</p>
-                    <p ng-show="answer">{{GameData.getConfig('score.answerCorrect')}} {{'points' | translate}}</p>
-                    <p>{{'total' | translate}}: {{score}} {{'points' | translate}}</p>
-                </div>
-            </ion-content>
-
-            <ion-footer-bar class="bar-positive" ng-click="modal.hide()">
-                <p class="title">{{'continue' | translate}}</p>
-            </ion-footer-bar>
-
-        </ion-modal-view>
-    </script>
-
 
     <div class="bar bar-subheader bar-assertive" ng-show="showInfo" class="ng-show">
         <h2 class="title">{{subHeaderInfo}}</h2>
