@@ -1317,7 +1317,7 @@ angular.module('starter')
 // #################################################################################################
 
 .controller('ProfPlayCtrl', function (userService, $rootScope, $scope, $stateParams, $ionicModal, $ionicPopup, $ionicLoading, $location,  $cordovaSocialSharing,
-                                    $translate, $timeout, $cookies, GameData, GameState, accAPI, PathData, PlayerStats, meanData) {
+                                      $translate, $timeout, $cookies, GameData, GameState, accAPI, PathData, PlayerStats, meanData) {
     var vm = this;
     vm.user = {};
 
@@ -1347,7 +1347,7 @@ angular.module('starter')
 
     /* only for debug purposes */
     var debugState = function () {
-      console.log("debugState function()");
+        console.log("debugState function()");
         return {
             gameName: $scope.gameName,
             gameloaded: $scope.gameLoaded,
@@ -1361,7 +1361,7 @@ angular.module('starter')
     };
 
     var createModal = function (templateUrl, id) {
-      console.log("createModal - function("+templateUrl+" "+id+")");
+        console.log("createModal - function("+templateUrl+" "+id+")");
         $ionicModal.fromTemplateUrl(templateUrl, {
             id: id,
             scope: $scope,
@@ -1379,8 +1379,6 @@ angular.module('starter')
         $scope.gameLoaded = true;
         accAPI.getOneBaseGame($scope.userName, $scope.gameName)
             .then(function (data) {
-              console.log("data");
-              console.log(data);
                 $scope.game = data.data[0];
                 $scope.gameTeamnamescope = [];
                 for(var i=0; i<data.data[0].team.length; i++){
@@ -1388,44 +1386,22 @@ angular.module('starter')
                 }
                 $scope.gameDatascope = data.data[0].players;
                 $scope.gameTeamscope = data.data[0].team;
-                console.log($scope.gameDatascope);
-                console.log($scope.gameTeamscope);
+                $scope.gameTaskscope = data.data[0].questions;
                 console.log($scope.game);
-                console.log($scope.gameTeamnamescope);
             })
-        setBasePoints();
-
+        setBasePoints()
     };
 
     var setBasePoints = function () {
-        var baseKeys = null
         var gameKey = GameData.getBaseIDs();
 
         $scope.basepointImgURL = null;
         accAPI.getOneBaseByKey(gameKey)
             .then(function (res) {
-                $scope.basepoints = res;
+                $scope.basepoints = res.data;
+                console.log($scope.basepoints);
                 $scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
             });
-    };
-
-    var handleNextActivity = function () {
-      console.log("handleNextActivity - function()");
-        var index = GameState.todoActivityIndex(); // Get next pending activity
-        console.log("index");
-        console.log(index);
-        if (index == GameState.ERR_NO_ACTIVITIES) {
-            abortGame($translate.instant('selected_game'));
-        } else if (GameState.gameOver()) {
-            endGame();
-        } else {
-            PlayerStats.startActivity(GameData.getActivity(index))
-            handleNextWaypoint();
-        }
-    };
-
-    $scope.showWaypointInfoModal = function() {
-        createModal('waypointinfo-modal.html', 'wpinfo');
     };
 
     // load modal to invite users to a game
@@ -1452,26 +1428,188 @@ angular.module('starter')
                     })
             })
     }
+
+    //Add a player to a Team
     $scope.playerToTeam = function(players, team){
         console.log("playerToTeam")
         for(var i=0; i<$scope.gameTeamnamescope.length; i++){
             if($scope.gameTeamscope[i].teamName == team){
                 $scope.game.team[i].teamMates.push(players);
-                accAPI.updateBasegameTeammates($scope.game, $scope.game.team[i].teamName)
-                    .then(function (data) {
-                        $scope.game = data.config.data;
-                        $scope.gameTeamnamescope = [];
-                        for(var i=0; i<data.config.data.team.length; i++){
-                            $scope.gameTeamnamescope.push(data.config.data.team[i].teamName)
-                        }
-                        $scope.gameDatascope = data.config.data.players;
-                        $scope.gameTeamscope = data.config.data.team;
+                accAPI.updateBasegameTeammates($scope.game, $scope.game.team[i].teamName, players)
+                    .then(function () {
+                        accAPI.getOneBaseGame($scope.userName, $scope.gameName)
+                            .then(function (data) {
+                                $scope.game = data.data[0];
+                                $scope.gameTeamnamescope = [];
+                                for(var i=0; i<data.data[0].team.length; i++){
+                                    $scope.gameTeamnamescope.push(data.data[0].team[i].teamName)
+                                }
+                                $scope.gameDatascope = data.data[0].players;
+                                $scope.gameTeamscope = data.data[0].team;
+                                console.log($scope.game);
+                            })
                     })
             }
         }
     }
 
-   var handleNextWaypoint = function () {
+    $scope.attackBase = function(lat, lng){
+        console.log("Base Attack");;
+        console.log(lat);
+        console.log(lng);
+        var min = 0;
+        var max = $scope.gameTaskscope.length - 1;
+        var random  = Math.floor(Math.random() * (max - min + 1)) + min;
+        if($scope.gameTaskscope[random].type == "QA"){
+            console.log("QA")
+            for(var i=0; i<$scope.basepoints.length; i++){
+                if($scope.basepoints[i].latitude == lat && $scope.basepoints[i].longitude == lng){
+                    performQATask(random, $scope.basepoints[i]._id)
+                    console.log($scope.basepoints[i]);
+                    /*var oTeam = $scope.basepoints[i].ownerTeam;
+                    for(var k=0; k<$scope.Teamscope.length; k++){
+                        if( $scope.Teamscope[k].teamName == oTeam){
+
+                        }
+                    }
+                    var indexTeam = $scope.Teamscope.indexOf(oTeam);
+                    var inTeam = $scope.Teamscope[indexTeam].indexOf($rootScope.userName);
+                    if(inTeam = -1){
+                        $scope.basepoints[i].power = $scope.basepoints[i].power + 1;
+                    }*/
+                }
+            }
+        }
+        else if($scope.gameTaskscope[random].type == "GeoReference"){
+
+        }
+        else if($scope.gameTaskscope[random].type == "sport"){
+
+        }
+    }
+
+    var performQATask = function (random, baseID) {
+        console.log("performQATask");
+        createModal('qa-modal.html', 'qa');
+
+        //$scope.nonTextAnswer = false; // True if images are used as answers
+        $scope.answerPicked = false;
+
+        if (typeof $scope.gameTaskscope[random].answers == 'undefined') {
+            console.log("No answers for this activity");
+        }
+
+        $scope.rightAnswer = $scope.gameTaskscope[random].answers[0]; // Correct answer is always at position 0
+        $scope.chosenAnswer = "";
+        $scope.clicked = [false, false, false, false];
+        $scope.ansChoosen = false;
+        $scope.answer = null; // true - right; false - wrong;
+
+        //Shuffle the array to fill the answer boxes randomly
+        var currentIndex = 4, temporaryValue, randomIndex;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+            // And swap it with the current element.
+            temporaryValue = $scope.gameTaskscope[random].answers[currentIndex];
+            $scope.gameTaskscope[random].answers[currentIndex] = $scope.gameTaskscope[random].answers[randomIndex];
+            $scope.gameTaskscope[random].answers[randomIndex] = temporaryValue;
+        }
+
+        $scope.imgAnsURL_0 = accAPI.getImageURL($scope.gameTaskscope[random].answers[0].img);
+        $scope.imgAnsURL_1 = accAPI.getImageURL($scope.gameTaskscope[random].answers[1].img);
+        $scope.imgAnsURL_2 = accAPI.getImageURL($scope.gameTaskscope[random].answers[2].img);
+        $scope.imgAnsURL_3 = accAPI.getImageURL($scope.gameTaskscope[random].answers[3].img);
+        $scope.imgRightAnswerURL = accAPI.getImageURL($scope.rightAnswer.img);
+        // console.log($scope.imgAnsURL_0, $scope.imgAnsURL_1, $scope.imgAnsURL_2, $scope.imgAnsURL_3);
+
+        $scope.chooseAnswer = function (answer, index) {
+            if (!$scope.ansChoosen) {
+                $scope.chosenAnswer = answer;
+                $scope.ansChoosen = true;
+                $scope.answerPicked = true;
+                $scope.clicked = [false, false, false, false];
+                $scope.clicked[index] = true;
+
+                clearInterval(intervalId);
+
+                if ($scope.chosenAnswer == $scope.rightAnswer) {
+                    $scope.answerResult = $translate.instant('right_answer');
+                    $scope.answer = true;
+                    $scope.icon = "ion-android-happy";
+                    for(var i=0; i<$scope.gamebasepoints.length; i++){
+                        if($scope.basepoints[i]._id == baseID){
+                            var oteam = $scope.basepoints[i].ownerTeam
+                            var indexi = i;
+                        }
+                        for(var k=0; k<$scope.gameTeamscope.length; k++){
+                            if($scope.gameTeamscope[k].teamMates.indexOf($rootScope.loginUserName) > -1){
+                                var userTeam = $scope.gameTeamscope[k].teamName;
+                            }
+                        }
+                    }
+
+                    setTimeout(function () {
+                        if(oteam == userTeam){
+                            $scope.basepoints[index].power = $scope.basepoints[indexi].power + 1;
+                            accAPI.updateBasepoint($scope.basepoints[indexi])
+                                .then(function(data){
+                                    console.log(data);
+                                    //$scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
+                                })
+                        }
+                    }, 500)
+                } else {
+                    $scope.answer = false;
+                    $scope.answerResult = $translate.instant("wrong_ans_1");
+                    $scope.icon = "ion-sad-outline";
+                }
+            }
+        };
+
+        var intervalId = setInterval(function () {
+            $scope.timeLeft--;
+            if ($scope.timeLeft <= 0) {
+                $scope.answerResult = $translate.instant("wrong_ans_1");
+                $scope.rightAnswer = $scope.rightAnswer;
+                $scope.icon = "ion-sad-outline";
+                $scope.score -= 10;
+                $scope.showOutput();
+                $scope.modal.remove();
+
+                clearInterval(intervalId);
+            }
+        }, 1000);
+
+        $scope.showOutput = function () {
+            $scope.$broadcast('qaTaskCompleted', $scope.task);
+            $scope.answerPicked = false;
+        };
+    };
+
+    var handleNextActivity = function () {
+        console.log("handleNextActivity - function()");
+        var index = GameState.todoActivityIndex(); // Get next pending activity
+        console.log("index");
+        console.log(index);
+        if (index == GameState.ERR_NO_ACTIVITIES) {
+            abortGame($translate.instant('selected_game'));
+        } else if (GameState.gameOver()) {
+            endGame();
+        } else {
+            PlayerStats.startActivity(GameData.getActivity(index))
+            handleNextWaypoint();
+        }
+    };
+
+    $scope.showWaypointInfoModal = function() {
+        createModal('waypointinfo-modal.html', 'wpinfo');
+    };
+
+    var handleNextWaypoint = function () {
         GameState.todoWaypointIndex(); // Get pending waypoint
         if (GameState.allWaypointsCleared()) {
             PlayerStats.endActivity();
@@ -1516,101 +1654,6 @@ angular.module('starter')
         createModal('georef-modal.html', 'georef');
     };
 
-    var performQATask = function (task) {
-        //$scope.showInfo = true;
-        createModal('qa-modal.html', 'qa');
-
-        //$scope.nonTextAnswer = false; // True if images are used as answers
-        $scope.timeLeft = $scope.TIME_LIMIT;
-        $scope.answerPicked = false;
-
-        if (typeof $scope.task.answers == 'undefined') {
-            console.log("No answers for this activity");
-        }
-
-        $scope.rightAnswer = $scope.task.answers[0]; // Correct answer is always at position 0
-        $scope.chosenAnswer = "";
-        $scope.clicked = [false, false, false, false];
-        $scope.ansChoosen = false;
-        $scope.answer = null; // true - right; false - wrong;
-
-        //Shuffle the array to fill the answer boxes randomly
-        var currentIndex = 4,
-            temporaryValue, randomIndex;
-
-        // While there remain elements to shuffle...
-        while (0 !== currentIndex) {
-
-            // Pick a remaining element...
-            randomIndex = Math.floor(Math.random() * currentIndex);
-
-            currentIndex -= 1;
-            // And swap it with the current element.
-            temporaryValue = $scope.task.answers[currentIndex];
-            $scope.task.answers[currentIndex] = $scope.task.answers[randomIndex];
-            $scope.task.answers[randomIndex] = temporaryValue;
-        }
-
-        $scope.imgAnsURL_0 = accAPI.getImageURL($scope.task.answers[0].img);
-        $scope.imgAnsURL_1 = accAPI.getImageURL($scope.task.answers[1].img);
-        $scope.imgAnsURL_2 = accAPI.getImageURL($scope.task.answers[2].img);
-        $scope.imgAnsURL_3 = accAPI.getImageURL($scope.task.answers[3].img);
-        $scope.imgRightAnswerURL = accAPI.getImageURL($scope.rightAnswer.img);
-        // console.log($scope.imgAnsURL_0, $scope.imgAnsURL_1, $scope.imgAnsURL_2, $scope.imgAnsURL_3);
-
-        $scope.chooseAnswer = function (answer, index) {
-            if (!$scope.ansChoosen) {
-                $scope.chosenAnswer = answer;
-                $scope.ansChoosen = true;
-                $scope.answerPicked = true;
-                $scope.clicked = [false, false, false, false];
-                $scope.clicked[index] = true;
-
-                clearInterval(intervalId);
-
-                if ($scope.chosenAnswer == $scope.rightAnswer) {
-                    $scope.answerResult = $translate.instant('right_answer');
-                    $scope.answer = true;
-                    $scope.icon = "ion-android-happy";
-
-                    $timeout(function () {
-                        $scope.icon = "ion-android-happy";
-                    }, 1200);
-                    $scope.score += GameData.getConfig('score.answerCorrect');
-                } else {
-                    $scope.answer = false;
-                    $scope.answerResult = $translate.instant("wrong_ans_1");
-                    $scope.rightAnswer = $scope.rightAnswer;
-                    $scope.icon = "ion-sad-outline";
-                    $scope.score -= GameData.getConfig('score.answerIncorrect');
-                }
-                PlayerStats.endTask({
-                        'answer_correct' : $scope.answer,
-                        'answer_chosen' : $scope.chosenAnswer
-                });
-            }
-        };
-
-        var intervalId = setInterval(function () {
-            $scope.timeLeft--;
-            if ($scope.timeLeft <= 0) {
-                $scope.answerResult = $translate.instant("wrong_ans_1");
-                $scope.rightAnswer = $scope.rightAnswer;
-                $scope.icon = "ion-sad-outline";
-                $scope.score -= 10;
-                $scope.showOutput();
-                $scope.modal.remove();
-
-                clearInterval(intervalId);
-            }
-        }, 1000);
-
-        $scope.showOutput = function () {
-            $scope.$broadcast('qaTaskCompleted', $scope.task);
-            $scope.answerPicked = false;
-        };
-    };
-
     $scope.$on('qaTaskCompleted', function (event) {
         $scope.congratsMessage = congratsMessages[Math.floor(Math.random() * congratsMessages.length)]; // show random congrats message
         createModal('qa-result-modal.html', 'qaResult');
@@ -1625,7 +1668,7 @@ angular.module('starter')
     $scope.$on('modal.hidden', function (event, modal) {
         // Start playing once the game info dialog is dismissed
         if (modal.id === 'info') {
-          setBasePoints();
+            setBasePoints();
             handleNextActivity();
         } else if (modal.id === 'endgame') {
             $location.path('/');
@@ -1731,9 +1774,9 @@ angular.module('starter')
                 }();
 
             }).error(function (data, status, headers, config) {
-                $rootScope.notify(
-                    $translate.instant('oops_wrong'));
-            });
+            $rootScope.notify(
+                $translate.instant('oops_wrong'));
+        });
     };
 
     GameData.loadUsergame($scope.userName, $scope.gameName)
@@ -1747,10 +1790,8 @@ angular.module('starter')
  * - Only shows waypoint and emits signal when waypoint is reached or georeference game is played
  * - Is not concerned with GameState or the game progression logic - that is a job for PlayCtrl
  */
-.controller('ProfStudentMapCtrl', ['$scope', '$rootScope', '$cordovaGeolocation', '$stateParams', '$ionicModal', '$ionicLoading',
-                                '$timeout', 'leafletData', '$translate', 'GameData', 'PathData', 'PlayerStats', 'meanData',
-                                function ($scope, $rootScope, $cordovaGeolocation, $stateParams, $ionicModal, $ionicLoading,
-                                            $timeout, leafletData, $translate, GameData, PathData, PlayerStats, meanData) {
+.controller('ProfStudentMapCtrl', function ($scope, $rootScope, $cordovaGeolocation, $stateParams, $ionicModal, $ionicLoading,
+                                            $timeout, leafletData, $translate, GameData, PathData, PlayerStats, meanData, $compile) {
     var vm = this;
     vm.user = {};
 
@@ -1905,16 +1946,18 @@ angular.module('starter')
 
     /* Add more markers once game is loaded */
     $scope.$on('basepointLoadedEvent', function (event, basepoints) {
-
-        for(var i=0; i<basepoints.data.length; i++ ){
+        for(var i=0; i<basepoints.length; i++ ){
+            var baseID = basepoints[i]._id;
             var marker = {
-                lat: basepoints.data[i].latitude,
-                lng: basepoints.data[i].longitude,
-                message: basepoints.data[i].name + "<br><button> Attack! </button>",
+                lat: basepoints[i].latitude,
+                lng: basepoints[i].longitude,
+                message: basepoints[i].name + '<br><button ng-click="attackBase(' + basepoints[i].latitude + "," + basepoints[i].longitude + ')"> Attack! </button>',
+                getMessageScope: function () {
+                    return $scope;
+                },
                 focus: true
             };
-            console.log($scope.map.markers);
-            $scope.map.markers[basepoints.data[i].name]= marker;
+            $scope.map.markers[basepoints[i].name]= marker;
         }
         /*$scope.destination = {
             lat: marker.lat,
@@ -2187,7 +2230,7 @@ angular.module('starter')
 
     //$scope.initialize();
 
-}])
+})
 
 // #################################################################################################
 // controller for playing FFA games

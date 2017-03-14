@@ -374,19 +374,12 @@ angular.module('starter.services', [])
         getOneBaseByKey: function (Key) {
              return $http.get(base + '/bases/' + Key, {
                 method: 'GET',
-                }).success(function(res) {
-                  console.log(res);
-                  /*var baseData = [];
-                  for (var i=0; i<res.length; i++) {
-                    console.log(i);
-                      baseData.push(res[i]);
-                      if (res.length -1 == i) {
-                        console.log(baseData);
-                        return baseData;
-                      }
-                  }*/
-                });
+                })
         },
+        updateBasepoint: function(data){
+            return $http.post(base + '/baseUpdate', data)
+        },
+
         //
         // deleteItem: function (uniqueKey) {
         //     return $http.delete(base + '/baseGames/baseItem/' + uniqueKey, {
@@ -410,8 +403,8 @@ angular.module('starter.services', [])
         updateBasegamePlayer: function (data) {
             return $http.post(base + '/updateBasegameplayer', data)
         },
-        updateBasegameTeammates: function (data, teamName) {
-            return $http.post(base + '/updateBasegameteammates/' + teamName, data)
+        updateBasegameTeammates: function (data, teamName, playerName) {
+            return $http.post(base + '/updateBasegameteammates/' + teamName + "/" + playerName, data)
         }
     };
 })
@@ -882,22 +875,15 @@ angular.module('starter.services', [])
 
     // for base game
     data.getBaseIDs = function () {
-      console.log("getBasepoints");
-      console.log("game");
-      console.log(game);
         if (loaded) {
-            console.log("loaded");
             return game.uniqueKey;
         }
     };
 
     data.loadUsergame = function(userName, gameName){
-      console.log("loadUsergame function()");
-        console.log('In loadUsergame')
         var defer = $q.defer();
         var baseGames = $http.get(Server + '/baseGames/baseItem/' + userName + '/' + gameName)
             .then(function (response) {
-              console.log(response);
                 game = response.data[0];
                 loaded = true;
                 if(game.hasOwnProperty('config') == false){
