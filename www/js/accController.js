@@ -1377,7 +1377,6 @@ angular.module('starter')
         accAPI.getOneBaseByKey(gameKey)
             .then(function (res) {
                 $scope.basepoints = res.data;
-                console.log($scope.basepoints);
                 $scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
             });
     };
@@ -1456,16 +1455,15 @@ angular.module('starter')
             else if($scope.gameTaskscope[random].type == "sport"){
 
             }
-        } else { $ionicPopup.alert({
-            title: 'NO attack',
-            template: 'you are not close enough'});
+        } else {
+            $ionicPopup.alert({
+            title: 'You are too far away to attack this base!'
+            });
         }
     }
 
     var randomSort = function(array){
-        //Shuffle the array to fill the answer boxes randomly
         var currentIndex = array.length, temporaryValue, randomIndex;
-
         // Answers on a random Place in the array
         while (0 !== currentIndex) {
             randomIndex = Math.floor(Math.random() * currentIndex);
@@ -1569,49 +1567,10 @@ angular.module('starter')
                 }
             }
         };
-
         $scope.showOutput = function () {
             $scope.$broadcast('qaTaskCompleted', $scope.task);
             $scope.answerPicked = false;
         };
-    };
-
-    var handleNextActivity = function () {
-        console.log("handleNextActivity - function()");
-        var index = GameState.todoActivityIndex(); // Get next pending activity
-        console.log("index");
-        console.log(index);
-        if (index == GameState.ERR_NO_ACTIVITIES) {
-            abortGame($translate.instant('selected_game'));
-        } else if (GameState.gameOver()) {
-            endGame();
-        } else {
-            PlayerStats.startActivity(GameData.getActivity(index))
-            handleNextWaypoint();
-        }
-    };
-
-    $scope.showWaypointInfoModal = function() {
-        createModal('waypointinfo-modal.html', 'wpinfo');
-    };
-
-    var handleNextWaypoint = function () {
-        GameState.todoWaypointIndex(); // Get pending waypoint
-        if (GameState.allWaypointsCleared()) {
-            PlayerStats.endActivity();
-            handleNextActivity();
-        } else {
-            var actIndex = GameState.getCurrentActivity();
-            var pointIndex = GameState.getCurrentWaypoint();
-            $scope.waypointImgURL = null;
-            $scope.waypoint = GameData.getWaypoint(actIndex, pointIndex);
-            if ($scope.waypoint.pic != undefined) {
-                $scope.waypointImgURL = accAPI.getImageURL($scope.waypoint.pic);
-            }
-            $scope.$broadcast('waypointLoadedEvent', $scope.waypoint);
-
-            $scope.score += GameData.getConfig('score.waypointCorrect');
-        }
     };
 
     $scope.performGeoReferencingTask = function () {
@@ -1626,21 +1585,11 @@ angular.module('starter')
         createModal('qa-result-modal.html', 'qaResult');
     });
 
-    $scope.$on('waypointReachedEvent', function (event) {
-        $scope.congratsMessage = congratsMessages[Math.floor(Math.random() * congratsMessages.length)]; // show random congrats message
-        PlayerStats.endWaypoint();
-        createModal('waypoint-reached-modal.html', 'waypoint');
-    });
-
     $scope.$on('modal.hidden', function (event, modal) {
         // Start playing once the game info dialog is dismissed
         if (modal.id === 'info') {
             setBasePoints();
             handleNextActivity();
-        } else if (modal.id === 'endgame') {
-            $location.path('/');
-        } else if (modal.id === 'error') {
-            $location.path('/');
         } else if (modal.id === 'georef') {
             $scope.$broadcast('georefEvent', $scope.task);
         } else if (modal.id === 'qa') {
@@ -1648,8 +1597,6 @@ angular.module('starter')
         } else if (modal.id === 'georefResult') {
             // handleTask();
         } else if (modal.id === 'qaResult') {
-            // handleTask();
-        } else if (modal.id === 'waypoint') {
             // handleTask();
         }
     });
@@ -1679,73 +1626,6 @@ angular.module('starter')
         createModal('georef-result-modal.html', 'georefResult');
     });
 
-    /* Game Results */
-    var endGame = function () {
-        PlayerStats.endGame($scope.score);
-        $scope.player.points = $scope.score;
-        var info = {
-            id: GameData.getId(),
-            playerInfo : $scope.player
-        };
-
-        createModal('gameover-modal.html', 'endgame');
-
-        $scope.shareButtons = false;
-        $timeout(function () {
-            $scope.shareButtons = true;
-        }, 1200);
-        showResults();
-
-        accAPI.addPlayerInfo(info); // Add score to player array for this game
-        $scope.$broadcast('gameOverEvent');
-
-        $scope.shareViaFacebook = function (message, image, link) {
-            $cordovaSocialSharing.canShareVia("twitter", message, image, link).then(function (result) {
-                $cordovaSocialSharing.shareViaFacebook(message, image, link);
-            }, function (error) {
-                alert("Cannot share on Twitter");
-            });
-        };
-    };
-
-    $scope.players = [];
-
-    var showResults = function () {
-        accAPI.getOne($scope.gameName, thisUser)
-            .success(function (data, status, headers, config) {
-                $scope.players = data.slice()[0].players;
-
-                var addLeader = function () {
-                    $scope.players.push($scope.player);
-                    /* Comparison function in order to get three best players */
-                    function compare(a, b) {
-                        if (a.points > b.points)
-                            return -1;
-                        else if (a.points < b.points)
-                            return 1;
-                        else
-                            return 0;
-                    };
-                    $scope.players.sort(compare);
-                };
-
-                $scope.bestPlayers = function () {
-                    addLeader();
-                    var maxResults = 10;
-                    /* In order to get three best players */
-                    if ($scope.players.length < maxResults) {
-                        return $scope.players;
-                    } else {
-                        return $scope.players.slice(0, maxResults);
-                    }
-                }();
-
-            }).error(function (data, status, headers, config) {
-            $rootScope.notify(
-                $translate.instant('oops_wrong'));
-        });
-    };
-
     GameData.loadUsergame($scope.userName, $scope.gameName)
         .then(initGame);
 })
@@ -1772,9 +1652,6 @@ angular.module('starter')
             console.log(e);
         });
 
-    var thisUser = $rootScope.loginUser;
-
-    $scope.waypointLoaded = false;
     $scope.allowEdit = false; // flag to toggle map editing when marking in georeferencing game
     $scope.showMarker = false;
 
