@@ -126,25 +126,22 @@
         <ion-modal-view style="padding: 0; margin:0; dispay:block; background-color:#64B5F6; ">
             <ion-content style="height: 100%; width:100%;">
                 <div class="qa_question" ng-class="{right_ans: answer == true,wrong_ans: answer == false}">
-                    <div class="skillbar clearfix">
-                        <div class="skillbar-bar"  timer-progressbar="timeLeft"></div>
-                    </div>
                     <h1 class="description">{{'answer_instruction' | translate}}</h1>
-                    <ori-qa type="question" qadata="task.question"> </ori-qa>
+                    <ori-qa type="question" qadata="question"> </ori-qa>
                     <button id="fab" ng-show="answerPicked" ng-click="showOutput();modal.remove()" class="button button-positive button-fab" style="background-color:#FFFF00"><i class="icon ion-arrow-right-c" style="color:#1565C0"></i></button>
                 </div>
                 <div class="qa_answers">
-                    <div class="answer1" ng-click="chooseAnswer(task.answers[0], 0);timeLeft = -1" ng-class="{'clicked_answ': clicked[0]}">
-                        <ori-qa type="answer" qadata="task.answers[0]"></ori-qa>
+                    <div class="answer1" ng-click="chooseAnswer(answerArray[0], 0);timeLeft = -1" ng-class="{'clicked_answ': clicked[0]}">
+                        <ori-qa type="answer" qadata="answerArray[0]"></ori-qa>
                     </div>
-                    <div class="answer2" ng-click="chooseAnswer(task.answers[1], 1);timeLeft = -1" ng-class="{'clicked_answ': clicked[1]}">
-                        <ori-qa type="answer" qadata="task.answers[1]"></ori-qa>
+                    <div class="answer2" ng-click="chooseAnswer(answerArray[1], 1);timeLeft = -1" ng-class="{'clicked_answ': clicked[1]}">
+                        <ori-qa type="answer" qadata="answerArray[1]"></ori-qa>
                     </div>
-                    <div class="answer3" ng-click="chooseAnswer(task.answers[2], 2);timeLeft = -1" ng-class="{'clicked_answ': clicked[2]}">
-                        <ori-qa type="answer" qadata="task.answers[2]"></ori-qa>
+                    <div class="answer3" ng-click="chooseAnswer(answerArray[2], 2);timeLeft = -1" ng-class="{'clicked_answ': clicked[2]}">
+                        <ori-qa type="answer" qadata="answerArray[2]"></ori-qa>
                     </div>
-                    <div class="answer4" ng-click="chooseAnswer(task.answers[3], 3);timeLeft = -1" ng-class="{'clicked_answ': clicked[3]}">
-                        <ori-qa type="answer" qadata="task.answers[3]"></ori-qa>
+                    <div class="answer4" ng-click="chooseAnswer(answerArray[3], 3);timeLeft = -1" ng-class="{'clicked_answ': clicked[3]}">
+                        <ori-qa type="answer" qadata="answerArray[3]"></ori-qa>
                     </div>
                 </div>
             </ion-content>
@@ -163,9 +160,6 @@
                         <p>{{'right_answer' | translate}}</p>
                         <img ng-show="!answer && nonTextAnswer" ng-src="{{imgRightAnswerURL}}" style='max-width:100%; max-height:100%'>
                     </div>
-                    <p ng-hide="answer">{{GameData.getConfig('score.answerIncorrect')}} {{'points' | translate}}</p>
-                    <p ng-show="answer">{{GameData.getConfig('score.answerCorrect')}} {{'points' | translate}}</p>
-                    <p>{{'total' | translate}}: {{score}} {{'points' | translate}}</p>
                 </div>
             </ion-content>
 

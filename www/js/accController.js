@@ -10,9 +10,7 @@ angular.module('starter')
 // controller for showing games
 // #################################################################################################
 
-.controller('ProfGamesCtrl', [ '$rootScope', '$scope', '$http', '$location', '$ionicModal', '$window', '$timeout',
-                            '$ionicPopup', '$ionicHistory', '$translate', 'accAPI', 'Data', 'meanData', 'FFAdefault',
-                            function ($rootScope, $scope, $http, $location, $ionicModal, $window, $timeout,
+.controller('ProfGamesCtrl', function ($rootScope, $scope, $http, $location, $ionicModal, $window, $timeout,
                                         $ionicPopup, $ionicHistory, $translate, accAPI, Data, meanData, FFAdefault) {
     var vm = this;
     vm.user = {};
@@ -22,6 +20,7 @@ angular.module('starter')
             vm.user = data;
             $rootScope.loginUser = vm.user.email;
             $rootScope.loginUserName = vm.user.userName;
+            $rootScope.loginUserGames = vm.user.games;
         })
         .error(function (e) {
             console.log(e);
@@ -29,22 +28,6 @@ angular.module('starter')
 
     var thisUser = $rootScope.loginUser;
 
-    // Info Popups --------------------------------------
-    $scope.showPathInfo = function () {
-        var alertPopup = $ionicPopup.alert({
-            title: $translate.instant('find_destination'),
-            /* template: 'Navigators have to plan a path to reach the destination. They refer to the survey knowledge they already have available, combine it in new ways and possibly make inferences about missing pieces. Requires more cognitive effort.'*/
-            template: $translate.instant('put_longer_tap')
-        });
-    };
-
-    $scope.showAidInfo = function () {
-        var alertPopup = $ionicPopup.alert({
-            title: $translate.instant('follow_route'),
-            template: $translate.instant('put_longer_tap')
-                //template: 'Navigators follow a trail to the destination. Less cognitive effort.'
-        });
-    };
     //Get back in the history
     $scope.cancelGame = function () {
         $ionicHistory.goBack();
@@ -111,23 +94,23 @@ angular.module('starter')
 
     // Fetch all the games from the server
     $scope.games = [];
-    console.log(thisUser)
-    accAPI.getAllBaseGames(thisUser)
+    accAPI.getAllBaseGames2()
         .success(function (games, status, headers, config) {
             $scope.error_msg = null;
             $scope.games = [];
+            console.log($rootScope.loginUserGames)
             for (var i = 0; i < games.length; i++) {
-                console.log(games[i].creator)
-                if (games[i].creator == thisUser) {
-                    $scope.games.push(games[i]);
-                    $scope.games[i].diff = Array.apply(null, Array(games[i].diff)).map(function () {
-                    return "ion-ios-star"
-                    });
-                } else {
-                    console.log("metadata " + i);
-                    // console.log(metadata[i]);
-                 }
+                console.log(games[i].uniqueKey)
+                for(var k=0; k<$rootScope.loginUserGames.length; k++){
+                    if (games[i].uniqueKey == $rootScope.loginUserGames[k]) {
+                        console.log("gamefound")
+                        $scope.games.push(games[i]);
+                    }
                 }
+                if(games[i].creator == thisUser){
+                    $scope.games.push(games[i]);
+                }
+            }
         })
         .error(function (data, status, headers, config) {
             $scope.error_msg = $translate.instant('network_error');
@@ -173,7 +156,7 @@ angular.module('starter')
         }
     };
 
-}])
+})
 
 // #################################################################################################
 // controller for showing games for editing
@@ -1387,6 +1370,7 @@ angular.module('starter')
                 $scope.gameDatascope = data.data[0].players;
                 $scope.gameTeamscope = data.data[0].team;
                 $scope.gameTaskscope = data.data[0].questions;
+                $scope.gameUniqueKey = data.data[0].uniqueKey;
                 console.log($scope.game);
             })
         setBasePoints()
@@ -1414,7 +1398,7 @@ angular.module('starter')
         var mail = angular.element('#newUsermail').val();
         userService.inviteUser(mail)
             .success(function (dataUser) {
-                dataUser.games.push($scope.gameName);
+                dataUser.games.push($scope.gameUniqueKey);
                 userService.updateFriend(dataUser)
                     .then(function () {
                         accAPI.getOneBaseGame($scope.userName, $scope.gameName)
@@ -1466,17 +1450,6 @@ angular.module('starter')
                 if($scope.basepoints[i].latitude == lat && $scope.basepoints[i].longitude == lng){
                     performQATask(random, $scope.basepoints[i]._id)
                     console.log($scope.basepoints[i]);
-                    /*var oTeam = $scope.basepoints[i].ownerTeam;
-                    for(var k=0; k<$scope.Teamscope.length; k++){
-                        if( $scope.Teamscope[k].teamName == oTeam){
-
-                        }
-                    }
-                    var indexTeam = $scope.Teamscope.indexOf(oTeam);
-                    var inTeam = $scope.Teamscope[indexTeam].indexOf($rootScope.userName);
-                    if(inTeam = -1){
-                        $scope.basepoints[i].power = $scope.basepoints[i].power + 1;
-                    }*/
                 }
             }
         }
@@ -1488,8 +1461,24 @@ angular.module('starter')
         }
     }
 
+    var randomSort = function(array){
+        //Shuffle the array to fill the answer boxes randomly
+        var currentIndex = array.length, temporaryValue, randomIndex;
+
+        // Answers on a random Place in the array
+        while (0 !== currentIndex) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+        }
+        return array;
+    }
+
     var performQATask = function (random, baseID) {
         console.log("performQATask");
+        console.log(baseID);
         createModal('qa-modal.html', 'qa');
 
         //$scope.nonTextAnswer = false; // True if images are used as answers
@@ -1500,29 +1489,20 @@ angular.module('starter')
         }
 
         $scope.rightAnswer = $scope.gameTaskscope[random].answers[0]; // Correct answer is always at position 0
+        $scope.question = $scope.gameTaskscope[random].question;
         $scope.chosenAnswer = "";
         $scope.clicked = [false, false, false, false];
         $scope.ansChoosen = false;
         $scope.answer = null; // true - right; false - wrong;
 
-        //Shuffle the array to fill the answer boxes randomly
-        var currentIndex = 4, temporaryValue, randomIndex;
+        $scope.answerArray = $scope.gameTaskscope[random].answers;
+        $scope.answerArray = randomSort($scope.answerArray);
+        console.log($scope.answerArray)
 
-        // While there remain elements to shuffle...
-        while (0 !== currentIndex) {
-            // Pick a remaining element...
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-            // And swap it with the current element.
-            temporaryValue = $scope.gameTaskscope[random].answers[currentIndex];
-            $scope.gameTaskscope[random].answers[currentIndex] = $scope.gameTaskscope[random].answers[randomIndex];
-            $scope.gameTaskscope[random].answers[randomIndex] = temporaryValue;
-        }
-
-        $scope.imgAnsURL_0 = accAPI.getImageURL($scope.gameTaskscope[random].answers[0].img);
-        $scope.imgAnsURL_1 = accAPI.getImageURL($scope.gameTaskscope[random].answers[1].img);
-        $scope.imgAnsURL_2 = accAPI.getImageURL($scope.gameTaskscope[random].answers[2].img);
-        $scope.imgAnsURL_3 = accAPI.getImageURL($scope.gameTaskscope[random].answers[3].img);
+        $scope.imgAnsURL_0 = accAPI.getImageURL($scope.answerArray[0].img);
+        $scope.imgAnsURL_1 = accAPI.getImageURL($scope.answerArray[1].img);
+        $scope.imgAnsURL_2 = accAPI.getImageURL($scope.answerArray[2].img);
+        $scope.imgAnsURL_3 = accAPI.getImageURL($scope.answerArray[3].img);
         $scope.imgRightAnswerURL = accAPI.getImageURL($scope.rightAnswer.img);
         // console.log($scope.imgAnsURL_0, $scope.imgAnsURL_1, $scope.imgAnsURL_2, $scope.imgAnsURL_3);
 
@@ -1534,19 +1514,23 @@ angular.module('starter')
                 $scope.clicked = [false, false, false, false];
                 $scope.clicked[index] = true;
 
-                clearInterval(intervalId);
+                // clearInterval(intervalId);
 
                 if ($scope.chosenAnswer == $scope.rightAnswer) {
                     $scope.answerResult = $translate.instant('right_answer');
                     $scope.answer = true;
                     $scope.icon = "ion-android-happy";
-                    for(var i=0; i<$scope.gamebasepoints.length; i++){
+                    for(var i=0; i<$scope.basepoints.length; i++){
                         if($scope.basepoints[i]._id == baseID){
-                            var oteam = $scope.basepoints[i].ownerTeam
+                            console.log("base found:");
+                            console.log($scope.basepoints[i])
+                            var oteam = $scope.basepoints[i].ownerTeam;
                             var indexi = i;
                         }
                         for(var k=0; k<$scope.gameTeamscope.length; k++){
                             if($scope.gameTeamscope[k].teamMates.indexOf($rootScope.loginUserName) > -1){
+                                console.log("userteam found")
+                                console.log($scope.gameTeamscope[k]);
                                 var userTeam = $scope.gameTeamscope[k].teamName;
                             }
                         }
@@ -1554,11 +1538,39 @@ angular.module('starter')
 
                     setTimeout(function () {
                         if(oteam == userTeam){
-                            $scope.basepoints[index].power = $scope.basepoints[indexi].power + 1;
+                            console.log("oteam = userTeam");
+                            $scope.basepoints[indexi].power = $scope.basepoints[indexi].power + 1;
+                            console.log($scope.basepoints[indexi])
                             accAPI.updateBasepoint($scope.basepoints[indexi])
                                 .then(function(data){
                                     console.log(data);
-                                    //$scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
+                                    var gameKey = GameData.getBaseIDs();
+                                    accAPI.getOneBaseByKey(gameKey)
+                                        .then(function (res) {
+                                            $scope.basepoints = res.data;
+                                            console.log($scope.basepoints);
+                                            $scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
+                                        });
+                                })
+                        }
+                        else{
+                            $scope.basepoints[indexi].power = $scope.basepoints[indexi].power - 1;
+                            if($scope.basepoints[indexi].power < 1){
+                                $scope.basepoints[indexi].ownerTeam = userTeam;
+                                $scope.basepoints[indexi].power = 3;
+                                console.log($scope.basepoints[indexi]);
+                            }
+                            accAPI.updateBasepoint($scope.basepoints[indexi])
+                                .then(function(data){
+                                    console.log(data);
+                                    var gameKey = GameData.getBaseIDs();
+                                    accAPI.getOneBaseByKey(gameKey)
+                                        .then(function (res) {
+                                            console.log(res)
+                                            $scope.basepoints = res.data;
+                                            console.log($scope.basepoints);
+                                            $scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
+                                        });
                                 })
                         }
                     }, 500)
@@ -1569,20 +1581,6 @@ angular.module('starter')
                 }
             }
         };
-
-        var intervalId = setInterval(function () {
-            $scope.timeLeft--;
-            if ($scope.timeLeft <= 0) {
-                $scope.answerResult = $translate.instant("wrong_ans_1");
-                $scope.rightAnswer = $scope.rightAnswer;
-                $scope.icon = "ion-sad-outline";
-                $scope.score -= 10;
-                $scope.showOutput();
-                $scope.modal.remove();
-
-                clearInterval(intervalId);
-            }
-        }, 1000);
 
         $scope.showOutput = function () {
             $scope.$broadcast('qaTaskCompleted', $scope.task);
@@ -1628,25 +1626,6 @@ angular.module('starter')
         }
     };
 
-    var handleTask = function () {
-        GameState.todoTaskIndex();
-        if (GameState.allTasksCleared()) {
-            handleNextWaypoint();
-        } else {
-            $scope.task = GameData.getTask(GameState.getCurrentActivity(), GameState.getCurrentWaypoint(), GameState.getCurrentTask());
-            PlayerStats.startTask($scope.task);
-            if ($scope.task.type == 'GeoReference') {
-                $scope.performGeoReferencingTask($scope.task);
-            } else if ($scope.task.type == 'QA') {
-                performQATask($scope.task);
-            } else {
-                // perform other kinds of tasks here
-                console.log("Handling other tasks, but of what kind?");
-                handleTask();
-            }
-        }
-    };
-
     $scope.performGeoReferencingTask = function () {
         $scope.showInfo = true;
         $scope.subHeaderInfo = "Mark location on map";
@@ -1679,11 +1658,11 @@ angular.module('starter')
         } else if (modal.id === 'qa') {
             $scope.$broadcast('qaEvent', $scope.task);
         } else if (modal.id === 'georefResult') {
-            handleTask();
+            // handleTask();
         } else if (modal.id === 'qaResult') {
-            handleTask();
+            // handleTask();
         } else if (modal.id === 'waypoint') {
-            handleTask();
+            // handleTask();
         }
     });
 
@@ -1946,25 +1925,20 @@ angular.module('starter')
 
     /* Add more markers once game is loaded */
     $scope.$on('basepointLoadedEvent', function (event, basepoints) {
+        $scope.map.markers= {};
         for(var i=0; i<basepoints.length; i++ ){
             var baseID = basepoints[i]._id;
             var marker = {
                 lat: basepoints[i].latitude,
                 lng: basepoints[i].longitude,
-                message: basepoints[i].name + '<br><button ng-click="attackBase(' + basepoints[i].latitude + "," + basepoints[i].longitude + ')"> Attack! </button>',
+                message: "Basename: " + basepoints[i].name + '<br>' + "Owner team: " + basepoints[i].ownerTeam + '<br>' + "Power: " + basepoints[i].power + '<br><button ng-click="attackBase(' + basepoints[i].latitude + "," + basepoints[i].longitude + ')"> Attack! </button>',
                 getMessageScope: function () {
                     return $scope;
                 },
-                focus: true
+                focus: false
             };
             $scope.map.markers[basepoints[i].name]= marker;
         }
-        /*$scope.destination = {
-            lat: marker.lat,
-            lng: marker.lng,
-            name: marker.message
-        };
-        $scope.waypointLoaded = true; // reset this flag*/
     });
 
     /* Get bearing in degrees to destination */

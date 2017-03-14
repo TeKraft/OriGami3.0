@@ -356,6 +356,9 @@ angular.module('starter.services', [])
                 method: 'GET',
             });
         },
+        getAllBaseGames2: function(){
+            return $http.get(base + '/baseGames');
+        },
         getOneBaseGame: function (user, name) {
             return $http.get(base + '/baseGames/baseItem/' + user + '/' + name, {
                 method: 'GET',
