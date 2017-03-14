@@ -1432,26 +1432,33 @@ angular.module('starter')
     }
 
     $scope.attackBase = function(lat, lng){
-        console.log("Base Attack");;
-        console.log(lat);
-        console.log(lng);
-        var min = 0;
-        var max = $scope.gameTaskscope.length - 1;
-        var random  = Math.floor(Math.random() * (max - min + 1)) + min;
-        if($scope.gameTaskscope[random].type == "QA"){
-            console.log("QA")
-            for(var i=0; i<$scope.basepoints.length; i++){
-                if($scope.basepoints[i].latitude == lat && $scope.basepoints[i].longitude == lng){
-                    performQATask(random, $scope.basepoints[i]._id)
-                    console.log($scope.basepoints[i]);
+        console.log("attackBase");
+        var centerOfMap = $rootScope.centerOfMap;
+        var dest = L.latLng(lat, lng);
+        var distance = centerOfMap.distanceTo(dest);
+        // If map center is within the threshold distance to destination, then the activity is complete
+        if (distance < $rootScope.thresholdDistance) {
+            var min = 0;
+            var max = $scope.gameTaskscope.length - 1;
+            var random  = Math.floor(Math.random() * (max - min + 1)) + min;
+            if($scope.gameTaskscope[random].type == "QA"){
+                console.log("QA")
+                for(var i=0; i<$scope.basepoints.length; i++){
+                    if($scope.basepoints[i].latitude == lat && $scope.basepoints[i].longitude == lng){
+                        performQATask(random, $scope.basepoints[i]._id)
+                        console.log($scope.basepoints[i]);
+                    }
                 }
             }
-        }
-        else if($scope.gameTaskscope[random].type == "GeoReference"){
+            else if($scope.gameTaskscope[random].type == "GeoReference"){
 
-        }
-        else if($scope.gameTaskscope[random].type == "sport"){
+            }
+            else if($scope.gameTaskscope[random].type == "sport"){
 
+            }
+        } else { $ionicPopup.alert({
+            title: 'NO attack',
+            template: 'you are not close enough'});
         }
     }
 
@@ -1491,7 +1498,6 @@ angular.module('starter')
 
         $scope.answerArray = $scope.gameTaskscope[random].answers;
         $scope.answerArray = randomSort($scope.answerArray);
-        console.log($scope.answerArray)
 
         $scope.imgAnsURL_0 = accAPI.getImageURL($scope.answerArray[0].img);
         $scope.imgAnsURL_1 = accAPI.getImageURL($scope.answerArray[1].img);
@@ -1516,15 +1522,11 @@ angular.module('starter')
                     $scope.icon = "ion-android-happy";
                     for(var i=0; i<$scope.basepoints.length; i++){
                         if($scope.basepoints[i]._id == baseID){
-                            console.log("base found:");
-                            console.log($scope.basepoints[i])
                             var oteam = $scope.basepoints[i].ownerTeam;
                             var indexi = i;
                         }
                         for(var k=0; k<$scope.gameTeamscope.length; k++){
                             if($scope.gameTeamscope[k].teamMates.indexOf($rootScope.loginUserName) > -1){
-                                console.log("userteam found")
-                                console.log($scope.gameTeamscope[k]);
                                 var userTeam = $scope.gameTeamscope[k].teamName;
                             }
                         }
@@ -1532,17 +1534,13 @@ angular.module('starter')
 
                     setTimeout(function () {
                         if(oteam == userTeam){
-                            console.log("oteam = userTeam");
                             $scope.basepoints[indexi].power = $scope.basepoints[indexi].power + 1;
-                            console.log($scope.basepoints[indexi])
                             accAPI.updateBasepoint($scope.basepoints[indexi])
                                 .then(function(data){
-                                    console.log(data);
                                     var gameKey = GameData.getBaseIDs();
                                     accAPI.getOneBaseByKey(gameKey)
                                         .then(function (res) {
                                             $scope.basepoints = res.data;
-                                            console.log($scope.basepoints);
                                             $scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
                                         });
                                 })
@@ -1552,17 +1550,13 @@ angular.module('starter')
                             if($scope.basepoints[indexi].power < 1){
                                 $scope.basepoints[indexi].ownerTeam = userTeam;
                                 $scope.basepoints[indexi].power = 3;
-                                console.log($scope.basepoints[indexi]);
                             }
                             accAPI.updateBasepoint($scope.basepoints[indexi])
                                 .then(function(data){
-                                    console.log(data);
                                     var gameKey = GameData.getBaseIDs();
                                     accAPI.getOneBaseByKey(gameKey)
                                         .then(function (res) {
-                                            console.log(res)
                                             $scope.basepoints = res.data;
-                                            console.log($scope.basepoints);
                                             $scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
                                         });
                                 })
@@ -1793,7 +1787,7 @@ angular.module('starter')
     /* Initialize view of map */
     $scope.initialize = function () {
       console.log("initialize function()");
-        $scope.thresholdDistance = GameData.getConfig('thresholdDistance');
+        $rootScope.thresholdDistance = GameData.getConfig('thresholdDistance');
         $scope.geolocationAlwaysOn = GameData.getConfig('geolocationAlwaysOn');
         var defaultLayer = GameData.getConfig('map.defaultLayer')
         var isDefaultLayer = function(layerName) { return (defaultLayer === layerName) ? true : false; };
@@ -1958,6 +1952,14 @@ angular.module('starter')
 
     /* (Re)compute distance to destination once map moves */
     $scope.$on('leafletDirectiveMap.move', function (event, args) {
+        console.log("leafletDirectiveMap.move - function()");
+        var map = args.leafletEvent.target;
+        var center = map.getCenter();
+        console.log("center");
+        console.log(center);
+        $rootScope.centerOfMap = center;
+        console.log("$rootScope.centerOfMap");
+        console.log($rootScope.centerOfMap);
         if ($scope.waypointLoaded) {
             var map = args.leafletEvent.target;
             var center = map.getCenter();
@@ -1995,7 +1997,7 @@ angular.module('starter')
                         $scope.drawSmiley($scope.canvas, $scope.canvasContext, normalizedDistance);
                     }
                     // If map center is within the threshold distance to destination, then the activity is complete
-                    if (distance < $scope.thresholdDistance) {
+                    if (distance < $rootScope.thresholdDistance) {
                         $scope.waypointLoaded = false;
                         delete $scope.map.markers.NextWaypoint;
                         $scope.$emit('waypointReachedEvent');
@@ -2157,7 +2159,7 @@ angular.module('starter')
                     map.dragging.disable();
                 });
             $scope.geoLocButtonColor = "button-balanced";
-            $scope.thresholdDistance = GameData.getConfig('thresholdDistanceGeolocOn');
+            $rootScope.thresholdDistance = GameData.getConfig('thresholdDistanceGeolocOn');
             $scope.trackPosition();
         } else {
             $scope.getRealTimePos = false;
@@ -2165,7 +2167,7 @@ angular.module('starter')
                 .then(function (map) {
                     map.dragging.enable();
                 });
-            $scope.thresholdDistance = GameData.getConfig('thresholdDistance');
+            $rootScope.thresholdDistance = GameData.getConfig('thresholdDistance');
             $scope.geoLocButtonColor = "button-calm";
             $scope.trackWatch.clearWatch();
         }
@@ -2292,6 +2294,151 @@ angular.module('starter')
       $scope.$broadcast('senseBoxLoadedEvent', user);
     };
 
+    $scope.attackBase = function(lat, lng){
+        console.log("attackBase");
+        var centerOfMap = $rootScope.centerOfMap;
+        var dest = L.latLng(lat, lng);
+        var distance = centerOfMap.distanceTo(dest);
+        // If map center is within the threshold distance to destination, then the activity is complete
+        if (distance < $rootScope.thresholdDistance) {
+            var min = 0;
+            var max = $scope.gameTaskscope.length - 1;
+            var random  = Math.floor(Math.random() * (max - min + 1)) + min;
+            if($scope.gameTaskscope[random].type == "QA"){
+                console.log("QA")
+                for(var i=0; i<$scope.basepoints.length; i++){
+                    if($scope.basepoints[i].latitude == lat && $scope.basepoints[i].longitude == lng){
+                        performQATask(random, $scope.basepoints[i]._id)
+                        console.log($scope.basepoints[i]);
+                    }
+                }
+            }
+            else if($scope.gameTaskscope[random].type == "GeoReference"){
+
+            }
+            else if($scope.gameTaskscope[random].type == "sport"){
+
+            }
+        } else { $ionicPopup.alert({
+            title: 'NO attack',
+            template: 'you are not close enough'});
+        }
+    }
+
+    var randomSort = function(array){
+        //Shuffle the array to fill the answer boxes randomly
+        var currentIndex = array.length, temporaryValue, randomIndex;
+
+        // Answers on a random Place in the array
+        while (0 !== currentIndex) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+        }
+        return array;
+    }
+
+    var performQATask = function (random, baseID) {
+        console.log("performQATask");
+        console.log(baseID);
+        createModal('qa-modal.html', 'qa');
+
+        //$scope.nonTextAnswer = false; // True if images are used as answers
+        $scope.answerPicked = false;
+
+        if (typeof $scope.gameTaskscope[random].answers == 'undefined') {
+            console.log("No answers for this activity");
+        }
+
+        $scope.rightAnswer = $scope.gameTaskscope[random].answers[0]; // Correct answer is always at position 0
+        $scope.question = $scope.gameTaskscope[random].question;
+        $scope.chosenAnswer = "";
+        $scope.clicked = [false, false, false, false];
+        $scope.ansChoosen = false;
+        $scope.answer = null; // true - right; false - wrong;
+
+        $scope.answerArray = $scope.gameTaskscope[random].answers;
+        $scope.answerArray = randomSort($scope.answerArray);
+
+        $scope.imgAnsURL_0 = accAPI.getImageURL($scope.answerArray[0].img);
+        $scope.imgAnsURL_1 = accAPI.getImageURL($scope.answerArray[1].img);
+        $scope.imgAnsURL_2 = accAPI.getImageURL($scope.answerArray[2].img);
+        $scope.imgAnsURL_3 = accAPI.getImageURL($scope.answerArray[3].img);
+        $scope.imgRightAnswerURL = accAPI.getImageURL($scope.rightAnswer.img);
+        // console.log($scope.imgAnsURL_0, $scope.imgAnsURL_1, $scope.imgAnsURL_2, $scope.imgAnsURL_3);
+
+        $scope.chooseAnswer = function (answer, index) {
+            if (!$scope.ansChoosen) {
+                $scope.chosenAnswer = answer;
+                $scope.ansChoosen = true;
+                $scope.answerPicked = true;
+                $scope.clicked = [false, false, false, false];
+                $scope.clicked[index] = true;
+
+                // clearInterval(intervalId);
+
+                if ($scope.chosenAnswer == $scope.rightAnswer) {
+                    $scope.answerResult = $translate.instant('right_answer');
+                    $scope.answer = true;
+                    $scope.icon = "ion-android-happy";
+                    for(var i=0; i<$scope.basepoints.length; i++){
+                        if($scope.basepoints[i]._id == baseID){
+                            var oteam = $scope.basepoints[i].ownerTeam;
+                            var indexi = i;
+                        }
+                        for(var k=0; k<$scope.gameTeamscope.length; k++){
+                            if($scope.gameTeamscope[k].teamMates.indexOf($rootScope.loginUserName) > -1){
+                                var userTeam = $scope.gameTeamscope[k].teamName;
+                            }
+                        }
+                    }
+
+                    setTimeout(function () {
+                        if(oteam == userTeam){
+                            $scope.basepoints[indexi].power = $scope.basepoints[indexi].power + 1;
+                            accAPI.updateBasepoint($scope.basepoints[indexi])
+                                .then(function(data){
+                                    var gameKey = GameData.getBaseIDs();
+                                    accAPI.getOneBaseByKey(gameKey)
+                                        .then(function (res) {
+                                            $scope.basepoints = res.data;
+                                            $scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
+                                        });
+                                })
+                        }
+                        else{
+                            $scope.basepoints[indexi].power = $scope.basepoints[indexi].power - 1;
+                            if($scope.basepoints[indexi].power < 1){
+                                $scope.basepoints[indexi].ownerTeam = userTeam;
+                                $scope.basepoints[indexi].power = 3;
+                            }
+                            accAPI.updateBasepoint($scope.basepoints[indexi])
+                                .then(function(data){
+                                    var gameKey = GameData.getBaseIDs();
+                                    accAPI.getOneBaseByKey(gameKey)
+                                        .then(function (res) {
+                                            $scope.basepoints = res.data;
+                                            $scope.$broadcast('basepointLoadedEvent', $scope.basepoints);
+                                        });
+                                })
+                        }
+                    }, 500)
+                } else {
+                    $scope.answer = false;
+                    $scope.answerResult = $translate.instant("wrong_ans_1");
+                    $scope.icon = "ion-sad-outline";
+                }
+            }
+        };
+
+        $scope.showOutput = function () {
+            $scope.$broadcast('qaTaskCompleted', $scope.task);
+            $scope.answerPicked = false;
+        };
+    };
+
     $scope.showUserInformation = function () {
       createModal('userInformation-modal.html', 'userinfo');
     };
@@ -2366,7 +2513,7 @@ angular.module('starter')
     });
 
     $scope.init = function () {
-        $scope.thresholdDistance = SenseBox.getConfig('thresholdDistance');
+        $rootScope.thresholdDistance = SenseBox.getConfig('thresholdDistance');
         $scope.geolocationAlwaysOn = SenseBox.getConfig('geolocationAlwaysOn');
         $scope.radiusDistance = SenseBox.getConfig('radiusDistance');
         var defaultLayer = SenseBox.getConfig('map.defaultLayer')
@@ -2488,6 +2635,8 @@ angular.module('starter')
             });
     };
 
+
+
     /* (Re)compute distance to destination once map moves */
     $scope.$on('leafletDirectiveMap.move', function (event, args) {
         console.log("leafletDirectiveMap.move - function()");
@@ -2495,9 +2644,9 @@ angular.module('starter')
         var center = map.getCenter();
         console.log("center");
         console.log(center);
-        $scope.centerOfMap = center;
-        console.log("$sope.centerOfMap");
-        console.log($scope.centerOfMap);
+        $rootScope.centerOfMap = center;
+        console.log("$rootScope.centerOfMap");
+        console.log($rootScope.centerOfMap);
         FFAdefault.getBaseMarkerFromFFA($scope.userName)
                 .then(function(res) {
                   $scope.gameTaskscope = res.data[0].questions;
@@ -2554,53 +2703,6 @@ angular.module('starter')
                 }
         })
     });
-
-        $scope.attackBase = function(lat, lng){
-            // window.alert("ATTACK!");
-            console.log("attackBase");
-            console.log("$scope.centerOfMap");
-            console.log($scope.centerOfMap);
-            var centerOfMap = $scope.centerOfMap;
-            var dest = L.latLng(lat, lng);
-            var distance = centerOfMap.distanceTo(dest);
-            console.log(distance);
-            // If map center is within the threshold distance to destination, then the activity is complete
-            if (distance < $scope.thresholdDistance) {
-                $ionicPopup.alert({
-                    title: 'ATTACK',
-                    template: 'you can Attack'});
-            } else { $ionicPopup.alert({
-                title: 'NO attack',
-                template: 'you are not close enough'}); }
-// ################################################################
-            var min = 0;
-            var max = $scope.gameTaskscope.length - 1;
-            var random  = Math.floor(Math.random() * (max - min + 1)) + min;
-            if($scope.gameTaskscope[random].type == "QA"){
-                console.log("QA")
-                for(var i=0; i<$scope.basepoints.length; i++){
-                    if($scope.basepoints[i].latitude == lat && $scope.basepoints[i].longitude == lng){
-                        performQATask(random, $scope.basepoints[i]._id)
-                        console.log($scope.basepoints[i]);
-                        /*var oTeam = $scope.basepoints[i].ownerTeam;
-                        for(var k=0; k<$scope.Teamscope.length; k++){
-                            if( $scope.Teamscope[k].teamName == oTeam){
-                              var indexTeam = $scope.Teamscope.indexOf(oTeam);
-                              var inTeam = $scope.Teamscope[indexTeam].indexOf($rootScope.userName);
-                              if(inTeam = -1){
-                                  $scope.basepoints[i].power = $scope.basepoints[i].power + 1;
-                              }
-                        }*/
-                  }
-                }
-            }
-            else if($scope.gameTaskscope[random].type == "GeoReference"){
-
-            }
-            else if($scope.gameTaskscope[random].type == "sport"){
-
-            }
-        };
 
         //####################################################
         //#### compute distance to marker ####################
@@ -2761,7 +2863,7 @@ angular.module('starter')
                         map.dragging.disable();
                     });
                 $scope.geoLocButtonColor = "button-balanced";
-                $scope.thresholdDistance = SenseBox.getConfig('thresholdDistanceGeolocOn');
+                $rootScope.thresholdDistance = SenseBox.getConfig('thresholdDistanceGeolocOn');
                 $scope.trackPosition();
             } else {
                 $scope.getRealTimePos = false;
@@ -2769,7 +2871,7 @@ angular.module('starter')
                     .then(function (map) {
                         map.dragging.enable();
                     });
-                $scope.thresholdDistance = SenseBox.getConfig('thresholdDistance');
+                $rootScope.thresholdDistance = SenseBox.getConfig('thresholdDistance');
                 $scope.geoLocButtonColor = "button-calm";
                 $scope.trackWatch.clearWatch();
             }
