@@ -395,6 +395,9 @@ angular.module('starter.services', [])
             method: 'POST',
           });
         },
+        updateOneBase: function(form){
+            return $http.post(base + '/baseGames/update', form)
+        },
         getOneBaseByKey: function (Key) {
              return $http.get(base + '/bases/' + Key, {
                 method: 'GET',

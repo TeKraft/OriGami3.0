@@ -207,6 +207,43 @@
         </ion-modal-view>
     </script>
 
+    <!-- model to invite users to the game -->
+    <!--<script id="stats-modal.html" type="text/ng-template">
+        <ion-modal-view>
+            <ion-content style="height: 100%; background-color:#64B5F6">
+                <p>Invite new users to the game!</p>
+                <form method="post">
+                    <div class="list list-inset" >
+                        <label class="item item-input">
+                            <input id="newUsermail" type="text" id="firstName" class="form-control" ng-model="vm.user.firstName" placeholder="e-mail"/>
+                        </label>
+                    </div>
+                    <button class="button button-block button-calm" ng-click="inviteUser()">Invite!</button>
+                </form>
+                <p>Players without a team</p>
+                <table class="list">
+                    <tr class="list" ng-repeat="players in gameDatascope">
+                        <td class="item" id="players">
+                            {{players}}
+                            <button ng-click="assignPlayer = !assignPlayer">Assign Player to a Team!</button>
+                            <table>
+                                <tr ng-repeat="team in gameTeamnamescope">
+                                    <td>
+                                        <button ng-click="playerToTeam(players, team)">{{team}}</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </ion-content>
+
+            <ion-footer-bar class="bar-positive" ng-click="modal.remove()">
+                <p class="title">OK</p>
+            </ion-footer-bar>
+        </ion-modal-view>
+    </script>-->
+
     <div class="bar bar-subheader bar-assertive" ng-show="showInfo" class="ng-show">
         <h2 class="title">{{subHeaderInfo}}</h2>
     </div>
@@ -224,7 +261,7 @@
                 <!--Button to display modal where you can add players -->
                 <button class="button button-fab map-button next {{geoLocButtonColor}} icon ion-person-add waves-effect waves-button waves-light" ng-click="inviteUsersModal()"></button>
                 <!--Button to display modal with waypoint info (hide during georeferencing task) -->
-                <button class="button button-fab map-button next {{geoLocButtonColor}} icon ion-information waves-effect waves-button waves-light" ng-click="showWaypointInfoModal()" ng-hide="task.type == 'GeoReference'"></button>
+                <button class="button button-fab map-button next {{geoLocButtonColor}} icon ion-information waves-effect waves-button waves-light" ng-click="showstatsModal()" ng-hide="task.type == 'GeoReference'"></button>
                 <!--Button to display modal georeferencing question -->
                 <button class="button button-fab map-button next {{geoLocButtonColor}} icon ion-help waves-effect waves-button waves-light" ng-click="performGeoReferencingTask()" ng-show="task.type == 'GeoReference'"></button>
                 <!--Button to dislpay player's position on map as icon. Icon is hidden after 5 seconds -->
