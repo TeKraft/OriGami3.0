@@ -618,7 +618,6 @@ angular.module('starter.services', [])
         return null;
     };
     data.loadGame = function (name) {
-      console.log("loadGame - function()"+name);
         var defer = $q.defer();
         //var games = $http.get('test_data/games.json')
         var games = $http.get(Server + '/games/item/' + name)
@@ -843,7 +842,6 @@ angular.module('starter.services', [])
     state.loadState = function(playerName) {
         LocalDB.getState().then(
             function(stateData) {
-                console.log("Got State", stateData)
                 if (stateData.playerName == playerName) {
                     var state = stateData.state;
                     gameFinished = state.gameFinished;
@@ -935,8 +933,6 @@ angular.module('starter.services', [])
         data.totalScore = score;
         data.activities = activities;
         data.trajectory = PathData.getPath();
-        console.log("data endGame playerstats");
-        console.log(data);
         LocalDB.saveItem(data);
         /*
         origami_stats = localStorage.getItem('origami_stats')
@@ -1034,8 +1030,6 @@ angular.module('starter.services', [])
     };
 
     register = function(user) {
-        console.log("register Service");
-        console.log("User: " + user);
         return $http.post(base + '/register', user, {
             method: 'POST'
         }).success(function(data){
@@ -1045,8 +1039,6 @@ angular.module('starter.services', [])
     };
 
     login = function(user) {
-        console.log("In Frontend-login");
-        console.log("User: " + user);
         return $http.post(base + '/login', user, {
             method: 'POST'
         }).success(function(data) {
@@ -1056,9 +1048,7 @@ angular.module('starter.services', [])
     };
 
     logout = function() {
-        console.log($window.localStorage.getItem('mean-token'));
         $window.localStorage.removeItem('mean-token');
-        console.log($window.localStorage.getItem('mean-token'));
     };
 
     return {

@@ -1929,7 +1929,7 @@ console.log($scope.GameData);
                             template: 'e-mail or Username already in use!'
                         });
                     })
-                    .then(function () {
+                    .success(function () {
                         var loc = $location.url();
                         $location.path('/acc/afterlogin');
                         var loc2 = $location.url();
@@ -1956,7 +1956,7 @@ console.log($scope.GameData);
                     template: 'e-mail or Username false!'
                 });
             })
-            .then(function(){
+            .success(function(){
                 $location.path('/acc/afterlogin');
                 $rootScope.loginUser = vm.credentials.email;
             });
