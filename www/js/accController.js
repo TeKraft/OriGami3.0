@@ -2206,11 +2206,7 @@ angular.module('starter')
         console.log("leafletDirectiveMap.move - function()");
         var map = args.leafletEvent.target;
         var center = map.getCenter();
-        console.log("center");
-        console.log(center);
         $rootScope.centerOfMap = center;
-        console.log("$rootScope.centerOfMap");
-        console.log($rootScope.centerOfMap);
         if ($scope.waypointLoaded) {
             var map = args.leafletEvent.target;
             var center = map.getCenter();
@@ -2221,11 +2217,7 @@ angular.module('starter')
                 .then(function (map) {
                     $sope.centerOfMap = null;
                     var center = map.getCenter();
-                    console.log("center");
-                    console.log(center);
                     $scope.centerOfMap = center;
-                    console.log("$sope.centerOfMap");
-                    console.log($scope.centerOfMap);
                     var dest = L.latLng($scope.destination.lat, $scope.destination.lng);
                     var distance = center.distanceTo(dest);
                     if ($scope.initialDistance == -1) {
