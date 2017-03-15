@@ -210,11 +210,10 @@
                         <tr class="list" ng-repeat="players in gameDatascope">
                             <td class="item" id="players">
                                 {{players}}
-                                <button ng-click="assignPlayer = !assignPlayer">Assign Player to a Team!</button>
                                 <table>
                                     <tr ng-repeat="team in gameTeamnamescope">
                                         <td>
-                                            <button ng-click="playerToTeam(players, team)">{{team}}</button>
+                                            <button class="button button-positive" ng-click="playerToTeam(players, team)">{{team}}</button>
                                         </td>
                                     </tr>
                                 </table>
