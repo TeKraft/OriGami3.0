@@ -32,8 +32,6 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
         $ionicHistory.goBack();
     };
 
-    console.log(API.getMetadata());
-
     // Fetch all the games from the server
     $scope.games = [];
     API.getMetadata().success(function (metadata, status, headers, config) {
@@ -1982,13 +1980,11 @@ console.log($scope.GameData);
 
         /* Add sensboxes as markers once game is loaded */
         $scope.$on('senseBoxLoginLoad', function (event, userName) {
-          console.log("userName");
-          console.log(userName);
           FFAdefault.getBoxJSON()
               .then(function(res) {
+                console.log("Senseboxdata from API");
+                console.log(res);
                   var object = res;
-                  console.log("object");
-                  console.log(object);
                   var markerArray = [];
                   for (var i=0; i<object.data.length; i++) {
                       var dt = new Date(object.data[i].updatedAt);
@@ -2008,8 +2004,6 @@ console.log($scope.GameData);
                                 markerArray.push(marker);
                   }
                 }
-                  console.log("markerArray");
-                  console.log(markerArray);  // all marker as 1 array
                   FFAdefault.saveSenseBoxMarkerToFFA(markerArray); //save marker in base
 
                 })
@@ -2017,7 +2011,6 @@ console.log($scope.GameData);
 
 })
 .controller('AccountCtrl', function ($stateParams, $rootScope, $scope, $ionicPopup, $ionicHistory, $state, $location, authentication, meanData, userService){
-    console.log("AccountCtrl")
     var vm = this;
     vm.user = {};
 
@@ -2030,7 +2023,6 @@ console.log($scope.GameData);
             $rootScope.loginUser = vm.user.email;
             $rootScope.loginUserName = vm.user.userName;
             $rootScope.userFriends = vm.user.friends;
-            console.log(data);
         })
         .error(function (e) {
             $location.path('/tab/home');
@@ -2106,7 +2098,6 @@ console.log($scope.GameData);
 .controller('FriendCtrl', function ($rootScope, $scope, $ionicPopup, $ionicHistory, $state, $location, authentication, meanData, userService, $stateParams) {
     var vm = this;
     vm.user = {};
-    console.log("FriendCtrl")
     $scope.friend = $stateParams.friend;
     meanData.getProfile2($scope.friend)
         .then(function (data) {
@@ -2123,7 +2114,6 @@ console.log($scope.GameData);
                         confirmPopup.then(function(res) {
                             if(res) {
                                 var index = vm.user2.friends.indexOf($scope.friend)
-                                console.log(vm.user2.friends)
                                 vm.user2.friends.splice(index, 1)
                                 userService.update(vm.user2)
                                     .then(function(){
@@ -2146,7 +2136,6 @@ console.log($scope.GameData);
                 confirmPopup.then(function(res) {
                     if(res) {
                         var index = vm.user2.friends.indexOf($scope.friend)
-                        console.log(vm.user2.friends)
                         vm.user2.friends.splice(index, 1)
                         userService.update(vm.user2)
                             .then(function(){

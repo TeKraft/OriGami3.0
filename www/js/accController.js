@@ -33,15 +33,11 @@ angular.module('starter')
         $ionicHistory.goBack();
     };
 
-    console.log("accAPI.getBaseMetadata()");
-    console.log(accAPI.getBaseMetadata());
-
     //################################################################
     //################################################################
     //################################################################
     // create FFA game and set to default
     $scope.createFFAgame = function() {
-      console.log("createFFAgame");
         $scope.ffagameschema = {};
         var teamNamesFFA = [];
         teamNamesFFA.push("FIRE");
@@ -64,24 +60,25 @@ angular.module('starter')
 
         FFAdefault.createFFA($scope.ffagameschema)
             .success(function (data, status, headers, config) {
-                console.log("success - data");
-                console.log(data);
+                $ionicPopup.alert({
+                    title: 'SUCCESS',
+                    template: 'FFA has been created.'
+                });
             })
             .error(function (data, status, headers, config) {
-                console.log("error - data");
-                console.log(data);
+                $ionicPopup.alert({
+                    title: 'ERROR',
+                    template: 'something went wrong.'
+                });
             });
     };
     $scope.playFFA = function () {
         $location.path('/acc/FFA/'+$scope.userName);
-        console.log("playFFA");
         // createModal('starting-modal.html', 'welcome');
     };
     // set game mode index
     $scope.choose_mode = 0;
     $scope.chooseMode = function (type) {
-      console.log("type");
-      console.log(type);
         if (type == $scope.choose_mode)
             $scope.choose_mode = 0;
         else {
@@ -98,12 +95,9 @@ angular.module('starter')
         .success(function (games, status, headers, config) {
             $scope.error_msg = null;
             $scope.games = [];
-            console.log($rootScope.loginUserGames)
             for (var i = 0; i < games.length; i++) {
-                console.log(games[i].uniqueKey)
                 for(var k=0; k<$rootScope.loginUserGames.length; k++){
                     if (games[i].uniqueKey == $rootScope.loginUserGames[k]) {
-                        console.log("gamefound")
                         $scope.games.push(games[i]);
                     }
                 }
@@ -114,7 +108,10 @@ angular.module('starter')
         })
         .error(function (data, status, headers, config) {
             $scope.error_msg = $translate.instant('network_error');
-            console.log("Could not fetch game metadata from server");
+            $ionicPopup.alert({
+                title: 'ERROR',
+                template: 'something went wrong.'
+            });
         });
 
     //Selected game
@@ -183,7 +180,6 @@ angular.module('starter')
     $scope.list = [];
 
     accAPI.getAllBaseGames(thisUser).success(function (data, status, headers, config) {
-      console.log("ProfTeacherCtrl - getAll.success("+thisUser+")");
         $scope.list = [];
         $scope.error_msg = null;
         for (var i = 0; i < data.length; i++) {
@@ -203,7 +199,6 @@ angular.module('starter')
             $scope.noData = false;
         }
     }).error(function (data, status, headers, config) {
-      console.log("ProfTeacherCtrl - error()");
         $scope.error_msg = $translate.instant('network_error');
         $rootScope.notify(
             $translate.instant('oops_wrong'));
@@ -214,12 +209,10 @@ angular.module('starter')
     $scope.animation = false;
 
     $scope.createGame = function () {
-      console.log("ProfTeacherCtrl - createGame()");
         // $scope.modal.remove();
         Edit.resetGame();
     };
     $scope.cancelGame = function () {
-      console.log("ProfTeacherCtrl - cancelGame()");
         $ionicHistory.goBack();
     };
 
@@ -227,24 +220,6 @@ angular.module('starter')
     $scope.newgame = {}; //General description of the game
     $scope.navactivities = []; // List of activities and types
     $scope.game_mode = 0;
-
-    // // set base amount
-    // $scope.newgame.baseAmount = 1;  //default 2 bases
-    // $scope.base = Array.apply(null, Array(10)).map(function () {
-    //   console.log("ProfTeacherCtrl - base()");
-    //     return "ion-ios-star-outline"
-    // });
-    // // set base amount of the game in stars
-    // $scope.setBaseAmount = function (baseAmount) {
-    //   console.log("ProfTeacherCtrl - setBaseAmount(baseAmount)");
-    //     $scope.base = Array.apply(null, Array(10)).map(function () {
-    //         return "ion-ios-star-outline"
-    //     });
-    //     for (var i = 0; i <= baseAmount; i++) {
-    //         $scope.base[i] = "ion-ios-star";
-    //     }
-    //     $scope.newgame.baseAmount = baseAmount + 1;
-    // };
 
     $scope.addedTeam = [];
     $scope.gameTeams = [];
@@ -260,8 +235,6 @@ angular.module('starter')
     //Choose Activity
     $scope.game_mode = 0;
     $scope.chooseGameMode = function (type) {
-      console.log("ProfTeacherCtrl - chooseActType()");
-      console.log(type);
         if (type == $scope.game_mode)
             $scope.game_mode = 0;
         else {
@@ -271,7 +244,6 @@ angular.module('starter')
 
     var currentAct = {}; // Activity that is currently created
     $scope.addMode = function () {
-      console.log("ProfTeacherCtrl - addMode()");
         $scope.newgame.activities = [];
         var newAct = {};
         currentAct.type = "set game";
@@ -283,7 +255,6 @@ angular.module('starter')
         var checkTeamname = false;
         if (teamname != null) {
             if ($scope.addedTeam.length != 0) {
-                console.log("$scope.addedTeam.length != 0");
                 for (var i=0; i<$scope.addedTeam.length; i++) {
                     if ( teamname == $scope.addedTeam[i] ) {
                         checkTeamname = true;
@@ -296,12 +267,8 @@ angular.module('starter')
                     teamMates: []
                 };
                 $scope.team.teamName = teamname;
-                console.log("$scope.team");
-                console.log($scope.team);
-                console.log($scope.addedTeam);
                 $scope.addedTeam.push(teamname)
                 $scope.gameTeams.push($scope.team);
-                console.log($scope.gameTeams)
             }
         }
     };
@@ -485,7 +452,6 @@ angular.module('starter')
     };
 
     var Waypoint = function () {
-      console.log("ProfTeacherCtrl - Waypoint()");
         if (!(this instanceof Waypoint)) return new Waypoint();
         this.lat = "";
         this.lng = "";
@@ -494,7 +460,6 @@ angular.module('starter')
 
     // Modal Windows Routine
     var createModal = function (templateUrl, id) {
-      console.log("ProfTeacherCtrl - createModal("+templateUrl +" --- "+ id+")");
         $ionicModal.fromTemplateUrl(templateUrl, {
             id: id,
             scope: $scope,
@@ -507,17 +472,14 @@ angular.module('starter')
     };
 
     $scope.closeModal = function () {
-      console.log("ProfTeacherCtrl - closeModal()");
         $scope.modal.remove();
     };
     $scope.noTask = function () {
-      console.log("ProfTeacherCtrl - noTask()");
         $scope.modal.remove();
         // $scope.numberTask = 0;
     };
 
     $scope.$on('$destroy', function () {
-      console.log("ProfTeacherCtrl - on.destroy()");
         if (typeof $scope.modal != 'undefined') {
             $scope.modal.remove();
         }
@@ -525,7 +487,6 @@ angular.module('starter')
 
     //Add Waypoint with modal
     $scope.$on('leafletDirectiveMap.contextmenu', function (event, locationEvent) {
-      console.log("ProfTeacherCtrl - leafletDirectiveMap.contextmenu()");
         $scope.newBasepoint = new Waypoint();
         $scope.newBasepoint.lat = locationEvent.leafletEvent.latlng.lat;
         $scope.newBasepoint.lng = locationEvent.leafletEvent.latlng.lng;
@@ -536,7 +497,6 @@ angular.module('starter')
     });
 
     $scope.$on('leafletDirectiveMap.click', function (event, locationEvent) {
-      console.log("ProfTeacherCtrl - leafletDirectiveMap.click()");
         $scope.newBasepoint = new Waypoint();
         $scope.newBasepoint.lat = locationEvent.leafletEvent.latlng.lat;
         $scope.newBasepoint.lng = locationEvent.leafletEvent.latlng.lng;
@@ -551,7 +511,6 @@ angular.module('starter')
     var newMarker = {};
     // $scope.numberTask = 0;
     $scope.saveBasepoint = function () {
-      console.log("ProfTeacherCtrl - saveWayPoint()");
       $scope.actBaseMarker = {};
 
         if (($scope.newBasepoint.name == "" || $scope.newBasepoint.name == undefined) || ($scope.newBasepoint.description == undefined || $scope.newBasepoint.description == "")) {
@@ -582,13 +541,11 @@ angular.module('starter')
     };
 
     $scope.taskHandlerStart = function () {
-        console.log("ProfTeacherCtrl - taskHandlerStart()")
         createModal('templates/tasks/task_choose_AQ_SP.html', 'm3');
     };
 
     /* Handle Task Creation routine */
     $scope.addQAtask = function () {
-      console.log("ProfTeacherCtrl - addQAtask()");
         $scope.qaTask = {};
         $scope.qaTask.answers = [{}, {}, {}, {}]; // Four answers - either text or images
         $scope.qaTask.question = {};
@@ -603,7 +560,6 @@ angular.module('starter')
     };
 
     $scope.addGRtask = function () {
-        console.log("ProfTeacherCtrl - addGRtask()");
         $scope.geoTask = {};
         $scope.geoTask.base = {};
 
@@ -617,7 +573,6 @@ angular.module('starter')
 
     // add sports task
     $scope.addSPtask = function () {
-        console.log("ProfTeacherCtrl - addSPtask()");
         $scope.sportTask = {};
         $scope.sportTask.exercise = {};
         $scope.exercises = [
@@ -632,8 +587,6 @@ angular.module('starter')
 
     $scope.submitSP = function () {
         $scope.sportTask.type = "SP";
-        console.log($scope.sportTask.exercise);
-        console.log($scope.sportTask.repetitions);
         $scope.newgame.tasks.push($scope.sportTask);
         $scope.closeModal();
         createModal('templates/tasks/task_choose_AQ_SP.html')
@@ -641,12 +594,8 @@ angular.module('starter')
 
 
     $scope.imgUpload = function(file, $event) {
-        console.log("ProfTeacherCtrl - imgUpload()");
-        console.log("file");
-        console.log(file);
         if (file) {
             var upload = accAPI.uploadImage(file);
-            console.log("upload");
             var reader = new FileReader();
             var isQuestion = false;
 
@@ -670,7 +619,6 @@ angular.module('starter')
                     isGeoref = true;
                     break;
             }
-            console.log("upload - 01");
             // Previewing the image
             reader.onload = function(event) {
                 if (isGeoref) {
@@ -682,12 +630,8 @@ angular.module('starter')
                 }
                 $scope.$apply();
             }
-            console.log("upload - 02");
             reader.readAsDataURL(file);
-            console.log("upload - 03");
             upload.then(function(res) {
-                console.log("res");
-                console.log(res);
                 if (res.status == 200) {
                     //$scope.picFilename[picIndex] = res.data.img_file;
                     if (isGeoref) {
@@ -699,10 +643,18 @@ angular.module('starter')
                     }
                 } else {
                     console.log('Error! Pic POSTed, but no filename returned')
+                    $ionicPopup.alert({
+                        title: 'ERROR',
+                        template: 'error returning filename.'
+                    });
                 }
                 //console.log($scope.picFilename);
             }), function(res) {
                 console.log("Error uploading image.", res);
+                $ionicPopup.alert({
+                    title: 'ERROR',
+                    template: 'Error uploading image.'
+                });
             }
         }
     };
@@ -740,7 +692,6 @@ angular.module('starter')
     };
 
     $scope.submitGR = function (img_file) {
-      console.log("ProfTeacherCtrl - submitGR()");
         /*Creation of game content */
         $scope.geoTask.type = "GeoReference";
         $scope.geoTask.base.lat = $scope.actBaseMarker.lat;
@@ -749,9 +700,7 @@ angular.module('starter')
         $scope.geoTask.lat = $scope.gameMap.markers[0].lat;
         $scope.geoTask.lng = $scope.gameMap.markers[0].lng;
         $scope.newgame.tasks.push($scope.geoTask);
-        //newMarker.tasks.push($scope.geoTask);
 
-        // $scope.numberTask++;
         $scope.closeModal();
         createModal('templates/tasks/task_georef.html', 'createGR');
         // $scope.georP = null;
@@ -759,13 +708,11 @@ angular.module('starter')
 
     // Add points to the Activity
     $scope.addActPoints = function () {
-      console.log("ProfTeacherCtrl - addActPoints()");
         currentAct.basepoints = $scope.mainMap.markers;
         $scope.newgame.activities.push(currentAct);
     };
 
     $scope.stopCreation = function () {
-      console.log("ProfTeacherCtrl - stopCreation()");
         $ionicHistory.goBack();
         $ionicHistory.goBack();
         $scope.newgame = {};
@@ -773,12 +720,10 @@ angular.module('starter')
     };
 
     $scope.finishGame = function () {
-      console.log("ProfTeacherCtrl - finishGame()");
       $scope.newgame.gameCreator = thisUser;
       $scope.newgame.team = $scope.gameTeams;
         accAPI.saveBaseItem($scope.newgame)
             .success(function (data, status, headers, config) {
-                console.log("FINISH")
                 $rootScope.hide();
                 $rootScope.doRefresh(1);
                 $ionicHistory.goBack();
@@ -793,13 +738,11 @@ angular.module('starter')
     };
 
     $scope.removeMarkers = function () {
-      console.log("ProfTeacherCtrl - removeMarkers()");
         $scope.modal.remove();
     };
 
     //Control of Navigation
     $scope.disableSwipe = function () {
-      console.log("ProfTeacherCtrl - disableSwipe()");
         $ionicSlideBoxDelegate.enableSlide(false);
     };
 
@@ -810,8 +753,6 @@ angular.module('starter')
          var user = thisUser;
          accAPI.getOneBaseGame(user, gamename)
              .success(function (data, status, headers, config) {
-                 console.log("data - success");
-                 console.log(data);
                  if (data.length == 0) {$scope.slideTo(1);}
                  else {
                      $ionicPopup.alert({
@@ -822,12 +763,11 @@ angular.module('starter')
              .error(function (data, status, headers, config) {
                  $ionicPopup.alert({
                      title: 'ERROR',
-                     template: 'there has been an error.\nPlease try again.'});
+                     template: 'there has been an error. Please try again.'});
              });
      };
 
     $scope.slideTo = function (index) {
-      console.log("ProfTeacherCtrl - slideTo()");
         if (index == 1) {
             $scope.emptyFields = [false, false];
             if ($scope.newgame.name == undefined || $scope.newgame.description == undefined) {
@@ -857,7 +797,7 @@ angular.module('starter')
                $ionicSlideBoxDelegate.slide(index);
            }
        } else if (index == 4) {
-           if ($scope.sportTask == undefined || $scope.qaTask == undefined || $scope.geoTask == undefined) {
+           if ($scope.sportTask == undefined && $scope.qaTask == undefined && $scope.geoTask == undefined) {
                var confirmPopup = $ionicPopup.confirm({
                  title: 'Are you sure?',
                  template: 'Press OK if you really want to continue without adding any task.'
@@ -881,7 +821,6 @@ angular.module('starter')
 
     // Delete the entire game by clicking on the trash icon
     $scope.deleteBaseItem = function (item, name) {
-        console.log("ProfTeacherCtrl - deleteItem()");
         // confirm deleting BaseGame
         var confirmPopup = $ionicPopup.confirm({
           title: 'Are you sure?',
@@ -907,7 +846,6 @@ angular.module('starter')
     };
 
     $scope.editBaseItem = function (item) {
-      console.log("ProfTeacherCtrl - editItem()");
         $scope.navactivities = [];
 
         accAPI.getOneBaseGame(item.name, thisUser)
@@ -916,6 +854,10 @@ angular.module('starter')
             }).error(function (data, status, headers, config) {
                 $rootScope.notify(
                     $translate.instant('oops_wrong'));
+                    $ionicPopup.alert({
+                        title: 'ERROR',
+                        template: 'something went wrong.'
+                    });
             });
 
         $scope.editedGame = $scope.list[$scope.list.indexOf(item)];
@@ -926,43 +868,14 @@ angular.module('starter')
 
 
     $scope.toggleActivity = function (activity) {
-      console.log("ProfTeacherCtrl - toggleActivity()");
         activity.show = !activity.show;
     };
     $scope.isActivityShown = function (activity) {
-      console.log("ProfTeacherCtrl - isActivityShown()");
         return activity.show;
     };
     $scope.closeModal = function () {
-      console.log("ProfTeacherCtrl - closeModal()");
         $scope.modal.hide();
     };
-
-    // $scope.saveEditedGame = function () {
-    //   console.log("ProfTeacherCtrl - saveEditedGame()");
-    //     /*First delete the existing game, then save new instance.
-    //          Not a very elegant solution, but i want to sleep already.*/
-    //
-    //     //  console.log(JSON.stringify($scope.deleteGame) == JSON.stringify($scope.editedGame));
-    //     accAPI.deleteBaseItem($scope.deleteGame.name, $rootScope.getToken())
-    //         .success(function (data, status, headers, config) {
-    //             $rootScope.hide();
-    //             $scope.list.splice($scope.list.indexOf($scope.deleteGame), 1);
-    //         }).error(function (data, status, headers, config) {
-    //             $rootScope.notify(
-    //                 $translate.instant('oops_wrong'));
-    //         });
-    //
-    //     accAPI.saveBaseItem($scope.editedGame)
-    //         .success(function (data, status, headers, config) {
-    //             $scope.list.push($scope.editedGame);
-    //             $scope.modal.hide();
-    //         })
-    //         .error(function (data, status, headers, config) {
-    //             $rootScope.hide();
-    //             $translate.instant('oops_wrong');
-    //         });
-    // };
 })
 
 // #################################################################################################
@@ -1357,12 +1270,8 @@ angular.module('starter')
     $scope.GameData = GameData; // ugly hack to make GameData visible in directives
     var gameKey = GameData.getBaseIDs();
 
-    console.log("GameData");
-    console.log(GameData);
-
     /* only for debug purposes */
     var debugState = function () {
-        console.log("debugState function()");
         return {
             gameName: $scope.gameName,
             gameloaded: $scope.gameLoaded,
@@ -1376,7 +1285,6 @@ angular.module('starter')
     };
 
     var createModal = function (templateUrl, id) {
-        console.log("createModal - function("+templateUrl+" "+id+")");
         $ionicModal.fromTemplateUrl(templateUrl, {
             id: id,
             scope: $scope,
@@ -1403,7 +1311,6 @@ angular.module('starter')
                 $scope.gameTeamscope = data.data[0].team;
                 $scope.gameTaskscope = data.data[0].questions;
                 $scope.gameUniqueKey = data.data[0].uniqueKey;
-                console.log($scope.game);
             })
         setBasePoints()
     };
@@ -1433,7 +1340,6 @@ angular.module('starter')
                 if($scope.gameDatascope.indexOf(data.data.userName) < 0){
                     for(var i=0; i<$scope.gameTeamscope.length; i++){
                         var inTheGame = $scope.gameTeamscope[i].teamMates.indexOf(data.data.userName)
-                        console.log(inTheGame)
                         if(inTheGame > -1){
                             $ionicPopup.alert({
                                 title: 'The Player is already in the game!'
@@ -1492,7 +1398,6 @@ angular.module('starter')
                                 }
                                 $scope.gameDatascope = data.data[0].players;
                                 $scope.gameTeamscope = data.data[0].team;
-                                console.log($scope.game);
                             })
                     })
             }
@@ -1500,7 +1405,6 @@ angular.module('starter')
     }
 
     $scope.attackBase = function(lat, lng){
-        console.log("attackBase");
         var centerOfMap = $rootScope.centerOfMap;
         var dest = L.latLng(lat, lng);
         var distance = centerOfMap.distanceTo(dest);
@@ -1510,11 +1414,9 @@ angular.module('starter')
             var max = $scope.gameTaskscope.length - 1;
             var random  = Math.floor(Math.random() * (max - min + 1)) + min;
             if($scope.gameTaskscope[random].type == "QA"){
-                console.log("QA")
                 for(var i=0; i<$scope.basepoints.length; i++){
                     if($scope.basepoints[i].latitude == lat && $scope.basepoints[i].longitude == lng){
                         performQATask(random, $scope.basepoints[i]._id)
-                        console.log($scope.basepoints[i]);
                     }
                 }
             }
@@ -1527,11 +1429,9 @@ angular.module('starter')
                 }
             }
             else if($scope.gameTaskscope[random].type == "SP"){
-                console.log('SP');
                 for(var i=0; i<$scope.basepoints.length; i++){
                     if($scope.basepoints[i].latitude == lat && $scope.basepoints[i].longitude == lng){
                         performSPTask(random, $scope.basepoints[i]._id)
-                        console.log($scope.basepoints[i]);
                     }
                 }
             }
@@ -1559,11 +1459,8 @@ angular.module('starter')
     }
 
     var performQATask = function (random, baseID) {
-        console.log("performQATask");
-        console.log(baseID);
         createModal('qa-modal.html', 'qa');
 
-        //$scope.nonTextAnswer = false; // True if images are used as answers
         $scope.answerPicked = false;
 
         if (typeof $scope.gameTaskscope[random].answers == 'undefined') {
@@ -1663,19 +1560,13 @@ angular.module('starter')
 
 
     var performSPTask = function (random, baseID) {
-        console.log("performSPTask");
-        console.log(baseID);
         $scope.listening_yet = false;
         $scope.repCount = 0;
         $scope.sportTask = $scope.gameTaskscope[random].question.name;
         $scope.sportTaskReps = $scope.gameTaskscope[random].repetitions;
-        console.log($scope.sportTask + ' ' + $scope.sportTaskReps);
         $scope.done = false;
         $scope.icon = {};
         createModal("sp-modal.html");
-
-
-
     };
 
     /**
@@ -1747,7 +1638,6 @@ angular.module('starter')
         // these variables are set on EVERY new data set arrival, and are used in the bellow motion capture functions
         z_acceleration = parseFloat(acceleration.z);
         y_acceleration = parseFloat(acceleration.y);
-        console.log(z_acceleration);
     }
 
     /**
@@ -1801,7 +1691,6 @@ angular.module('starter')
                 // set freshlyTriggered = true, so up()-function knows that it is called from outside, as opposed to recursively!
                 freshlyTriggered = true;
                 countBeschlGroesserEins = 0;
-                console.log('into UP()');
                 upSHJ();
             }
             else {
@@ -1846,7 +1735,6 @@ angular.module('starter')
                 upSQA();
             }
             else {
-                console.log(countBeschlGroesserEins);
                 console.log('recursive into down');
                 downSQA();
             }
@@ -1931,11 +1819,9 @@ angular.module('starter')
                 repCount = repCount+1;
                 $scope.repCount = repCount;
                 document.getElementById('squad_reps').innerHTML = repCount;
-                console.log('into Down(), rep #' +repCount);
                 spDone(repCount, 'Squads');
             }
             else {
-                console.log('recursive into up');
                 upSQA();
             }
         }, 2);
@@ -1952,7 +1838,6 @@ angular.module('starter')
 
             // if triggered from the outside (i.e. freshlyTriggered == true)
             if (freshlyTriggered) {
-                console.log('got to JUMP()');
                 freshlyTriggered = false;
             }
 
@@ -1974,13 +1859,11 @@ angular.module('starter')
                 repCount = repCount + 1;
                 $scope.exercise.repCount = repCount;
                 document.getElementById('squad-jump_reps').innerHTML = repCount;
-                console.log('into DOWN(), rep #' + repCount);
                 spDone(repCount, 'Squads & High Jumps');
             }
             else {
 
                 // if motion is yet unfinished, recursive call jump() again
-                console.log('recursive into jump');
                 jumpSHJ();
             }
         }, 2);
@@ -2692,7 +2575,6 @@ angular.module('starter')
     };
 
     var createModal = function (templateUrl, id) {
-      console.log("createModal - function("+templateUrl+" "+id+")");
         $ionicModal.fromTemplateUrl(templateUrl, {
             id: id,
             scope: $scope,
@@ -2709,23 +2591,17 @@ angular.module('starter')
     };
 
     var configGame = function () {
-      console.log("configGame");
         $translate.use(SenseBox.getConfig('language'));
-        // initializeMarker($scope.userName);
     };
 
     var initializeMarker = function (user) {
-      console.log("initializeMarker()");
       $scope.$broadcast('senseBoxLoadedEvent', user);
     };
 
     $scope.showSensemap = function () {
-        console.log("showSensemap - function ()");
         createModal('templates/map/sensemap.html'); //tasks/georef_type.html'); //sensemap
             FFAdefault.getBaseMarkerFromFFA()
                     .then(function(res) {
-                      console.log("res");
-                      console.log(res);
                       // $scope.locate();         // TODO: uf on mobile device
 
                       var object = res;
@@ -2755,13 +2631,10 @@ sensorMessage=sensorMessage+'<br>'+boxArray[i].sensors[j].title+' '+boxArray[i].
                           };
                           $scope.senseMap.markers[boxArray[i].id] = marker;
                       }
-                      console.log("$scope.senseMap.markers");
-                      console.log($scope.senseMap.markers);
             })
     };
 
     $scope.attackBase = function(lat, lng){
-        console.log("attackBase");
         var centerOfMap = $rootScope.centerOfMap;
         var dest = L.latLng(lat, lng);
         var distance = centerOfMap.distanceTo(dest);
@@ -2771,11 +2644,10 @@ sensorMessage=sensorMessage+'<br>'+boxArray[i].sensors[j].title+' '+boxArray[i].
             var max = $scope.gameTaskscope.length - 1;
             var random  = Math.floor(Math.random() * (max - min + 1)) + min;
             if($scope.gameTaskscope[random].type == "QA"){
-                console.log("QA")
                 for(var i=0; i<$scope.basepoints.length; i++){
                     if($scope.basepoints[i].latitude == lat && $scope.basepoints[i].longitude == lng){
                         performQATask(random, $scope.basepoints[i]._id)
-                        console.log($scope.basepoints[i]);
+
                     }
                 }
             }
@@ -2807,8 +2679,6 @@ sensorMessage=sensorMessage+'<br>'+boxArray[i].sensors[j].title+' '+boxArray[i].
     }
 
     var performQATask = function (random, baseID) {
-        console.log("performQATask");
-        console.log(baseID);
         createModal('qa-modal.html', 'qa');
 
         //$scope.nonTextAnswer = false; // True if images are used as answers
@@ -2913,7 +2783,6 @@ sensorMessage=sensorMessage+'<br>'+boxArray[i].sensors[j].title+' '+boxArray[i].
     //TODO: bei annäherung an eine Base --> attack button --> angreifen der Base
     //TODO: tasks anzeigen
 
-    //TODO: Wofür?
     $scope.$on('$destroy', function () {
         if (typeof $scope.modal != 'undefined') {
             $scope.modal.remove();
@@ -2923,7 +2792,6 @@ sensorMessage=sensorMessage+'<br>'+boxArray[i].sensors[j].title+' '+boxArray[i].
     SenseBox.FFA()
         .then(configGame);
 }])
-
 // #################################################################################################
 // controller for map in origami play mode
 // #################################################################################################
@@ -2954,7 +2822,6 @@ sensorMessage=sensorMessage+'<br>'+boxArray[i].sensors[j].title+' '+boxArray[i].
     $scope.showMarker = false;
 
     $scope.$on('FFAgameLoadedEvent', function(event, args) {
-      console.log("FFAgameLoadedEvent");
         $scope.init();
     });
 
@@ -3076,14 +2943,16 @@ sensorMessage=sensorMessage+'<br>'+boxArray[i].sensors[j].title+' '+boxArray[i].
                 });
             }, function (err) {
                 // error
-                console.log("Geolocation error!");
                 console.log(err);
+                $ionicPopup.alert({
+                    title: 'ERROR',
+                    template: 'error with your geolocation.'
+                });
             });
     };
 
     /* (Re)compute distance to destination once map moves */
     $scope.$on('leafletDirectiveMap.move', function (event, args) {
-        console.log("leafletDirectiveMap.move - function()");
         var map = args.leafletEvent.target;
         var center = map.getCenter();
         $rootScope.centerOfMap = center;
@@ -3095,7 +2964,6 @@ sensorMessage=sensorMessage+'<br>'+boxArray[i].sensors[j].title+' '+boxArray[i].
                   $scope.map.markers = {};
                   $scope.map.markers.PlayerPos = playerpos;
                   // $scope.locate();         // TODO: uf on mobile device
-
 
                   var object = res;
                   var possibleToSee = false;
@@ -3147,14 +3015,6 @@ sensorMessage=sensorMessage+'<br>'+boxArray[i].sensors[j].title+' '+boxArray[i].
         //####################################################
         //#### compute distance to marker ####################
         //####################################################
-
-        $scope.$on('BasepointReachedEvent', function (event) {
-            console.log("hey du hast eine Base erreicht");
-            // $scope.congratsMessage = congratsMessages[Math.floor(Math.random() * congratsMessages.length)]; // show random congrats message
-            // PlayerStats.endWaypoint();
-            //TODO: on BasepointAttackEvent create Modal Questions
-            // createModal('waypoint-reached-modal.html', 'waypoint');
-        });
 
         $scope.trackPosition = function () {
             var watchOptions = {
@@ -3222,14 +3082,11 @@ sensorMessage=sensorMessage+'<br>'+boxArray[i].sensors[j].title+' '+boxArray[i].
 
         // Show player position if button is pressed
         $scope.showUsersPosition = function () {
-          console.log("showUsersPosition");
             if ($scope.showMarker == false) {
                 $scope.showMarker = true;
                 $scope.playerMarkerButtonColor = "button-balanced";
 
                 if (typeof $scope.map.markers.PlayerPos != "undefined") {
-                  console.log("$scope.map.markers.PlayerPos");
-                  console.log($scope.map.markers.PlayerPos);
                     $scope.map.markers.PlayerPos.icon = {
                         iconUrl: './img/icons/Youarehere.png',
                         iconSize: [48, 48],
