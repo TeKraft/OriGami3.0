@@ -508,9 +508,6 @@ angular.module('starter')
 
     $scope.closeModal = function () {
       console.log("ProfTeacherCtrl - closeModal()");
-      $ionicPopup.alert({
-          title: 'closeModal()',
-          template: 'remove'});
         $scope.modal.remove();
     };
     $scope.noTask = function () {
@@ -588,11 +585,6 @@ angular.module('starter')
         console.log("ProfTeacherCtrl - taskHandlerStart()")
         createModal('templates/tasks/task_choose_AQ_SP.html', 'm3');
     };
-
-    // $scope.taskHandlerEnd = function () {
-    //     console.log("ProfTeacherCtrl - taskHandlerEnd()")
-    //     $scope.closeModal();
-    // };
 
     /* Handle Task Creation routine */
     $scope.addQAtask = function () {
@@ -759,13 +751,6 @@ angular.module('starter')
         $scope.newgame.activities.push(currentAct);
     };
 
-    // $scope.addGameCreator = function (){
-    //   console.log("ProfTeacherCtrl - addGameCreator");
-    //   console.log("gameCreator in addGameCreator");
-    //   console.log(gameCreator);
-    //   $scope.newgame.gameCreator = thisUser;
-    // };
-
     $scope.stopCreation = function () {
       console.log("ProfTeacherCtrl - stopCreation()");
         $ionicHistory.goBack();
@@ -844,22 +829,35 @@ angular.module('starter')
     /* ----------------------------------------------------------------------- */
     // TODO: delete, EditBaseGame baseGame
 
-    // // Delete the entire game by clicking on the trash icon
-    // $scope.deleteBaseItem = function (item, name) {
-    //   console.log("ProfTeacherCtrl - deleteItem()");
-    //     accAPI.deleteBaseItem(name, $rootScope.getToken())
-    //         .success(function (data, status, headers, config) {
-    //             $rootScope.hide();
-    //         }).error(function (data, status, headers, config) {
-    //             $rootScope.notify(
-    //                 $translate.instant('oops_wrong'));
-    //         });
-    //     $scope.list.splice($scope.list.indexOf(item), 1);
-    // };
-    //
+    // Delete the entire game by clicking on the trash icon
+    $scope.deleteBaseItem = function (item, name) {
+        console.log("ProfTeacherCtrl - deleteItem()");
+        // confirm deleting BaseGame
+        var confirmPopup = $ionicPopup.confirm({
+          title: 'Are you sure?',
+          template: 'Press OK if you really want to do it.'
+        });
+        confirmPopup.then(function(res) {
+          if(res) {
+            accAPI.deleteBaseItem(name, item)
+                .success(function (data, status, headers, config) {
+                    $rootScope.hide();
+                    $ionicPopup.alert({
+                        title: 'deleted',
+                        template: 'game '+ name +' has been removed.'});
+                }).error(function (data, status, headers, config) {
+                    $ionicPopup.alert({
+                        title: 'not deleted',
+                        template: 'something went wrong'});
+                });
+            $scope.list.splice($scope.list.indexOf(item), 1);
+
+          }
+        });
+    };
+
     $scope.editBaseItem = function (item) {
       console.log("ProfTeacherCtrl - editItem()");
-      console.log(item);
         $scope.navactivities = [];
 
         accAPI.getOneBaseGame(item.name, thisUser)
@@ -887,9 +885,6 @@ angular.module('starter')
     };
     $scope.closeModal = function () {
       console.log("ProfTeacherCtrl - closeModal()");
-      $ionicPopup.alert({
-          title: 'closeModal()',
-          template: 'hide'});
         $scope.modal.hide();
     };
 
@@ -2227,25 +2222,6 @@ angular.module('starter')
     var configGame = function () {
       console.log("configGame");
         $translate.use(SenseBox.getConfig('language'));
-        // $scope.TIME_LIMIT = SenseBox.getConfig('qaTimeLimit'); // time limit to answer question (in seconds)
-        // $scope.gameLoaded = true;
-        // accAPI.getFFAGame($scope.userName)
-        //     .then(function (data) {
-        //       console.log("data");
-        //       console.log(data);
-        //         // $scope.game = data.data[0];
-        //         // $scope.gameTeamnamescope = [];
-        //         // for(var i=0; i<data.data[0].team.length; i++){
-        //         //     $scope.gameTeamnamescope.push(data.data[0].team[i].teamName)
-        //         // }
-        //         // $scope.gameDatascope = data.data[0].players;
-        //         // $scope.gameTeamscope = data.data[0].team;
-        //         // console.log($scope.gameDatascope);
-        //         // console.log($scope.gameTeamscope);
-        //         // console.log($scope.game);
-        //         // console.log($scope.gameTeamnamescope);
-        //     })
-
         // initializeMarker($scope.userName);
     };
 
@@ -2447,26 +2423,6 @@ sensorMessage=sensorMessage+'<br>'+boxArray[i].sensors[j].title+' '+boxArray[i].
     //TODO: show online user/ show user playing FFA
     //TODO: bei annäherung an eine Base --> attack button --> angreifen der Base
     //TODO: tasks anzeigen
-
-    // $scope.$on('modal.hidden', function (event, modal) {
-    //     // Start playing once the game info dialog is dismissed
-    //     if (modal.id === 'info') {
-    //       setBasePoints();
-    //         handleNextActivity();
-    //     } else if (modal.id === 'error') {
-    //         $location.path('/');
-    //     } else if (modal.id === 'georef') {
-    //         $scope.$broadcast('georefEvent', $scope.task);
-    //     } else if (modal.id === 'qa') {
-    //         $scope.$broadcast('qaEvent', $scope.task);
-    //     } else if (modal.id === 'georefResult') {
-    //         handleTask();
-    //     } else if (modal.id === 'qaResult') {
-    //         handleTask();
-    //     } else if (modal.id === 'waypoint') {
-    //         handleTask();
-    //     }
-    // });
 
     //TODO: Wofür?
     $scope.$on('$destroy', function () {
@@ -2711,107 +2667,6 @@ sensorMessage=sensorMessage+'<br>'+boxArray[i].sensors[j].title+' '+boxArray[i].
             // createModal('waypoint-reached-modal.html', 'waypoint');
         });
 
-        //####################################################
-        //############### for georef task ####################
-        //####################################################
-
-        // $scope.$on('leafletDirectiveMap.zoomend', function (event, args) {
-        //     if ($scope.getRealTimePos) {
-        //         $scope.toggleGeoLocation(false);
-        //         $scope.locate();
-        //         $scope.toggleGeoLocation(false);
-        //     }
-        // });
-        // $scope.$on('leafletDirectiveMap.contextmenu', function (event, locationEvent) {
-        //     if ($scope.allowEdit) {
-        //         leafletData.getMap()
-        //             .then(function (map) {
-        //                 $scope.newGeoRefPoint = new GeoRefPoint();
-        //                 $scope.newGeoRefPoint.lat = locationEvent.leafletEvent.latlng.lat;
-        //                 $scope.newGeoRefPoint.lng = locationEvent.leafletEvent.latlng.lng;
-        //
-        //                 var marker = {
-        //                     lat: $scope.newGeoRefPoint.lat,
-        //                     lng: $scope.newGeoRefPoint.lng,
-        //                     message: "Marked photograph location",
-        //                     focus: true,
-        //                     icon: {
-        //                         iconUrl: './img/icons/PhotoMarker2.png',
-        //                         iconSize: [24, 38],
-        //                         iconAnchor: [12, 38]
-        //                     }
-        //                 };
-        //                 var marker2 = {
-        //                     lat: $scope.georef.lat,
-        //                     lng: $scope.georef.lng,
-        //                     message: "Original photograph location",
-        //                     focus: true,
-        //                     icon: {
-        //                         iconUrl: './img/icons/PhotoMarker1.png',
-        //                         iconSize: [24, 38],
-        //                         iconAnchor: [12, 38]
-        //                     }
-        //                 };
-        //                 $scope.map.markers.playerPhotoMark = marker;
-        //                 $scope.map.markers.origPhotoMark = marker2;
-        //
-        //                 var origLocation = L.latLng($scope.georef.lat, $scope.georef.lng);
-        //                 var markedLocation = L.latLng($scope.newGeoRefPoint.lat, $scope.newGeoRefPoint.lng);
-        //                 var distance = parseInt(origLocation.distanceTo(markedLocation));
-        //
-        //                 /* Georef task - Path from where the photograph was originally taken to where the player marked */
-        //                 var path = {
-        //                     type: "polyline",
-        //                     color: 'red',
-        //                     weight: 5,
-        //                     latlngs: [origLocation, markedLocation]
-        //                 };
-        //
-        //                 $scope.map.paths = {
-        //                     'georefTaskPath': path
-        //                 };
-        //
-        //                 $scope.map.center = {
-        //                     lat: $scope.georef.lat,
-        //                     lng: $scope.georef.lng,
-        //                     zoom: $scope.map.center.zoom
-        //                 };
-        //
-        //                 $scope.allowEdit = false;
-        //                 /* Draw and show path between original and marked locations for 2 seconds. Then show modal*/
-        //                 $timeout(function () {
-        //                     delete $scope.map.paths.georefTaskPath;
-        //                     delete $scope.map.markers.playerPhotoMark;
-        //                     delete $scope.map.markers.origPhotoMark;
-        //                     PlayerStats.endTask ({
-        //                         "marked_lat" : $scope.newGeoRefPoint.lat,
-        //                         "marked_lng" : $scope.newGeoRefPoint.lng,
-        //                         "distance_in_m" : distance
-        //                     });
-        //                     $scope.$emit('geoRefMarkedEvent', distance);
-        //                 }, 2000);
-        //                 //$scope.map.markers.pop();
-        //                 //$scope.map.markers.pop();
-        //             });
-        //     };
-        // });
-        //
-        // $scope.$on('georefEvent', function (event, args) {
-        //     $scope.allowEdit = true;
-        //     $scope.georef = {};
-        //
-        //     /* Dummy values. Remove after georeferecing task editing has been implemented*/
-        //     if (typeof args.lat === "undefined") {
-        //         $scope.georef.lat = 51.9649;
-        //         $scope.georef.lng = 7.601;
-        //         args.lat = 51.94;
-        //         args.lng = 7.60;
-        //     } else {
-        //         $scope.georef.lat = args.lat;
-        //         $scope.georef.lng = args.lng;
-        //     }
-        // });
-        //
         $scope.trackPosition = function () {
             var watchOptions = {
                 frequency: 100,
@@ -2871,13 +2726,6 @@ sensorMessage=sensorMessage+'<br>'+boxArray[i].sensors[j].title+' '+boxArray[i].
                 $scope.trackWatch.clearWatch();
             }
         };
-
-        // $scope.$on('gameOverEvent', function (event) {
-        //     if ($scope.getRealTimePos == true) {
-        //         // Turn off geolocation watch and reenable map drag
-        //         $scope.toggleGeoLocation(false);
-        //     }
-        // });
 
         //####################################################
         //######### show position of user ####################

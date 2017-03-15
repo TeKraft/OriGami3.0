@@ -406,13 +406,19 @@ angular.module('starter.services', [])
         updateBasepoint: function(data){
             return $http.post(base + '/baseUpdate', data)
         },
-
-        //
-        // deleteItem: function (uniqueKey) {
-        //     return $http.delete(base + '/baseGames/baseItem/' + uniqueKey, {
-        //         method: 'DELETE',
-        //     });
-        // },
+        deleteBaseItem: function (name, object) {
+           console.log("object");
+           console.log(object);
+           console.log(object.basekey.length);
+           var toDeleteBases;
+           for (var i=0; i<object.basekey.length; i++) {
+             console.log(object.basekey[i]);
+               toDeleteBases = toDeleteBases + '-' + object.basekey[i];
+           }
+             return $http.delete(base + '/baseGames/baseItem/' + name + '/' + object._id + '/' + object.creator + '/' + toDeleteBases, {
+                 method: 'DELETE',
+             });
+         },
         getImageURL: function(name) {
             if (name == undefined) {
                 return null
