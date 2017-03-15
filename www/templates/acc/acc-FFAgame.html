@@ -40,9 +40,9 @@
             </div>
             <div id="button-container">
                 <!--Button to display modal where you can add players -->
-                <button class="button button-fab map-button next {{geoLocButtonColor}} icon ion-person-add waves-effect waves-button waves-light" ng-click="inviteUsersModal()"></button>
+        <!-- <button class="button button-fab map-button next {{geoLocButtonColor}} icon ion-person-add waves-effect waves-button waves-light" ng-click="inviteUsersModal()"></button> -->
                 <!--Button to display modal with waypoint info (hide during georeferencing task) -->
-                <button class="button button-fab map-button next {{geoLocButtonColor}} icon ion-information waves-effect waves-button waves-light" ng-click="showWaypointInfoModal()" ng-hide="task.type == 'GeoReference'"></button>
+                <button class="button button-fab map-button next {{geoLocButtonColor}} icon ion-information waves-effect waves-button waves-light" ng-click="showSensemap()"></button>
                 <!--Button to display modal georeferencing question -->
                 <button class="button button-fab map-button next {{geoLocButtonColor}} icon ion-help waves-effect waves-button waves-light" ng-click="performGeoReferencingTask()" ng-show="task.type == 'GeoReference'"></button>
                 <!--Button to dislpay player's position on map as icon. Icon is hidden after 5 seconds -->

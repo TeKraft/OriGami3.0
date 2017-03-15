@@ -469,10 +469,8 @@ angular.module('starter.services', [])
               method: 'GET',
           });
         },
-        getBaseMarkerFromFFA: function (name) {
-          console.log("name#########################################");
-          console.log(name);
-          return $http.get(Server + '/FFAGame/item/' + name, {
+        getBaseMarkerFromFFA: function () {
+          return $http.get(Server + '/FFAGame/item', {
             method: 'GET',
           });
         },
@@ -624,37 +622,11 @@ angular.module('starter.services', [])
         }
         return null;
     };
-    // data.FFA = function (name) {
-    //     console.log('In loadFFAGame');
-    //     console.log(name);
-    //     console.log(Server);
-    //     var defer = $q.defer();
-    //     var FFAgame = $http.get(Server + '/FFAgame/item/' + name)
-    //         .then(function (response) {
-    //           console.log(response);
-    //             // game = response.data[0];
-    //             // loaded = true;
-    //             // if(game.hasOwnProperty('config') == false){
-    //             //     game.config={};
-    //             // }
-    //             // angular.merge (config, default_config, game.config);
-    //             // $rootScope.$broadcast('usergameLoadedEvent');
-    //             // defer.resolve();
-    //
-    //         },
-    //         function (response) {
-    //             console.log("Fetching game data. HTTP GET request failed");
-    //             console.log(response);
-    //             defer.reject("Unable to fetch game data. HTTP GET request faield")
-    //         });
-    //         console.log("FFAgame");
-    //         console.log(FFAgame);
-    //     return defer.promise;
-    // };
-    data.FFA = function(name){
+    
+    data.FFA = function(){
         console.log('In FFA service')
         var defer = $q.defer();
-        var FFAgame = $http.get(Server + '/FFAGame/item/' + name)
+        var FFAgame = $http.get(Server + '/FFAGame/item')
             .then(function (response) {
               console.log(response);
                 game = response.data[0];

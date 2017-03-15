@@ -1,0 +1,11 @@
+<ion-modal-view  style="height:75%; " >
+    <ion-content class="geor_p" style="background-color:#00997a;" data-tap-disabled="true">
+        <h2>Map with Senseboxes</h2>
+
+      <div class="senseMapStyle">
+          <leaflet defaults="senseMap.defaults" layers="senseMap.layers" center="senseMap.center" paths="senseMap.paths" markers="senseMap.markers" event-broadcast="senseMap.events" ng-if="senseMap"></leaflet>
+      </div>
+
+      </ion-content>
+      <a class="skip_b" ng-click = "closeModal()"><p style="color:white;">CANCEL</p></a>
+      </ion-modal-view>

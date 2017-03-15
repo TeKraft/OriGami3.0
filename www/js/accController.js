@@ -1464,8 +1464,7 @@ angular.module('starter')
             }
             else if($scope.gameTaskscope[random].type == "GeoReference"){
                 if($scope.gameTaskscope[random].base.lat == lat && $scope.gameTaskscope[random].base.lng == lng){
-                    console.log($scope.gameTaskscope[random].img)
-                    $scope.performGeoReferencingTask($scope.gameTaskscope[random].img)
+
                 }
                 else{
                     $scope.attackBase(lat, lng);
@@ -1597,17 +1596,10 @@ angular.module('starter')
         };
     };
 
-    $scope.performGeoReferencingTask = function (imgID) {
-        console.log(imgID);
+    $scope.performGeoReferencingTask = function () {
         $scope.showInfo = true;
         $scope.subHeaderInfo = "Mark location on map";
-        console.log("in performGeaReferencingTask");
-        accAPI.getImageURL(imgID)
-            .then(function (img) {
-                console.log(img);
-                $scope.geoRefPhoto = img;
-                console.log($scope.geoRefPhoto);
-            })
+        $scope.geoRefPhoto = accAPI.getImageURL($scope.task.img);
         createModal('georef-modal.html', 'georef');
     };
 
@@ -2138,12 +2130,93 @@ angular.module('starter')
         });
 
     var thisUser = $rootScope.loginUserName;
-    console.log("thisUser");
-    console.log(thisUser);
-
     $scope.userName = thisUser;
-    console.log("$scope.userName");
-    console.log($scope.userName);
+
+    $scope.senseMap = {
+        center: {
+            autoDiscover: true,
+            zoom: 16
+        },
+
+        defaults: {
+            tileLayer: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            maxZoom: 18,
+            zoomControlPosition: 'topleft',
+            lat: 57,
+            lng: 8
+
+        },
+
+        geojson: {},
+
+        paths: {
+            userPos: {
+                type: 'circleMarker',
+                color: '#2E64FE',
+                weight: 2,
+                radius: 1,
+                opacity: 0.0,
+                clickable: false,
+                latlngs: {
+                    lat: 52,
+                    lng: 7
+                }
+            },
+            userPosCenter: {
+                type: 'circleMarker',
+                color: '#2E64FE',
+                fill: true,
+                radius: 3,
+                opacity: 0.0,
+                fillOpacity: 1.0,
+                clickable: false,
+                updateTrigger: true,
+                latlngs: {
+                    lat: 52,
+                    lng: 7
+                }
+            }
+        },
+
+        markers: {},
+        events: {
+            map: {
+                enable: ['click'],
+                logic: 'emit'
+            }
+        },
+
+        layers: {
+            baselayers: {
+                osm: {
+                    name: 'Satelite View',
+                    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                    type: 'xyz',
+                    top: true,
+                    layerOptions: {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                        continuousWorld: false
+                    }
+                },
+                streets: {
+                    name: 'Streets View',
+                    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    type: 'xyz',
+                    top: false,
+                },
+                topographic: {
+                    name: 'Topographic View',
+                    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+                    type: 'xyz',
+                    top: false,
+                    layerOptions: {
+                        attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
+                        continuousWorld: false
+                    }
+                }
+            }
+        }
+    };
 
     // go back in History to
     $scope.cancelGame = function () {
@@ -2162,15 +2235,10 @@ angular.module('starter')
             $scope.modal.show();
         });
     };
-    //
-    // $scope.closeModal = function () {
-    //   console.log("click");
-    //   $ionicPopup.alert({
-    //       title: 'closeModal()',
-    //       template: 'remove'});
-    //     $scope.modal.remove();
-    // };
 
+    $scope.closeModal = function () {
+        $scope.modal.remove();
+    };
 
     var configGame = function () {
       console.log("configGame");
@@ -2200,6 +2268,47 @@ angular.module('starter')
     var initializeMarker = function (user) {
       console.log("initializeMarker()");
       $scope.$broadcast('senseBoxLoadedEvent', user);
+    };
+
+    $scope.showSensemap = function () {
+        console.log("showSensemap - function ()");
+        createModal('templates/map/sensemap.html'); //tasks/georef_type.html'); //sensemap
+            FFAdefault.getBaseMarkerFromFFA()
+                    .then(function(res) {
+                      console.log("res");
+                      console.log(res);
+                      // $scope.locate();         // TODO: uf on mobile device
+
+                      var object = res;
+                      var possibleToSee = false;
+                      var boxArray = [];
+                      boxArray = object.data[0].bases;
+
+                      var count = 0;
+                      var potBoxes = [];
+                      for (var i=0; i<boxArray.length; i++) {
+                          // var sensorMessage = '<br>';
+                          var sensorMessage = null;
+                          for (var j=0; j<boxArray[i].sensors.length; j++) {
+                              if (boxArray[i].sensors[j].lastMeasurement != undefined) {
+sensorMessage=sensorMessage+'<br>'+boxArray[i].sensors[j].title+': '+boxArray[i].sensors[j].lastMeasurement.value+' '+boxArray[i].sensors[j].unit+'('+boxArray[i].sensors[j].lastMeasurement.createdAt+')'+'<br>of type - '+boxArray[i].sensors[j].sensorType;
+                            } else {
+sensorMessage=sensorMessage+'<br>'+boxArray[i].sensors[j].title+' '+boxArray[i].sensors[j].unit+'<br>of type - '+boxArray[i].sensors[j].sensorType;
+                            }
+                          }
+                          var marker = {
+                              lat: boxArray[i].lat,
+                              lng: boxArray[i].lng,
+                              id: boxArray[i].id,
+                              sensors: boxArray[i].sensors,
+                              message: boxArray[i].name + sensorMessage,
+                              focus: false
+                          };
+                          $scope.senseMap.markers[boxArray[i].id] = marker;
+                      }
+                      console.log("$scope.senseMap.markers");
+                      console.log($scope.senseMap.markers);
+            })
     };
 
     $scope.attackBase = function(lat, lng){
@@ -2382,7 +2491,7 @@ angular.module('starter')
         }
     });
 
-    SenseBox.FFA($scope.userName)
+    SenseBox.FFA()
         .then(configGame);
 }])
 
@@ -2543,19 +2652,13 @@ angular.module('starter')
             });
     };
 
-
-
     /* (Re)compute distance to destination once map moves */
     $scope.$on('leafletDirectiveMap.move', function (event, args) {
         console.log("leafletDirectiveMap.move - function()");
         var map = args.leafletEvent.target;
         var center = map.getCenter();
-        console.log("center");
-        console.log(center);
         $rootScope.centerOfMap = center;
-        console.log("$rootScope.centerOfMap");
-        console.log($rootScope.centerOfMap);
-        FFAdefault.getBaseMarkerFromFFA($scope.userName)
+        FFAdefault.getBaseMarkerFromFFA()
                 .then(function(res) {
                   $scope.gameTaskscope = res.data[0].questions;
                   var playerpos = null;

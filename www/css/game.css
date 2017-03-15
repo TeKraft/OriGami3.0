@@ -799,3 +799,9 @@
 	color:#444;
 	color:rgba(0, 0, 0, 0.4);
 }
+
+.senseMapStyle {
+    width: 98%;
+    height: 85%;
+    margin: auto;
+}
