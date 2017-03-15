@@ -2029,6 +2029,8 @@ console.log($scope.GameData);
             vm.user = data;
             $rootScope.loginUser = vm.user.email;
             $rootScope.loginUserName = vm.user.userName;
+            $rootScope.userFriends = vm.user.friends;
+            console.log(data);
         })
         .error(function (e) {
             $location.path('/tab/home');
@@ -2070,10 +2072,29 @@ console.log($scope.GameData);
     // Invite user as friend
     $scope.inviteUser = function () {
         var mail = angular.element('#newmail').val();
-        userService.inviteUser(mail)
+        var inFriendList = false;
+        userService.getEmailUsers(mail)
             .then(function (data) {
-                vm.user.friends.push(data.data.userName)
-                userService.update(vm.user)
+                for(var i=0; i<$rootScope.userFriends.length; i++){
+                    var inFriends = $rootScope.userFriends.indexOf(data.data.userName)
+                    if(inFriends > -1){
+                        inFriendList = true;
+                    }
+                }
+                setTimeout(function () {
+                    if(inFriendList == false){
+                        userService.inviteUser(mail)
+                            .then(function (data) {
+                                vm.user.friends.push(data.data.userName)
+                                userService.update(vm.user)
+                            })
+                    }
+                    else{
+                        $ionicPopup.alert({
+                            title: 'This user is already in your list!'
+                        });
+                    }
+                },90);
             })
     }
     $scope.friendAccount = function (friend) {

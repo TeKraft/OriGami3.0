@@ -1389,22 +1389,52 @@ angular.module('starter')
 
     //invite the new player
     $scope.inviteUser = function () {
+        var inGame = false;
         var mail = angular.element('#newUsermail').val();
-        userService.inviteUser(mail)
-            .success(function (dataUser) {
-                dataUser.games.push($scope.gameUniqueKey);
-                userService.updateFriend(dataUser)
-                    .then(function () {
-                        accAPI.getOneBaseGame($scope.userName, $scope.gameName)
-                            .success(function (dataGame) {
-                                dataGame[0].players.push(dataUser.userName);
-                                accAPI.updateBasegamePlayer(dataGame[0])
-                                    .then(function (dataGameUpdated) {
-                                        $scope.gameDatascope = dataGameUpdated.config.data.players;
-                                    })
-                            })
-                    })
-            })
+        userService.getEmailUsers(mail)
+            .then(function(data){
+                if($scope.gameDatascope.indexOf(data.data.userName) < 0){
+                    for(var i=0; i<$scope.gameTeamscope.length; i++){
+                        var inTheGame = $scope.gameTeamscope[i].teamMates.indexOf(data.data.userName)
+                        console.log(inTheGame)
+                        if(inTheGame > -1){
+                            $ionicPopup.alert({
+                                title: 'The Player is already in the game!'
+                            });
+                            inGame = true;
+                        }
+                    }
+                    setTimeout(function () {
+                        if(inGame == false){
+                            userService.inviteUser(mail)
+                                .success(function (dataUser) {
+                                    dataUser.games.push($scope.gameUniqueKey);
+                                    userService.updateFriend(dataUser)
+                                        .then(function () {
+                                            accAPI.getOneBaseGame($scope.userName, $scope.gameName)
+                                                .success(function (dataGame) {
+                                                    dataGame[0].players.push(dataUser.userName);
+                                                    accAPI.updateBasegamePlayer(dataGame[0])
+                                                        .then(function (dataGameUpdated) {
+                                                            $scope.gameDatascope = dataGameUpdated.config.data.players;
+                                                        })
+                                                })
+                                        })
+                                })
+                        }
+                        else{
+                            $ionicPopup.alert({
+                                title: 'The Player is already in the game!'
+                            });
+                        }
+                    },90);
+
+                }
+                else{
+                    $ionicPopup.alert({
+                        title: 'The Player is already in the game!'
+                    });
+                }
     }
 
     //Add a player to a Team

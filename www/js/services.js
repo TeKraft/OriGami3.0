@@ -1354,7 +1354,7 @@ angular.module('starter.services', [])
 
     function friendUser(userName){
         return $http.get(base + '/friendUser/' + userName)
-    }
+    };
 
     var friendID;
 
@@ -1365,6 +1365,13 @@ angular.module('starter.services', [])
     function getFriendID(){
         return friendID;
     };
+    function getEmailUsers(email) {
+        return $http.get(base + '/profileSearch/' + email, {
+            headers: {
+                Authorization: 'Bearer ' + authentication.getToken()
+            }});
+
+    }
 
     return {
         update : update,
@@ -1373,6 +1380,7 @@ angular.module('starter.services', [])
         getFriendID: getFriendID,
         inviteUser: inviteUser,
         friendUser: friendUser,
-        updateFriend: updateFriend
+        updateFriend: updateFriend,
+        getEmailUsers:getEmailUsers
     };
 }]);

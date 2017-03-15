@@ -229,42 +229,29 @@
         </ion-modal-view>
     </script>
 
-    <!-- model to invite users to the game -->
-    <!--<script id="stats-modal.html" type="text/ng-template">
+    <!-- model to show stats about teams and players -->
+    <script id="stats-modal.html" type="text/ng-template">
         <ion-modal-view>
             <ion-content style="height: 100%; background-color:#64B5F6">
-                <p>Invite new users to the game!</p>
-                <form method="post">
-                    <div class="list list-inset" >
-                        <label class="item item-input">
-                            <input id="newUsermail" type="text" id="firstName" class="form-control" ng-model="vm.user.firstName" placeholder="e-mail"/>
-                        </label>
-                    </div>
-                    <button class="button button-block button-calm" ng-click="inviteUser()">Invite!</button>
-                </form>
-                <p>Players without a team</p>
-                <table class="list">
-                    <tr class="list" ng-repeat="players in gameDatascope">
-                        <td class="item" id="players">
-                            {{players}}
-                            <button ng-click="assignPlayer = !assignPlayer">Assign Player to a Team!</button>
-                            <table>
-                                <tr ng-repeat="team in gameTeamnamescope">
-                                    <td>
-                                        <button ng-click="playerToTeam(players, team)">{{team}}</button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
+                <p>See statistics and Team information here!</p>
+                <div class="row header">
+                    <div class="col"><button ng-click="showteams = false" class="button button-positive">Show Teams</button></div>
+                    <div class="col"><button ng-click="showteams = true" class="button button-positive">Show the players</button></div>
+                </div>
+                <div class="row header" ng-hide="showteams" ng-repeat="team in gameTeamscope">
+                    <div class="col">{{team.teamName}}</div>
+                    <div class="col"><div class="row header"><div class="col">{{team.teamMates}}</div></div></div>
+                </div>
+                <div class="row header" ng-show="showteams">
+                    <p>Statistics about players (How many question answered, how many bases conquered)</p>
+                </div>
             </ion-content>
 
             <ion-footer-bar class="bar-positive" ng-click="modal.remove()">
                 <p class="title">OK</p>
             </ion-footer-bar>
         </ion-modal-view>
-    </script>-->
+    </script>
 
     <div class="bar bar-subheader bar-assertive" ng-show="showInfo" class="ng-show">
         <h2 class="title">{{subHeaderInfo}}</h2>
