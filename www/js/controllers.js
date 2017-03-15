@@ -729,7 +729,8 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
     $scope.diff = Array.apply(null, Array(5)).map(function () {
         return "ion-ios-star-outline"
     });
-
+    console.log("$scope.newgame");
+    console.log($scope.newgame);
     $scope.newgame.difficulty = 0;
 
     // Rate difficulty of the game in stars
@@ -745,6 +746,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
 
     // Check, whether we are CREATING or EDITING new game
     if (Edit.getGame() != null) {
+      console.log("edit.getgame() != null");
         $scope.currentAction = "Edit Game";
         $scope.newgame = {
             title: Edit.getGame().name,
@@ -752,6 +754,8 @@ angular.module('starter.controllers', ['starter.services', 'starter.directives']
             time: Edit.getGame().timecompl,
             difficulty: Edit.getGame().difficulty
         };
+        console.log("$scope.newgame");
+        console.log($scope.newgame);
 
         $scope.navactivities = Edit.getGame().activities;
         Edit.resetActivities();

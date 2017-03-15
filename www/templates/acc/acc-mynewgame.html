@@ -4,7 +4,6 @@
             <h2>{{currentAction}}</h2>
             <div class="game-type">
 
-                <button class="button icon-left ion-arrow-graph-up-right" style="background-color:#FFEB3B" ui-sref="tab.pathplan" ng-click="pathGame()" style="color:black;width:50px;">{{'find_destination' | translate}}</button>
                 <button class="button icon-right ion-location" style="background-color:#2196F3" ui-sref="tab.aidnavig" ng-click="aidGame()" style="color:black;">{{'follow_route' | translate}}</button>
 
             </div>
@@ -20,31 +19,9 @@
             <input type="text" ng-model="newgame.description" placeholder="{{'short_description' | translate}}" required>
         </label>
         <label class="item item-input input-info">
-            <span class="input-label">{{'time_compl' | translate}}</span>
-            <input type="text" ng-model="newgame.time" placeholder="{{'time_descr' | translate}}" required>
+            <span class="input-label">{{'team_name' | translate}}</span>
+            <input type="text" ng-model="newgame.team" placeholder="{{'team_name' | translate}}" required>
         </label>
-        <div class="item item-input input-info">
-            <span class="input-label">{{'difficulty' | translate}}</span>
-            <span class="rating" id="stars">
-               <a ng-click = "rateGame(0)">
-                  <i class = {{diff[0]}} style="font-size:2em;color:#FFEB3B;"></i>
-                </a>
-              <a ng-click = "rateGame(1)">
-                  <i class = {{diff[1]}} style="font-size:2em;color:#FFEB3B;"></i>
-                </a>
-              <a ng-click = "rateGame(2)">
-                  <i class = {{diff[2]}} style="font-size:2em;color:#FFEB3B;"></i>
-                </a>
-              <a ng-click = "rateGame(3)">
-                  <i class = {{diff[3]}} style="font-size:2em;color:#FFEB3B;"></i>
-                </a>
-              <a ng-click = "rateGame(4)">
-                  <i class = {{diff[4]}} style="font-size:2em;color:#FFEB3B;"></i>
-               </a>
-          </span>
-        </div>
-        <!-- <input type="text" ng-model = "newgame.difficulty" placeholder="How difficult this game is?" required> -->
-
 
         <ion-list>
             <div ng-repeat="act in navactivities">

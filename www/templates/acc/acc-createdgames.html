@@ -18,21 +18,10 @@
                 <div class="item game-desc">
                     <h2>{{item.name}}</h2>
                     <p>{{item.description}}</p>
-                    <div class="techm_diffc">
-                        <i class={{item.diff[0]}} style="font-size:2vh;color:#03A9F4;"></i>
-                        <i class={{item.diff[1]}} style="font-size:2.5vh;color:#03A9F4;"></i>
-                        <i class={{item.diff[2]}} style="font-size:3vh;color:#2196F3;"></i>
-                        <i class={{item.diff[3]}} style="font-size:3.5vh;color:#2196F3;"></i>
-                        <i class={{item.diff[4]}} style="font-size:4vh;color:#2196F3;"></i>
-                    </div>
-
-                    <!-- <div style="position:absolute;right:2%; top:10%;">
-                        <button class="button button-fab button-positive icon ion-ios-cloud-download waves-effect waves-button waves-light" style=" background:#E91E63; font-size:40px;"></button>
-                    </div> -->
                 </div>
                 <div class="item item-body teachm_menu">
                     <div class="teachm_b" ng-click="deleteItem(item,'{{item.name}}')">DELETE</div>
-                    <div class="teachm_b" ui-sref="acc.mynewgame" ng-click="editItem(item)">EDIT</div>
+                    <div class="teachm_b" ui-sref="acc.mynewgame" ng-click="editBaseItem(item)">EDIT</div>
                 </div>
             </a>
         </div>

@@ -87,6 +87,27 @@ angular.module('starter.services', [])
     }
     return editedGame;
 })
+.factory('EditBaseGame', function() {
+    var editedGame = {};
+    var game = {};
+
+    editedGame.pushGame = function(value){
+        game = value;
+    };
+
+    editedGame.getGame = function(){
+      return game;
+    };
+
+    editedGame.resetGame = function(){
+        game = null;
+    };
+
+    editedGame.resetActivities = function(){
+        editedGame.activities = [];
+    }
+    return editedGame;
+})
 .factory('PathData',function(){
     var pathObj = {};
     var pathdata = [];
@@ -622,7 +643,7 @@ angular.module('starter.services', [])
         }
         return null;
     };
-    
+
     data.FFA = function(){
         console.log('In FFA service')
         var defer = $q.defer();

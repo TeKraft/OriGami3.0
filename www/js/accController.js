@@ -163,7 +163,7 @@ angular.module('starter')
 // #################################################################################################
 
 .controller('ProfTeacherCtrl', function ($rootScope, $scope, $timeout, $ionicPopup, $ionicModal, $window, $ionicHistory,
-                                    $translate, $ionicSlideBoxDelegate, $cordovaCamera, $q, accAPI, Edit, meanData) {
+                                    $translate, $ionicSlideBoxDelegate, $cordovaCamera, $q, accAPI, EditBaseGame, meanData) {
     var vm = this;
     vm.user = {};
 
@@ -843,7 +843,7 @@ angular.module('starter')
 
     };
     /* ----------------------------------------------------------------------- */
-    // TODO: delete, edit baseGame
+    // TODO: delete, EditBaseGame baseGame
 
     // // Delete the entire game by clicking on the trash icon
     // $scope.deleteBaseItem = function (item, name) {
@@ -858,23 +858,24 @@ angular.module('starter')
     //     $scope.list.splice($scope.list.indexOf(item), 1);
     // };
     //
-    // $scope.editBaseItem = function (item) {
-    //   console.log("ProfTeacherCtrl - editItem()");
-    //     $scope.navactivities = [];
-    //
-    //     accAPI.getOneBaseGame(item.name, thisUser)
-    //         .success(function (data, status, headers, config) {
-    //             $scope.deleteGame = data.slice()[0];
-    //         }).error(function (data, status, headers, config) {
-    //             $rootScope.notify(
-    //                 $translate.instant('oops_wrong'));
-    //         });
-    //
-    //     $scope.editedGame = $scope.list[$scope.list.indexOf(item)];
-    //     $scope.navactivities = $scope.editedGame.activities;
-    //
-    //     Edit.pushGame($scope.editedGame);
-    // };
+    $scope.editBaseItem = function (item) {
+      console.log("ProfTeacherCtrl - editItem()");
+      console.log(item);
+        $scope.navactivities = [];
+
+        accAPI.getOneBaseGame(item.name, thisUser)
+            .success(function (data, status, headers, config) {
+                $scope.deleteGame = data.slice()[0];
+            }).error(function (data, status, headers, config) {
+                $rootScope.notify(
+                    $translate.instant('oops_wrong'));
+            });
+
+        $scope.editedGame = $scope.list[$scope.list.indexOf(item)];
+        $scope.navactivities = $scope.editedGame.activities;
+
+        EditBaseGame.pushGame($scope.editedGame);
+    };
 
 
     $scope.toggleActivity = function (activity) {
@@ -926,10 +927,10 @@ angular.module('starter')
 
 .controller('ProfNewGameCtrl', ['$rootScope', '$scope', '$state', '$http', '$location', '$cordovaGeolocation', '$ionicModal',
                             '$window', '$ionicPopup', '$ionicHistory', '$stateParams', '$cordovaCamera',
-                            '$translate', 'leafletData', 'accAPI', 'Edit', 'Data', 'Task', 'meanData',
+                            '$translate', 'leafletData', 'accAPI', 'EditBaseGame', 'Data', 'Task', 'meanData',
                             function ($rootScope, $scope, $state, $http, $location, $cordovaGeolocation, $ionicModal,
                                         $window, $ionicPopup, $ionicHistory, $stateParams, $cordovaCamera,
-                                        $translate, leafletData, accAPI, Edit, Data, Task, meanData) {
+                                        $translate, leafletData, accAPI, EditBaseGame, Data, Task, meanData) {
     var vm = this;
     vm.user = {};
 
@@ -949,37 +950,28 @@ angular.module('starter')
     $scope.currentAction = "New Game";
     $scope.newgame = {}; //General description of the game
     $scope.navactivities = []; // List of activities and types
-    $scope.diff = Array.apply(null, Array(5)).map(function () {
-        return "ion-ios-star-outline"
-    });
-
-    $scope.newgame.difficulty = 0;
-
-    // Rate difficulty of the game in stars
-    $scope.rateGame = function (difficulty) {
-        $scope.diff = Array.apply(null, Array(5)).map(function () {
-            return "ion-ios-star-outline"
-        });
-        for (var i = 0; i <= difficulty; i++) {
-            $scope.diff[i] = "ion-ios-star";
-        }
-        $scope.newgame.difficulty = difficulty + 1;
-    };
 
     // Check, whether we are CREATING or EDITING new game
-    if (Edit.getGame() != null) {
-        $scope.currentAction = "Edit Game";
+    if (EditBaseGame.getGame() != null) {
+      console.log("EditBaseGame.getgame() != null");
+        $scope.currentAction = "EditBaseGame Game";
+        var thisTeam = EditBaseGame.getGame().team;
+        var teamNameArray = [];
+        for (var i=0; i<thisTeam.length; i++) {
+            teamNameArray.push(thisTeam[i].teamName);
+        }
         $scope.newgame = {
-            title: Edit.getGame().name,
-            description: Edit.getGame().description,
-            time: Edit.getGame().timecompl,
-            difficulty: Edit.getGame().difficulty
+            title: EditBaseGame.getGame().name,
+            description: EditBaseGame.getGame().description,
+            team: teamNameArray
+            // time: EditBaseGame.getGame().timecompl,
+            // difficulty: EditBaseGame.getGame().difficulty
         };
+        console.log("$scope.newgame");
+        console.log($scope.newgame);
 
-        $scope.navactivities = Edit.getGame().activities;
-        Edit.resetActivities();
-
-        $scope.rateGame(Edit.getGame().difficulty - 1);
+        $scope.navactivities = EditBaseGame.getGame().activities;
+        EditBaseGame.resetActivities();
 
         for (var i = 0; i < Data.getAct().length; i++) {
             $scope.navactivities.push(Data.getAct()[i]);
@@ -1248,8 +1240,8 @@ angular.module('starter')
                 activities: $scope.navactivities
             };
 
-            if (Edit.getGame() != null) {
-                accAPI.deleteBaseItem(Edit.getGame().name, $rootScope.getToken())
+            if (EditBaseGame.getGame() != null) {
+                accAPI.deleteBaseItem(EditBaseGame.getGame().name, $rootScope.getToken())
                     .success(function (data, status, headers, config) {
                         $rootScope.hide();
                         //$scope.list.splice($scope.list.indexOf($scope.completeGame), 1);
