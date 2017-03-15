@@ -1464,7 +1464,8 @@ angular.module('starter')
             }
             else if($scope.gameTaskscope[random].type == "GeoReference"){
                 if($scope.gameTaskscope[random].base.lat == lat && $scope.gameTaskscope[random].base.lng == lng){
-
+                    console.log($scope.gameTaskscope[random].img)
+                    $scope.performGeoReferencingTask($scope.gameTaskscope[random].img)
                 }
                 else{
                     $scope.attackBase(lat, lng);
@@ -1596,10 +1597,17 @@ angular.module('starter')
         };
     };
 
-    $scope.performGeoReferencingTask = function () {
+    $scope.performGeoReferencingTask = function (imgID) {
+        console.log(imgID);
         $scope.showInfo = true;
         $scope.subHeaderInfo = "Mark location on map";
-        $scope.geoRefPhoto = accAPI.getImageURL($scope.task.img);
+        console.log("in performGeaReferencingTask");
+        accAPI.getImageURL(imgID)
+            .then(function (img) {
+                console.log(img);
+                $scope.geoRefPhoto = img;
+                console.log($scope.geoRefPhoto);
+            })
         createModal('georef-modal.html', 'georef');
     };
 

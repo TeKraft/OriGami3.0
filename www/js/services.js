@@ -393,7 +393,7 @@ angular.module('starter.services', [])
             if (name == undefined) {
                 return null
             }
-            return base + '/baseData/img/' + name;
+            return $http.get(base + '/baseData/img/' + name);
         },
         uploadImage: function(file) {
             return Upload.upload({
