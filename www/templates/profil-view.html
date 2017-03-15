@@ -6,14 +6,34 @@
         <!-- <button ng-click = "createFile()">ASDGFASDGASDG</button> -->
     </div>
     <ion-content style="height:90%;top:10%;">
-
-        <p>First name: {{vm.user.firstName}}</p>
-        <p>Name: {{vm.user.lastName}}</p>
-        <p>Username: {{vm.user.userName}}</p>
-        <p>e-mail: {{vm.user.email}}</p>
-        <p>Birthday: {{vm.user.birthday}}</p>
-        <p>Info: {{vm.user.info}}</p>
-
+        <table>
+          <tr>
+            <td>First Name:</td>
+            <td>{{vm.user.firstName}}</td>
+          </tr>
+          <tr>
+            <td>Name:</td>
+            <td>{{vm.user.lastName}}</td>
+          </tr>
+          <tr>
+            <td>Username:</td>
+            <td>{{vm.user.userName}}</td>
+          </tr>
+          <tr>
+            <td>e-mail:</td>
+            <td>{{vm.user.email}}</td>
+          </tr>
+          <tr>
+            <td>Birthday:</td>
+            <td>{{vm.user.birthday}}</td>
+          </tr>
+          <tr>
+            <td>Info:</td>
+            <td>{{vm.user.info}}</td>
+          </tr>
+        </table>
+        <br>
+        <br>
         <table class="list">
             <tr ng-repeat="friend in vm.user.friends">
                 <td ng-click="friendAccount(friend)" id="friend"><a>{{friend}}</a></td>

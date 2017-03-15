@@ -1,5 +1,18 @@
 /* white Space Tab bug fix */
 
+table {
+    width:100%;
+    color:black;
+    font-size:4vh;
+    text-align: left;
+}
+tr, td {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin: 1px;
+    height: 8px;
+}
+
 .tabs-top > .tabs,
 .tabs.tabs-top {
     top: 0 !important;
