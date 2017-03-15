@@ -170,6 +170,28 @@
         </ion-modal-view>
     </script>
 
+
+    <!-- SP  Game Modal -->
+    <script id="sp-modal.html" type="text/ng-template">
+        <ion-modal-view style="padding: 0; margin:0; dispay:block; background-color:#64B5F6; ">
+            <ion-content style="height: 100%; width:100%;">
+                <i class="{{icon}}"></i>
+                <div class="qa_question" ng-class="{right_ans: answer == true,wrong_ans: answer == false}">
+                    <h1 class="description">Let's do some {{sportTask}}</h1>
+                    <p>{{repCount}} of {{sportTaskReps}} reps done!</p>
+                    <button ng-click="go()" ng-show="!listening_yet" class="btn btn-danger"> ~~~ GO! ~~~ </button>
+                    <ori-qa type="question" qadata="question"> </ori-qa>
+                    <button id="sporty" ng-show="exercise.done" ng-click="modal.remove()" class="button button-positive button-fab" style="background-color:#FFFF00"><i class="icon ion-arrow-right-c" style="color:#1565C0"></i></button>
+                </div>
+                <div class="qa_answers">
+                    <div class="answer1" ng-model="exercise">
+                    </div>
+                </div>
+            </ion-content>
+        </ion-modal-view>
+    </script>
+
+
     <!-- model to invite users to the game -->
     <script id="inviteusers-modal.html" type="text/ng-template">
         <ion-modal-view>

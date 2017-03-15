@@ -1,7 +1,35 @@
 <ion-modal-view style="height:75%; ">
     <ion-content class="qa_page" style="background-color:#64B5F6;" data-tap-disabled="true">
 
-      
+        <div class="quest-tab">
+            <div class="information">
+                <i class="icon ion-ios-body"></i>
+                <h2>Exercise</h2>
+                <div class="question">
+                    <label class="item item-input item-select" for="exerciseType">
+                        <div class="input-label">
+                            <img class="photo_ic" src="../../img/icons/sports.png" height="50" width="50">
+                        </div>
+                        <select ng-model="sportTask.question" ng-options="exercise.name group by exercise.targetBodyPart for exercise in exercises" id="exerciseType" rows="5" placeholder="Add text or choose image"> </select>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="answers">
+            <div class="answer">
+                <label class="item item-input item-floating-label ans_inp">
+                    <i class="icon ion-ios-loop-strong"></i>
+                    <input type="number" min="5" ng-model="sportTask.repetitions" class="wrong-input" placeholder="Number of repetitions">
+                </label>
+                <div class="photo_c">
+                    <label class="item-floating-label" >
+                        <img src="../../img/icons/sports.png" height="40" width="40"/>
+                    </label>
+                </div>
+            </div>
+        </div>
+
 
     <div class="navi">
         <button class="button button-block button-balanced save_but" ng-click="submitSP()">{{'save' | translate}}</button>
