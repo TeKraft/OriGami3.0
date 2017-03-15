@@ -1458,6 +1458,15 @@ angular.module('starter')
                     $scope.attackBase(lat, lng);
                 }
             }
+            else if($scope.gameTaskscope[random].type == "SP"){
+                console.log('SP');
+                for(var i=0; i<$scope.basepoints.length; i++){
+                    if($scope.basepoints[i].latitude == lat && $scope.basepoints[i].longitude == lng){
+                        performSPTask(random, $scope.basepoints[i]._id)
+                        console.log($scope.basepoints[i]);
+                    }
+                }
+            }
             else if($scope.gameTaskscope[random].type == "sport"){
 
             }
