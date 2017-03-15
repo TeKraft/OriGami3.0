@@ -6,21 +6,9 @@ angular.module('starter.services', [])
 // services service
 // #################################################################################################
 
-// NEW: clear input field
-.factory('ClearInputField', function() {
-  console.log("ClearInputField");
-
-  clearInput = function(fieldID) {
-
-    console.log("clearInput");
-    console.log(fieldID);
-    console.log($scope.fieldID);
-    // $scope.fieldID = null;
-  };
-})
-
 // NEW: Login Service
 .service('LoginService', function($q) {
+  window.alert(LoginService);
   return {
     loginUser: function(name, pw) {
       var deferred = $q.defer();
@@ -48,9 +36,6 @@ angular.module('starter.services', [])
 .service('EditService', function() {
   return {
     editValue: function(value, def) {
-      console.log("EditService");
-      console.log(value);
-      console.log(def);
       var back = value + ', ' + def;
       return back;
     }
@@ -228,25 +213,10 @@ angular.module('starter.services', [])
 // API for getting data from the remote server (REST interface to Mongodb)
 .factory('API', function ($rootScope, $http, $ionicLoading, $window, Server, Upload) {
     var base = Server;
-    /*$rootScope.show = function (text) {
-        $rootScope.loading = $ionicLoading.show({
-            content: text ? text : 'Loading',
-            animation: 'fade-in',
-            showBackdrop: true,
-            maxWidth: 200,
-            showDelay: 0
-        });
-    };*/
+
     $rootScope.hide = function () {
         $ionicLoading.hide();
     };
-
-    /*$rootScope.notify = function (text) {
-        $rootScope.show(text);
-        $window.setTimeout(function () {
-            $rootScope.hide();
-        }, 1999);
-    };*/
 
     $rootScope.doRefresh = function (tab) {
         if (tab == 1)
@@ -290,14 +260,6 @@ angular.module('starter.services', [])
                 method: 'POST',
             });
         },
-        /* putItem: function (id, form, email) {
-         return $http.put(base+'/api/v1/bucketList/data/item/' + id, form, {
-         method: 'PUT',
-         params: {
-         token: email
-         }
-         });
-         },*/
         deleteItem: function (name) {
             return $http.delete(base + '/games/item/' + name, {
                 method: 'DELETE',
@@ -329,25 +291,9 @@ angular.module('starter.services', [])
 .factory('accAPI', function ($rootScope, $http, $ionicLoading, $window, Server, Upload) {
     var base = Server;
 
-        /*$rootScope.show = function (text) {
-            $rootScope.loading = $ionicLoading.show({
-                content: text ? text : 'Loading',
-                animation: 'fade-in',
-                showBackdrop: true,
-                maxWidth: 200,
-                showDelay: 0
-            });
-        };*/
         $rootScope.hide = function () {
             $ionicLoading.hide();
         };
-
-        // $rootScope.notify = function (text) {
-        //     $rootScope.show(text);
-        //     $window.setTimeout(function () {
-        //         $rootScope.hide();
-        //     }, 1999);
-        // };
 
         $rootScope.doRefresh = function (tab) {
             if (tab == 1)
@@ -372,7 +318,6 @@ angular.module('starter.services', [])
 
     return {
         getAllBaseGames: function (user) {
-          console.log(user);
             return $http.get(base + '/baseGames/' + user, {
                 method: 'GET',
             });
@@ -407,12 +352,8 @@ angular.module('starter.services', [])
             return $http.post(base + '/baseUpdate', data)
         },
         deleteBaseItem: function (name, object) {
-           console.log("object");
-           console.log(object);
-           console.log(object.basekey.length);
            var toDeleteBases;
            for (var i=0; i<object.basekey.length; i++) {
-             console.log(object.basekey[i]);
                toDeleteBases = toDeleteBases + '-' + object.basekey[i];
            }
              return $http.delete(base + '/baseGames/baseItem/' + name + '/' + object._id + '/' + object.creator + '/' + toDeleteBases, {
@@ -444,25 +385,10 @@ angular.module('starter.services', [])
 
 .factory('FFAdefault', function ($rootScope, $http, $ionicLoading, $window, Server, Upload) {
     var base = Server;
-    /*$rootScope.show = function (text) {
-        $rootScope.loading = $ionicLoading.show({
-            content: text ? text : 'Loading',
-            animation: 'fade-in',
-            showBackdrop: true,
-            maxWidth: 200,
-            showDelay: 0
-        });
-    };*/
+
     $rootScope.hide = function () {
         $ionicLoading.hide();
     };
-
-    /*$rootScope.notify = function (text) {
-        $rootScope.show(text);
-        $window.setTimeout(function () {
-            $rootScope.hide();
-        }, 1999);
-    };*/
 
     $rootScope.doRefresh = function (tab) {
         if (tab == 1)
@@ -487,8 +413,6 @@ angular.module('starter.services', [])
     return {
         // sensebox FFA game
         createFFA: function (form) {
-          console.log("form");
-          console.log(form);
             return $http.post(base + '/FFAGameCreation', form, {
                 method: 'POST',
             });
@@ -548,79 +472,7 @@ angular.module('starter.services', [])
         language : "en" // recommmended interface language for game (alternatives - de / es / pt / en)
 
     };
-    // data.isLoaded = function () {
-    //     return loaded;
-    // };
-    // data.getId = function() {
-    //     if (loaded) {
-    //         return game._id;
-    //     }
-    //     return null;
-    // };
-    // data.getName = function() {
-    //     if (loaded) {
-    //         return game.name;
-    //     }
-    //     return null;
-    // };
-    // data.getNumActivities = function () {
-    //     if (loaded) {
-    //         if ('activities' in game) {
-    //             return game.activities.length;
-    //         }
-    //         return 0;
-    //     }
-    //     return -1;
-    // };
-    // data.getNumWaypoints = function (activityIndex) {
-    //     if (loaded) {
-    //         if (typeof game.activities[activityIndex] === 'undefined') {
-    //             return 0;
-    //         }
-    //         if ('points' in game.activities[activityIndex]) {
-    //             return game.activities[activityIndex].points.length;
-    //         }
-    //         return 0;
-    //     }
-    //     return -1;
-    // };
-    // data.getNumTasks = function (activityIndex, waypointIndex) {
-    //     if (loaded) {
-    //         if ('tasks' in game.activities[activityIndex].points[waypointIndex]) {
-    //             return game.activities[activityIndex].points[waypointIndex].tasks.length;
-    //         }
-    //         return 0;
-    //     }
-    //     return -1;
-    // };
-    // data.getActivity = function (index) {
-    //     if (loaded) {
-    //         return game.activities[index];
-    //     }
-    //     return -1;
-    // };
-    // data.getWaypoint = function (actIndex, pointIndex) {
-    //   console.log("data");
-    //   console.log(data);
-    //   console.log("game");
-    //   console.log(game);
-    //     if (loaded) {
-    //         return game.activities[actIndex].points[pointIndex];
-    //     }
-    //     return -1;
-    // };
-    // data.getTask = function (actIndex, pointIndex, taskIndex) {
-    //     if (loaded) {
-    //         return game.activities[actIndex].points[pointIndex].tasks[taskIndex];
-    //     }
-    //     return -1;
-    // };
-    // data.getAllConfigs = function() {
-    //     if (loaded) {
-    //         return config;
-    //     }
-    //     return null;
-    // };
+
     data.getConfig = function (prop) {
         /*
             Check if object has nested keys. Angular don't provide inbuilt functions for the same
@@ -675,40 +527,6 @@ angular.module('starter.services', [])
             });
         return defer.promise;
     };
-
-    // // for base game
-    // data.getBaseIDs = function () {
-    //   console.log("getBasepoints");
-    //   console.log("game");
-    //   console.log(game);
-    //     if (loaded) {
-    //         console.log("loaded");
-    //         return game.uniqueKey;
-    //     }
-    // };
-
-    // data.loadUsergame = function(userName, gameName){
-    //     console.log('In loadUsergame')
-    //     var defer = $q.defer();
-    //     var baseGames = $http.get(Server + '/baseGames/baseItem/' + userName + '/' + gameName)
-    //         .then(function (response) {
-    //             game = response.data[0];
-    //             loaded = true;
-    //             if(game.hasOwnProperty('config') == false){
-    //                 game.config={};
-    //             }
-    //             angular.merge (config, default_config, game.config);
-    //             $rootScope.$broadcast('usergameLoadedEvent');
-    //             defer.resolve();
-    //
-    //         },
-    //         function (response) {
-    //             console.log("Fetching ame data. HTTP GET request failed");
-    //             console.log(response);
-    //             defer.reject("Unable to fetch game data. HTTP GET request faield")
-    //         });
-    //     return defer.promise;
-    // };
 
     return data;
 })
@@ -799,10 +617,6 @@ angular.module('starter.services', [])
         return -1;
     };
     data.getWaypoint = function (actIndex, pointIndex) {
-      console.log("data");
-      console.log(data);
-      console.log("game");
-      console.log(game);
         if (loaded) {
             return game.activities[actIndex].points[pointIndex];
         }
@@ -873,8 +687,6 @@ angular.module('starter.services', [])
                     console.log(response);
                     defer.reject("Unable to fetch game data. HTTP GET request failed");
                 });
-                console.log("games");
-                console.log(games);
         return defer.promise;
     };
 

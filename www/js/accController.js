@@ -805,6 +805,27 @@ angular.module('starter')
 
     $scope.emptyFields = [];
 
+    $scope.checkGameName = function (gamename) {
+         console.log(gamename);
+         var user = thisUser;
+         accAPI.getOneBaseGame(user, gamename)
+             .success(function (data, status, headers, config) {
+                 console.log("data - success");
+                 console.log(data);
+                 if (data.length == 0) {$scope.slideTo(1);}
+                 else {
+                     $ionicPopup.alert({
+                         title: 'gamename',
+                         template: 'game '+ data[0].name +' already exists.'});
+                 }
+             })
+             .error(function (data, status, headers, config) {
+                 $ionicPopup.alert({
+                     title: 'ERROR',
+                     template: 'there has been an error.\nPlease try again.'});
+             });
+     };
+
     $scope.slideTo = function (index) {
       console.log("ProfTeacherCtrl - slideTo()");
         if (index == 1) {
@@ -817,25 +838,41 @@ angular.module('starter')
                     $scope.emptyFields[1] = true;
                 }
             } else {
-              console.log("ionicSlideBoxDelegate");
                 $ionicSlideBoxDelegate.slide(index);
             }
-        // } else if (index == 1) {
-        //     console.log("index == 1 --> second page");
-        // } else if (index == 2) {
-        //     if ($scope.game_mode != 0) {
-        //         $ionicSlideBoxDelegate.slide(index);
-        //     }
-      } else if (index == 2) {
-          if ($scope.team != "") {
-              console.log("nicht leer");
-              $ionicSlideBoxDelegate.slide(index);
-          } else { $ionicPopup.alert({
-              title: 'Continue impossible!',
-              template: 'no teams added'}); }
-      } else {
-          $ionicSlideBoxDelegate.slide(index);
-      }
+        } else if (index == 2) {
+           if ($scope.team == "" || $scope.team == undefined) {
+               $ionicPopup.alert({
+                   title: 'Continue impossible!',
+                   template: 'no teams added'});
+           } else {
+               $ionicSlideBoxDelegate.slide(index);
+           }
+       } else if (index == 3) {
+           if ($scope.newBasepoint == "" || $scope.newBasepoint == undefined) {
+               $ionicPopup.alert({
+                   title: 'Continue impossible!',
+                   template: 'no basepoints added'});
+           } else {
+               $ionicSlideBoxDelegate.slide(index);
+           }
+       } else if (index == 4) {
+           if ($scope.sportTask == undefined || $scope.qaTask == undefined || $scope.geoTask == undefined) {
+               var confirmPopup = $ionicPopup.confirm({
+                 title: 'Are you sure?',
+                 template: 'Press OK if you really want to continue without adding any task.'
+               });
+               confirmPopup.then(function(res) {
+                 if(res) {
+                     $ionicSlideBoxDelegate.slide(index);
+                 }
+               });
+           } else {
+               $ionicSlideBoxDelegate.slide(index);
+           }
+       } else {
+           $ionicSlideBoxDelegate.slide(index);
+       }
 
 
     };
@@ -848,7 +885,7 @@ angular.module('starter')
         // confirm deleting BaseGame
         var confirmPopup = $ionicPopup.confirm({
           title: 'Are you sure?',
-          template: 'Press OK if you really want to do it.'
+          template: 'Press OK if you really want to delete this game.'
         });
         confirmPopup.then(function(res) {
           if(res) {
@@ -1435,7 +1472,8 @@ angular.module('starter')
                         title: 'The Player is already in the game!'
                     });
                 }
-    }
+        });
+  };
 
     //Add a player to a Team
     $scope.playerToTeam = function(players, team){

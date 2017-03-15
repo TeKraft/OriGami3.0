@@ -15,7 +15,7 @@
                         </div>
                         <div class="row">
                             <span class="input-label">{{'game_description' | translate}}</span>
-                            <textarea rows="4" ng-class = "{empty_field: emptyFields[1]}" ng-model="newgame.description" required> </textarea>
+                            <textarea rows="4" ng-class = "{empty_field: emptyFields[1]}" ng-model="newgame.description" required></textarea>
                         </div>
                     </div>
                 </div>
@@ -23,7 +23,7 @@
             <!-- Navigation buttons -->
             <div class="page_menu">
                 <div class="navi">
-                    <button class="button button_navi" ng-click="slideTo(1)">
+                    <button class="button button_navi" ng-click="checkGameName(newgame.name)">
                         Continue
                     </button>
                      <a class="stop_b" ng-click="stopCreation()"><p>BACK</p></a>
@@ -43,17 +43,15 @@
                     <div class="main_info">
                         <div class="row">
                             <form name="myForm">
-                              <label>{{'team_title' | translate}}</label><br>
-                              <input class="typeTeamname"  type="text" ng-model="addTeamname" required/>
-                              <button ng-click="addTeamnames(addTeamname); addTeamname = null">add</button>
+                              <label class="addTeam" style="font-size:3vh;">{{'add_team' | translate}}</label><br>
+                              <input class="typeTeamname"  type="text" ng-model="addTeamname"/>
+                              <button class="addTeamname" ng-click="addTeamnames(addTeamname); addTeamname = null">add</button>
 
-                              <label for="addTeam"> Multiple select: </label><br>
                               <div name="addTeam" id="selectTeam" ng-model="shownTeamnames" multiple ng-repeat="teamname in addedTeam">
                                   {{teamname}}
                               </div>
                               <br>
-                              <tt>multipleSelect = {{addedTeam}}</tt><br/>
-                              <button ng-click="forceUnknownOption()">clear input</button><br>
+                              <button class="clearTeamname" ng-click="forceUnknownOption()">clear input</button><br>
                             </form>
 
                         </div>
@@ -63,7 +61,7 @@
             <!-- Navigation buttons -->
             <div class="page_menu">
                 <div class="navi">
-                    <button class="button button_navi" ng-click="addMode(); slideTo(2)">
+                    <button class="button button_navi" ng-click="slideTo(2); addMode()">
                         Continue
                     </button>
                      <a class="stop_b" ng-click="stopCreation()"><p>STOP</p></a>
@@ -102,8 +100,15 @@
             <div class="page_content">
                 <div class="content">
                     <h2 style="color:white;">Add tasks</h2>
-                    <p style="color:white;font-size:3vh;"><span>Step 4:</span> Add tasks to questions catalouge</p>
-                    <button ng-click="taskHandlerStart()">click me</button>
+                    <p style="color:white;font-size:3vh;"><span>Step 4:</span> Add tasks to questions cataloge</p>
+                    <a ng-click="taskHandlerStart()">
+                        <div class="task_t addTask">
+                            <!-- <div class="picture"> <img src="./img/icons/Chat-2.png" /></div> -->
+                            <div class="description">
+                                <h2>... by clicking</h2>
+                            </div>
+                        </div>
+                    </a>
                 </div>
             </div>
             <div class="page_menu" ng-hide="allFilled[2]">
@@ -125,13 +130,6 @@
                     <h2 style="color:white;"> Great! </h2>
                     <h2 style="color:white;"> Your game {{newgame.name}} is created!  </h2>
                     <div class="crtd_icon"><img src="./img/icons/fireworks.svg"> </div>
-                    <div class="final_desc">
-                        <p class = "final_info">Your game contains:</p>
-                        <p class = "final_info">{{newgame.activities[0].points.length}} waypoints</p>
-                        <p class = "final_info">{{numberTask}} tasks</p>
-
-                        <p class = "final_p_info">Maximum reward: {{maxScore}} points</p>
-                    </div>
                 </div>
             </div>
             <div class="page_menu" ng-hide="allFilled[2]">
