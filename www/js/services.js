@@ -3,51 +3,6 @@ angular.module('starter.services', [])
 .value('Server', 'http://localhost:5000')
 
 // #################################################################################################
-// services service
-// #################################################################################################
-
-// NEW: Login Service
-.service('LoginService', function($q) {
-  window.alert(LoginService);
-  return {
-    loginUser: function(name, pw) {
-      var deferred = $q.defer();
-      var promise = deferred.promise;
-
-      //user & secret = placeholder for DB check
-      if (name == 'user' && pw == 'secret') {
-        deferred.resolve('Welcome ' + name + '!');
-      } else {
-        deferred.reject('Wrong credentials!');
-      }
-      promise.success = function(fn) {
-        promise.then(fn);
-        return promise;
-      }
-      promise.error = function(fn) {
-        promise.then(null, fn);
-        return promise;
-      }
-      return promise;
-    }
-  }
-})
-
-.service('EditService', function() {
-  return {
-    editValue: function(value, def) {
-      var back = value + ', ' + def;
-      return back;
-    }
-  }
-})
-
-// NEW: account edit factory
-.factory('EditProfile', function() {
-
-})
-
-// #################################################################################################
 // services factory
 // #################################################################################################
 

@@ -1,6 +1,6 @@
 angular.module('starter.controllers', ['starter.services', 'starter.directives'])
 
-.controller('HomeCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData) {})
+.controller('HomeCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, $location, authentication, meanData) {})
 
 // #################################################################################################
 // controller game
@@ -1941,7 +1941,7 @@ console.log($scope.GameData);
         };
     })
 
-.controller('LoginCtrl', function ($rootScope, $scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication) {
+.controller('LoginCtrl', function ($rootScope, $scope, $ionicPopup, $ionicHistory, $state, $location, authentication) {
     var vm = this;
 
     vm.credentials = {
@@ -1965,7 +1965,7 @@ console.log($scope.GameData);
     };
 })
 
-.controller('AfterloginCtrl', function ($rootScope, $scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData, FFAdefault){
+.controller('AfterloginCtrl', function ($rootScope, $scope, $ionicPopup, $ionicHistory, $state, $location, authentication, meanData, FFAdefault){
     var vm = this;
     vm.user = {};
 
@@ -2016,7 +2016,7 @@ console.log($scope.GameData);
         });
 
 })
-.controller('AccountCtrl', function ($stateParams, $rootScope, $scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData, userService){
+.controller('AccountCtrl', function ($stateParams, $rootScope, $scope, $ionicPopup, $ionicHistory, $state, $location, authentication, meanData, userService){
     console.log("AccountCtrl")
     var vm = this;
     vm.user = {};
@@ -2103,7 +2103,7 @@ console.log($scope.GameData);
     };
 })
 
-.controller('FriendCtrl', function ($rootScope, $scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData, userService, $stateParams) {
+.controller('FriendCtrl', function ($rootScope, $scope, $ionicPopup, $ionicHistory, $state, $location, authentication, meanData, userService, $stateParams) {
     var vm = this;
     vm.user = {};
     console.log("FriendCtrl")
@@ -2159,7 +2159,7 @@ console.log($scope.GameData);
     }
 })
 
-.controller('TabCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, LoginService, $location, authentication, meanData) {
+.controller('TabCtrl', function ($scope, $ionicPopup, $ionicHistory, $state, $location, authentication, meanData) {
 
     $scope.logout = function () {
         authentication.logout();
