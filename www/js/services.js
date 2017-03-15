@@ -461,11 +461,9 @@ angular.module('starter.services', [])
     };
 
     data.FFA = function(){
-        console.log('In FFA service')
         var defer = $q.defer();
         var FFAgame = $http.get(Server + '/FFAGame/item')
             .then(function (response) {
-              console.log(response);
                 game = response.data[0];
                 loaded = true;
                 if(game.hasOwnProperty('config') == false){
@@ -476,8 +474,7 @@ angular.module('starter.services', [])
                 defer.resolve();
             },
             function (response) {
-                console.log("Fetching ame data. HTTP GET request failed");
-                console.log(response);
+                console.log("Fetching game data. HTTP GET request failed");
                 defer.reject("Unable to fetch game data. HTTP GET request faield")
             });
         return defer.promise;
